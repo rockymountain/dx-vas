@@ -48,6 +48,3 @@ Dưới đây là danh sách **các ADR từ API Gateway có thể tái sử d�
 | API & Design         | `dx-adr-030-api-version`, `dx-adr-031-api-governance`, `dx-adr-032-contract-test`, `dx-adr-033-deprecation`                  |
 | Resilience & Scaling | `dx-adr-040-resilience`, `dx-adr-041-autoscaling`, `dx-adr-042-zero-downtime`, `dx-adr-043-rate-limit`, `dx-adr-044-caching` |
 
----
-
-Bạn muốn mình bắt đầu gom nhóm và refactor thành các `dx-adr-xxx.md` cho toàn hệ thống không? Mình có thể tạo ngay **bản đầu tiên `dx-adr-001-ci-cd.md`** dựa trên `adr-003` nếu bạn đồng ý.
