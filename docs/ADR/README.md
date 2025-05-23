@@ -1,50 +1,52 @@
-Dưới đây là danh sách **các ADR từ API Gateway có thể tái sử dụng toàn phần hoặc điều chỉnh nhẹ để dùng cho toàn bộ hệ thống `dx_vas`**, phân loại theo **phạm vi áp dụng**:
+# 📚 DX VAS Architectural Decision Records (ADR)
+
+Tài liệu này tổng hợp toàn bộ các quyết định thiết kế kỹ thuật (ADR) chính thức trong hệ thống **dx_vas**. Mỗi ADR phản ánh một quyết định quan trọng được thống nhất giữa các team liên quan nhằm đảm bảo kiến trúc hệ thống bền vững, bảo mật và dễ mở rộng.
 
 ---
 
-## ✅ **Danh sách ADR tái sử dụng được cho `dx_vas`**
+## 🧭 Mục lục ADR theo chủ đề
 
-| ADR Code  | Tiêu đề                                   | Phạm vi tái sử dụng                              | Ghi chú chỉnh sửa cần thiết                                               |
-| --------- | ----------------------------------------- | ------------------------------------------------ | ------------------------------------------------------------------------- |
-| `adr-003` | CI/CD structure with GitHub Actions       | ✅ Toàn hệ thống                                  | Chuyển `service = api-gateway` → biến tham số; dùng cho frontend, backend |
-| `adr-004` | API Versioning Strategy (`/api/v1/`)      | ✅ Gateway + tất cả backend API                   | Giữ nguyên, chỉ mở rộng thêm cho frontend/mobile                          |
-| `adr-005` | Observability (Logging, Metrics, Tracing) | ✅ Toàn hệ thống                                  | Tách metric & log theo service/module                                     |
-| `adr-006` | Auth via Google OAuth2 + JWT              | 🔶 Một phần                                      | Chỉ áp dụng nếu các service dùng chung gateway auth                       |
-| `adr-007` | Error Handling chuẩn hóa JSON             | ✅ Toàn bộ API (gateway + backend service)        | Có thể chuẩn hóa luôn cho LMS adapter, CRM service...                     |
-| `adr-008` | Rate Limiting với Redis                   | 🔶 Backend API + Gateway                         | Áp dụng được nếu các service chạy public-facing                           |
-| `adr-009` | Security Hardening                        | ✅ Tất cả service (API, frontend, background job) | Cần bổ sung thêm cho frontend nếu dùng Next.js/Nuxt                       |
-| `adr-010` | Deployment Strategy (Blue/Green + Canary) | ✅ Cloud Run service bất kỳ                       | Áp dụng y hệt cho LMS Adapter, Notification Service...                    |
-| `adr-011` | Secrets Rotation                          | ✅ Toàn hệ thống                                  | Áp dụng chung cho frontend, backend, CI/CD                                |
-| `adr-013` | Autoscaling Strategy (Cloud Run)          | ✅ Mọi service Cloud Run                          | Cần tinh chỉnh concurrency theo từng workload                             |
-| `adr-014` | Multi-Environment Config                  | ✅ Frontend, Backend, Terraform                   | Cấu hình `ENV`, `.env`, secret injection → giữ nguyên                     |
-| `adr-015` | Cost Observability                        | ✅ Mọi resource GCP                               | Chỉ cần sửa label thành `application = dx-vas-*`                          |
-| `adr-016` | Resilience & Fallback                     | ✅ Mọi service có call external                   | Áp dụng luôn cho LMS Adapter, CRM adapter                                 |
-| `adr-017` | Caching Strategy (Memory + Redis)         | ✅ Gateway, CRM adapter, frontend SSR             | Cần chú thích rõ scope nào không dùng được Redis                          |
-| `adr-018` | API Governance (OpenAPI, lint, version)   | ✅ Tất cả service public API                      | Có thể dùng linter cho frontend GraphQL/REST nếu applicable               |
-| `adr-019` | Contract Testing (Pact)                   | 🔶 Gateway ↔ Frontend, LMS Adapter ↔ LMS         | Dễ tái dùng nhưng cần người tiêu dùng rõ ràng                             |
-| `adr-020` | API Lifecycle & Deprecation               | ✅ Tất cả API public                              | Không cần thay đổi, chỉ thêm endpoint `/docs/deprecation` vào portal      |
-| `adr-021` | Zero-Downtime Deployment                  | ✅ Mọi service dùng Cloud Run                     | Giữ nguyên, tách bạch với chiến lược canary cụ thể                        |
-| `adr-022` | Observability cho bên thứ ba              | ✅ LMS, Zalo, CRM, Firebase...                    | Có thể tách riêng `partner_name` cho từng tích hợp                        |
-| `adr-023` | IaC Terraform Strategy                    | ✅ Toàn bộ GCP infra                              | Giữ nguyên – chỉ cần mở rộng module cho frontend infra                    |
+### 1. 🧪 CI/CD & Deployment
+- [ADR-001: CI/CD Strategy](./adr-001-ci-cd.md)
+- [ADR-015: Deployment Strategy](./adr-015-deployment-strategy.md)
+- [ADR-014: Zero Downtime Deployment](./adr-014-zero-downtime.md)
+- [ADR-018: Release Approval Policy](./adr-018-release-approval-policy.md)
+- [ADR-017: Environment Deploy Boundary](./adr-017-env-deploy-boundary.md)
+- [ADR-016: Auto Scaling](./adr-016-auto-scaling.md)
+
+### 2. 📡 API Design & Governance
+- [ADR-004: Security Strategy](./adr-004-security.md)
+- [ADR-006: Auth Strategy](./adr-006-auth-strategy.md)
+- [ADR-007: RBAC Strategy](./adr-007-rbac.md)
+- [ADR-009: API Governance](./adr-009-api-governance.md)
+- [ADR-010: Contract Testing](./adr-010-contract-testing.md)
+- [ADR-011: API Error Format](./adr-011-api-error-format.md)
+- [ADR-012: API Response Structure](./adr-012-response-structure.md)
+- [ADR-013: API Path Naming Convention](./adr-013-path-naming-convention.md)
+
+### 3. 👁️ Observability & Reliability
+- [ADR-005: Observability Strategy](./adr-005-observability.md)
+- [ADR-008: Audit Logging](./adr-008-audit-logging.md)
+- [ADR-020: Cost Observability](./adr-020-cost-observability.md)
+- [ADR-021: External Observability](./adr-021-external-observability.md)
+- [ADR-022: SLA/SLO Monitoring](./adr-022-sla-slo-monitoring.md)
+
+### 4. 🏗️ Infrastructure & IaC
+- [ADR-002: Infrastructure-as-Code (Terraform)](./adr-002-iac.md)
+- [ADR-003: Secrets Management](./adr-003-secrets.md)
+- [ADR-019: Project Layout (multi-project)](./adr-019-project-layout.md) ⚠️ *draft*
+
+### 5. 🧬 Data Management & Governance
+- [ADR-023: Schema Migration Strategy](./adr-023-schema-migration-strategy.md)
+- [ADR-024: Data Anonymization & Retention](./adr-024-data-anonymization-retention.md)
 
 ---
 
-## 🔶 **ADR chỉ tái dùng một phần / cần mở rộng**
-
-| ADR                           | Lý do giới hạn                                                            |
-| ----------------------------- | ------------------------------------------------------------------------- |
-| `adr-001` (FastAPI framework) | Chỉ áp dụng cho backend Python service; frontend có thể dùng Next.js      |
-| `adr-002` (RBAC động)         | Áp dụng chủ yếu cho API Gateway; các service khác có thể gọi RBAC qua API |
+## ✅ Quy ước đặt tên & trạng thái
+- File được lưu tại `adr-XXX-name.md`
+- Trạng thái có thể là: `accepted`, `draft`, `deprecated`
+- Mỗi ADR có phần **Bối cảnh**, **Quyết định**, **Chi tiết kỹ thuật**, **Lợi ích**, **Rủi ro**, **Liên kết liên quan**
 
 ---
 
-## ✅ Gợi ý nhóm ADR khi refactor sang `dx_vas`
-
-| Nhóm                 | Mã ADR đề xuất mới                                                                                                           |
-| -------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
-| DevOps/Infra         | `dx-adr-001-ci-cd`, `dx-adr-002-iac`, `dx-adr-003-env-config`, `dx-adr-004-secrets`                                          |
-| Security             | `dx-adr-010-security`, `dx-adr-011-auth-strategy`                                                                            |
-| Observability        | `dx-adr-020-logging`, `dx-adr-021-cost`, `dx-adr-022-3rdparty-tracing`                                                       |
-| API & Design         | `dx-adr-030-api-version`, `dx-adr-031-api-governance`, `dx-adr-032-contract-test`, `dx-adr-033-deprecation`                  |
-| Resilience & Scaling | `dx-adr-040-resilience`, `dx-adr-041-autoscaling`, `dx-adr-042-zero-downtime`, `dx-adr-043-rate-limit`, `dx-adr-044-caching` |
-
+> “Good architecture decisions are not just documented — we live by them.”
