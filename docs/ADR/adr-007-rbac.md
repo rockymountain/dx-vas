@@ -22,7 +22,7 @@ Hệ thống `dx_vas` phục vụ nhiều loại người dùng (học sinh, gi�
 * Permission được lưu trong DB và cache tại Redis
 * Quyền truy cập được kiểm tra dựa trên cặp `(user_id, path:method)` tại API Gateway hoặc Backend
 
-> JWT **KHÔNG** chứa danh sách `permissions`. Gateway sẽ lấy `role` từ JWT, tra `permissions` từ Redis hoặc DB, evaluate điều kiện dựa trên context, và chỉ forward **các permission hợp lệ (đã evaluate)** qua header `X-Permissions` dưới dạng danh sách `code`.
+> JWT **KHÔNG** chứa danh sách `permissions`. Gateway sẽ lấy `role` từ JWT, tra `permissions` từ Redis hoặc DB, evaluate điều kiện dựa trên context, và chỉ forward **các permission hợp lệ (đã evaluate)** qua header `X-Permissions` dưới dạng danh sách các **permission code**.
 
 ---
 
@@ -38,17 +38,17 @@ Hệ thống `dx_vas` phục vụ nhiều loại người dùng (học sinh, gi�
    * Nếu pass, Gateway forward header:
 
 ```http
-X-User-ID: <user_id>
-X-Role: <role>
-X-Auth-Method: <auth_method>
-X-Permissions: score:read, course:create
+X-User-ID: u123
+X-Role: parent
+X-Auth-Method: otp
+X-Permissions: VIEW_STUDENT_SCORE_OWN_CHILD, CREATE_COURSE_GLOBAL
 ```
 
-> `X-Permissions` là danh sách **code hoặc resource\:action** đã được **evaluate và hợp lệ** cho request hiện tại. Backend không cần xử lý điều kiện mà chỉ tin cậy header này.
+> `X-Permissions` là danh sách **permission code** đã được Gateway evaluate và xác định là hợp lệ cho request hiện tại. Đây là định danh duy nhất, ngắn gọn và dễ xử lý tại backend.
 
 ---
 
-## 📛 Cấu trúc dữ liệu RBAC
+## 🧱 Cấu trúc dữ liệu RBAC
 
 ### Bảng `roles`
 
@@ -60,12 +60,10 @@ X-Permissions: score:read, course:create
 
 ### Bảng `permissions`
 
-| id | code           | description       | resource | action | condition (JSONB)                                                     |
-| -- | -------------- | ----------------- | -------- | ------ | --------------------------------------------------------------------- |
-| 1  | score\:read    | Đọc điểm học sinh | score    | read   | { "accessible\_student\_ids": \["\<student\_id\_of\_their\_child>"] } |
-| 2  | course\:create | Tạo mới khoá học  | course   | create | null                                                                  |
-
-> Thêm `code` duy nhất giúp quản lý và truy vết permission dễ dàng. Trường `description` giúp định nghĩa rõ ý nghĩa của từng permission.
+| id | code                             | description      | resource | action | condition (JSONB)                                                     |
+| -- | -------------------------------- | ---------------- | -------- | ------ | --------------------------------------------------------------------- |
+| 1  | VIEW\_STUDENT\_SCORE\_OWN\_CHILD | Xem điểm con     | score    | read   | { "accessible\_student\_ids": \["\<student\_id\_of\_their\_child>"] } |
+| 2  | CREATE\_COURSE\_GLOBAL           | Tạo mới khoá học | course   | create | null                                                                  |
 
 ### Bảng `role_permissions`
 
@@ -82,15 +80,15 @@ X-Permissions: score:read, course:create
 
 ---
 
-## 🪂 Caching & preload
+## 🔁 Caching & preload
 
 * Redis key: `rbac:user:{user_id}` → danh sách permission object (`code`, `resource`, `action`, `condition`)
 * TTL tùy chỉnh (5–15 phút), preload khi login hoặc chạy background task
-* Gateway luôn evaluate lại điều kiện theo context → chỉ forward permission hợp lệ
+* Gateway luôn evaluate lại điều kiện theo context → chỉ forward các permission code hợp lệ
 
 ---
 
-## 🤖 Tích hợp service khác
+## 🧩 Tích hợp service khác
 
 * Backend (Notification, CRM Adapter...) sử dụng `X-Permissions`, `X-Role`, `X-User-ID` từ Gateway
 * Backend **không cần decode JWT** hoặc re-check permission (trừ khi audit đặc biệt)
@@ -101,7 +99,7 @@ X-Permissions: score:read, course:create
 
 * Phân quyền động, chính xác đến từng request context
 * Cho phép cập nhật permission không cần chỉnh JWT
-* Dễ dàng quản lý nhờ `code` và mô tả rõ ràng trong DB
+* Quản lý đơn giản nhờ sử dụng permission code duy nhất, dễ kiểm tra và log
 
 ---
 
@@ -116,7 +114,7 @@ X-Permissions: score:read, course:create
 
 ---
 
-## 📌 Tài liệu liên quan
+## 📎 Tài liệu liên quan
 
 * Auth Strategy: [ADR-006](./adr-006-auth-strategy.md)
 * Audit Logging: [ADR-008](./adr-008-audit-logging.md)

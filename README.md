@@ -53,9 +53,17 @@ CREATE TABLE users (
     user_category TEXT NOT NULL CHECK (user_category IN ('student', 'teacher', 'staff', 'parent')),
     password_hash TEXT,
     created_at TIMESTAMP DEFAULT now(),
-    updated_at TIMESTAMP DEFAULT now()
+    updated_at TIMESTAMP DEFAULT now(),
+    is_active BOOLEAN NOT NULL DEFAULT TRUE
 );
 ```
+
+```sql
+-- Đối với hệ thống đã vận hành, có thể cần chạy thêm câu lệnh:
+ALTER TABLE users ADD COLUMN is_active BOOLEAN NOT NULL DEFAULT TRUE;
+```
+
+> *Hệ thống duy trì cờ `is_active` để xác định tài khoản còn hoạt động hay không. Nếu `is_active = false`, người dùng sẽ không thể đăng nhập dù có tài khoản hợp lệ (JWT vẫn bị từ chối ở API Gateway). Điều này hỗ trợ quản lý lifecycle của user (ví dụ: học sinh tốt nghiệp, giáo viên nghỉ việc) mà không làm mất dữ liệu liên quan (học bạ, lịch sử điểm danh, audit trail…).*
 
 * **Cấu trúc bảng permission linh hoạt:**
 
@@ -81,7 +89,7 @@ role_permission (role_id, permission_id)
 
   * Mỗi request đến API Gateway sẽ trải qua quá trình kiểm tra xác thực và phân quyền:
 
-    1. Xác thực JWT (từ Google OAuth2 hoặc hệ thống local/OTP) để lấy thông tin người dùng.
+    1. Xác thực JWT (từ Google OAuth2 hoặc hệ thống local/OTP), đồng thời kiểm tra trạng thái `is_active` của người dùng.
     2. Truy xuất danh sách roles và permissions từ Redis cache.
     3. Kiểm tra permission với `resource`, `action`, `condition`.
     4. Các điều kiện trong permission đóng vai trò then chốt để giới hạn context cụ thể (ví dụ: chỉ xem được học sinh của mình).
