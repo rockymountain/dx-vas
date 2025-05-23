@@ -1,105 +1,162 @@
 ---
 id: adr-011-api-error-format
-title: ADR-011: Chuẩn hóa định dạng lỗi API cho hệ thống dx_vas
+title: ADR-011: Chuẩn hóa định dạng lỗi API trong hệ thống dx_vas
 status: accepted
-author: DX VAS Architecture Team
+author: DX VAS Platform Team
 date: 2025-06-22
-tags: [api, error-handling, design, dx_vas]
+tags: [api, error, format, dx_vas]
 ---
 
 ## 📌 Bối cảnh
 
-Trong hệ thống **dx_vas**, các dịch vụ như API Gateway, LMS Adapter, CRM Adapter, Notification Service... đều cung cấp API cho frontend và/hoặc dịch vụ khác tiêu thụ. Để đảm bảo việc xử lý lỗi dễ dàng và nhất quán:
-- Frontend cần phân tích và hiển thị lỗi rõ ràng cho người dùng
-- Backend cần log lỗi đầy đủ nhưng không rò rỉ thông tin nhạy cảm
-- Các service cần thống nhất định dạng lỗi khi giao tiếp với nhau
+Các dịch vụ API trong hệ thống dx_vas phục vụ nhiều loại client: frontend web, mobile app, admin dashboard, service-to-service. Để đảm bảo nhất quán, dễ debug và dễ hiển thị thông báo lỗi cho người dùng, cần một định dạng lỗi chuẩn hóa trên toàn hệ thống.
 
-Do đó, việc **chuẩn hóa định dạng lỗi API** là cần thiết để hỗ trợ developer, tăng khả năng debug, và đảm bảo tính thống nhất trên toàn hệ thống.
+> 🔄 Quyết định sử dụng `trace_id` (thay vì `request_id`) để đồng bộ với hệ thống quan sát phân tán (tracing), thống nhất với ADR-005 (Observability) và ADR-008 (Audit Logging).
+
+---
 
 ## 🧠 Quyết định
 
-**Áp dụng định dạng lỗi API chuẩn theo JSON, với các trường: `error_code`, `message`, `details`, `trace_id`, `meta`. Tất cả dịch vụ thuộc dx_vas sẽ trả lỗi theo chuẩn này cho mọi HTTP status code từ 4xx trở lên. HTTP status code luôn phản ánh chính xác loại lỗi, và đi kèm với `error_code` tương ứng.**
-
-## 📦 Cấu trúc lỗi chuẩn đề xuất
-
+Tất cả lỗi API sẽ trả về response JSON thống nhất theo cấu trúc:
 ```json
 {
-  "error_code": "USER_NOT_FOUND",
-  "message": "Người dùng không tồn tại hoặc đã bị xóa",
-  "details": {
-    "user_id": "u_12345"
+  "error": {
+    "code": "<ERROR_CODE>",
+    "message": "<Human-readable message>",
+    "details": {
+      // optional, context phụ trợ cho dev/debug
+    }
   },
-  "trace_id": "req-abcd-1234",
   "meta": {
-    "timestamp": "2025-06-22T14:00:00Z",
-    "service": "gateway",
-    "env": "staging"
+    "timestamp": "2025-06-22T12:34:56Z",
+    "trace_id": "trace-12345"
+  }
+}
+```
+- HTTP status code vẫn trả về đúng chuẩn REST (`400`, `401`, `403`, `404`, `500`...)
+- `error.code`: mã lỗi tĩnh, để frontend hoặc hệ thống khác dễ bắt & dịch
+- `error.message`: mô tả dễ hiểu với người dùng
+- `error.details`: có thể bao gồm field cụ thể sai, hoặc context thêm
+- `meta.trace_id`: ID duy nhất cho mỗi request dùng trong trace/log phân tán
+
+---
+
+## 🧾 Danh sách mã lỗi chuẩn hóa
+
+| error.code | HTTP code | Ý nghĩa |
+|------------|-----------|---------|
+| `INVALID_INPUT` | 400 | Dữ liệu đầu vào không hợp lệ |
+| `UNAUTHORIZED` | 401 | Chưa đăng nhập hoặc token sai |
+| `FORBIDDEN` | 403 | Không đủ quyền |
+| `NOT_FOUND` | 404 | Tài nguyên không tồn tại |
+| `INTERNAL_ERROR` | 500 | Lỗi hệ thống nội bộ |
+| `VALIDATION_FAILED` | 422 | Dữ liệu hợp lệ về schema nhưng sai logic |
+| `OTP_EXPIRED` | 400 | Mã OTP đã hết hạn (dùng trong login phụ huynh) |
+| `OTP_INVALID` | 400 | Mã OTP sai hoặc không khớp |
+| `RATE_LIMITED` | 429 | Gọi API quá nhiều trong thời gian ngắn |
+
+---
+
+## 📦 Mẫu phản hồi chi tiết
+
+### ❌ Trường hợp lỗi (HTTP 400 – OTP hết hạn)
+```json
+{
+  "error": {
+    "code": "OTP_EXPIRED",
+    "message": "Mã xác nhận đã hết hạn. Vui lòng thử lại."
+  },
+  "meta": {
+    "timestamp": "2025-06-22T14:01:02Z",
+    "trace_id": "trace-otp-abcd123"
   }
 }
 ```
 
-### Giải thích các trường:
-| Trường | Bắt buộc | Mô tả |
-|--------|----------|------|
-| `error_code` | ✅ | Mã lỗi tĩnh, viết `SNAKE_CASE`, phục vụ phân loại & xử lý tự động |
-| `message` | ✅ | Mô tả lỗi rõ ràng, dùng được để hiển thị cho người dùng cuối nếu cần |
-| `details` | ⛔ (optional) | Payload kèm chi tiết lỗi nếu cần debug (không chứa thông tin nhạy cảm) |
-| `trace_id` | ⛔ (optional) | Mã định danh request, phục vụ truy vấn log | 
-| `meta` | ⛔ (optional) | Thông tin bổ sung: `timestamp`, service name, env, phiên bản API... |
-
-## 🔧 Mapping với HTTP status
-
-| HTTP status | Mô tả | Ví dụ `error_code` |
-|-------------|-------|---------------------|
-| 400 | Bad Request | `VALIDATION_ERROR`, `MISSING_FIELD` |
-| 401 | Unauthorized | `TOKEN_EXPIRED`, `NOT_AUTHENTICATED` |
-| 403 | Forbidden | `ACCESS_DENIED`, `RBAC_FORBIDDEN` |
-| 404 | Not Found | `USER_NOT_FOUND`, `RESOURCE_NOT_FOUND` |
-| 409 | Conflict | `EMAIL_ALREADY_EXISTS` |
-| 422 | Unprocessable Entity | `BUSINESS_RULE_VIOLATION` |
-| 429 | Too Many Requests | `RATE_LIMIT_EXCEEDED` |
-| 500+ | Internal Error | `INTERNAL_ERROR`, `UPSTREAM_FAILURE`, `DB_ERROR` |
-
-## 🔄 Áp dụng toàn hệ thống
-
-- API Gateway: convert mọi exception/error thành response chuẩn
-- Các service nội bộ: dùng wrapper/middleware (Python FastAPI, NodeJS Express, Go) để thống nhất định dạng lỗi
-- Frontend và mobile chỉ cần bắt lỗi 4xx/5xx và phân tích `error_code`
-- Có thể mapping lỗi backend vào frontend enum để hiển thị thân thiện
-
-## 🛠 Tích hợp CI & Linting
-
-- CI/CD scan để đảm bảo mọi endpoint 4xx/5xx đều có JSON `error_code`
-- Lint OpenAPI schema để enforce định dạng `{error_code, message, ...}`
-- Các error code nên được định nghĩa trong enum riêng (`ERROR_CODES.py`, `error.ts`, ...)
-
-## ✅ Lợi ích
-
-- Frontend dễ hiển thị lỗi và cung cấp gợi ý hành động tiếp theo
-- Backend log và phân tích lỗi nhất quán
-- Giảm chi phí debug liên dịch vụ
-- Dễ thống kê & giám sát lỗi theo `error_code`, `trace_id`
-
-## ❌ Rủi ro & Giải pháp
-
-| Rủi ro | Giải pháp |
-|--------|-----------|
-| Service chưa chuyển sang format chuẩn | Cung cấp wrapper/middleware tích hợp dễ dùng |
-| Lộ thông tin nhạy cảm qua `details` | Mask dữ liệu + code review chặt chẽ |
-| Lỗi trả về sai status code | Kết hợp CI + test + middleware map status chính xác |
-
-## 🔄 Các phương án đã loại bỏ
-
-| Phương án | Lý do không chọn |
-|-----------|------------------|
-| Chỉ trả `message` dạng text | Không phân tích/track được lỗi tự động |
-| Dùng HTML/redirect với lỗi | Không phù hợp cho API, mobile, SPA |
-| Cho phép mỗi service định nghĩa format riêng | Gây rối loạn, khó maintain & debug |
-
-## 📎 Tài liệu liên quan
-
-- API Governance: [ADR-009](./adr-009-api-governance.md)
-- CI/CD Strategy: [ADR-001](./adr-001-ci-cd.md)
+### ✅ Trường hợp thành công
+```json
+{
+  "data": {
+    "user": {
+      "id": "u123",
+      "role": "parent"
+    },
+    "token": "<JWT token>"
+  },
+  "meta": {
+    "timestamp": "2025-06-22T14:01:02Z",
+    "trace_id": "trace-otp-abcd123"
+  }
+}
+```
 
 ---
-> “Một hệ thống API chuyên nghiệp không chỉ trả lời đúng – mà còn trả lỗi đúng cách.”
+
+## 🧰 Định nghĩa OpenAPI Schema (áp dụng từ ADR-012)
+- `ApiErrorInternal`: phần bên trong `error`
+```yaml
+ApiErrorInternal:
+  type: object
+  required:
+    - code
+    - message
+  properties:
+    code:
+      type: string
+      example: OTP_EXPIRED
+    message:
+      type: string
+      example: Mã xác nhận đã hết hạn
+    details:
+      type: object
+      additionalProperties: true
+```
+- `ApiErrorResponse`:
+```yaml
+ApiErrorResponse:
+  type: object
+  properties:
+    error:
+      $ref: '#/components/schemas/ApiErrorInternal'
+    meta:
+      $ref: '#/components/schemas/ResponseMeta'
+```
+- `ResponseMeta`:
+```yaml
+ResponseMeta:
+  type: object
+  properties:
+    timestamp:
+      type: string
+      format: date-time
+    trace_id:
+      type: string
+```
+
+---
+
+## ✅ Lợi ích
+- Giao tiếp API nhất quán, dễ xử lý ở client
+- Giúp debug nhanh thông qua `trace_id`
+- Frontend dễ hiển thị thông báo lỗi có ngữ nghĩa
+
+---
+
+## ❌ Rủi ro & Giải pháp
+| Rủi ro | Giải pháp |
+|--------|-----------|
+| Quên không dùng chuẩn | CI rule check, middleware kiểm chuẩn |
+| Lỗi ẩn dưới 200 OK | Phải throw rõ ràng trong controller/service |
+
+---
+
+## 📎 Tài liệu liên quan
+- Observability: [ADR-005](./adr-005-observability.md)
+- Auth Strategy: [ADR-006](./adr-006-auth-strategy.md)
+- RBAC & Permission: [ADR-007](./adr-007-rbac.md)
+- API Governance: [ADR-009](./adr-009-api-governance.md)
+- API Response Structure: [ADR-012](./adr-012-response-structure.md)
+- Audit Logging: [ADR-008](./adr-008-audit-logging.md)
+
+---
+> “Lỗi là điều không thể tránh — nhưng chuẩn hóa giúp ta phản hồi đúng và kịp thời.”

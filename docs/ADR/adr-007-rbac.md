@@ -1,121 +1,127 @@
 ---
 id: adr-007-rbac
-title: ADR-007: Chiến lược Phân quyền dựa trên Vai trò (RBAC Strategy) cho hệ thống dx_vas
 status: accepted
-author: DX VAS Security Team
+title: ADR-007: Chiến lược phân quyền RBAC động cho toàn hệ thống dx_vas
+author: DX VAS Platform Team
 date: 2025-06-22
-tags: [rbac, access-control, roles, permissions, dx_vas]
+tags: [rbac, security, auth, dx_vas]
 ---
 
 ## 📌 Bối cảnh
 
-Hệ thống **dx_vas** phục vụ nhiều loại người dùng và dịch vụ:
-- Học sinh, giáo viên, phụ huynh (qua Portal/LMS)
-- Quản trị viên, nhân viên trường (qua CRM, SIS)
-- Dịch vụ nội bộ gọi API qua Gateway (LMS Adapter, CRM Proxy...)
+Hệ thống `dx_vas` phục vụ nhiều loại người dùng (học sinh, giáo viên, phụ huynh, quản trị viên), mỗi nhóm có quyền khác nhau trên các tài nguyên. Các dịch vụ API hoạt động theo mô hình microservice nên cần cơ chế phân quyền đồng bộ và linh hoạt giữa các service.
 
-Với quy mô nhiều dịch vụ và người dùng như vậy, cần một chiến lược phân quyền linh hoạt, thống nhất và dễ mở rộng, giúp:
-- Giới hạn truy cập tài nguyên theo vai trò và quyền
-- Kiểm soát hành vi người dùng và dịch vụ rõ ràng
-- Đồng bộ cơ chế kiểm tra quyền ở nhiều thành phần hệ thống
+---
 
 ## 🧠 Quyết định
 
-**Áp dụng chiến lược RBAC động, lưu trữ trung tâm và cache hiệu quả, với Role/Permission rõ ràng, hỗ trợ kiểm tra tại Gateway và/hoặc các service backend.**
+Áp dụng mô hình **RBAC động**:
 
-## 🧩 Mô hình dữ liệu RBAC
+* Mỗi user có thể được gán một hoặc nhiều **role**
+* Mỗi **role** ánh xạ tới một danh sách **permission** (theo định dạng `resource:action` + `condition`)
+* Permission được lưu trong DB và cache tại Redis
+* Quyền truy cập được kiểm tra dựa trên cặp `(user_id, path:method)` tại API Gateway hoặc Backend
 
-### 1. Các thực thể chính
-- `User`: thực thể đăng nhập (người dùng hoặc dịch vụ)
-- `Role`: định danh vai trò (student, teacher, admin, service)
-- `Permission`: quyền cụ thể (ví dụ: `student_info:read`, `grades:update`)
+> JWT **KHÔNG** chứa danh sách `permissions`. Gateway sẽ lấy `role` từ JWT, tra `permissions` từ Redis hoặc DB, evaluate điều kiện dựa trên context, và chỉ forward **các permission hợp lệ (đã evaluate)** qua header `X-Permissions` dưới dạng danh sách `code`.
 
-### 2. Quan hệ
-- Một `User` có thể có **nhiều `Role`**
-- Một `Role` có thể có **nhiều `Permission`**
-- `Permissions` nên được định danh theo định dạng: `resource:action`
+---
 
-```text
-User → Role → Permissions
-        ↘         ↘
-      (student)   (student_info:read, attendance:view)
+## 🔐 Cách hoạt động
+
+1. User đăng nhập → nhận JWT chứa `sub`, `role`, `auth_method`
+2. Khi request đến API Gateway:
+
+   * JWT được xác thực (ADR-006)
+   * `role` và `user_id` được extract từ JWT
+   * Gateway tra `permissions` từ Redis hoặc DB (gồm cả `condition`)
+   * Gateway kiểm tra `resource`, `action` và evaluate `condition` theo context request hiện tại
+   * Nếu pass, Gateway forward header:
+
+```http
+X-User-ID: <user_id>
+X-Role: <role>
+X-Auth-Method: <auth_method>
+X-Permissions: score:read, course:create
 ```
 
-### 3. Lưu trữ
-- Roles, Permissions và Mapping lưu trong DB (PostgreSQL, qua API Gateway)
-- Dữ liệu cache tại Redis: `user_id` → `permissions[]`
-- Hỗ trợ preload: pattern route (e.g., `/students/:id:GET`) → permission
+> `X-Permissions` là danh sách **code hoặc resource\:action** đã được **evaluate và hợp lệ** cho request hiện tại. Backend không cần xử lý điều kiện mà chỉ tin cậy header này.
 
-## 🔐 Quy trình kiểm tra quyền
+---
 
-### ✅ Tại API Gateway
-- JWT xác thực → chứa `sub`, `role`
-- Gateway dùng `path + method` → map sang `required_permission`
-- Lấy quyền user từ Redis (cache theo `user_id`)
-- Nếu `required_permission ∈ user_permissions` → cho phép
-- Nếu không → trả 403
+## 📛 Cấu trúc dữ liệu RBAC
 
-### ✅ Tại Backend Services
-Có 3 mô hình triển khai:
+### Bảng `roles`
 
-#### **Option 1: Tin tưởng Gateway (Header-based)**
-- Gateway forward các header:
-  - `X-User-Id`, `X-Role`, `X-Permissions`
-- Backend chỉ cần check logic nghiệp vụ → không cần re-verify JWT
+| id | name    |
+| -- | ------- |
+| 1  | student |
+| 2  | teacher |
+| 3  | parent  |
 
-#### **Option 2: Tự kiểm tra (Verify JWT + Redis)**
-- Backend service tự verify JWT (nếu dùng public key)
-- Truy vấn Redis/DB để lấy `permissions`
-- Tự kiểm tra hành động có được phép không
+### Bảng `permissions`
 
-#### **Option 3: Hybrid**
-- Tin `X-Permissions`, nhưng fallback Redis nếu thiếu
-- Xác thực kỹ hơn với endpoint quan trọng (e.g., `PUT /grades`)
+| id | code           | description       | resource | action | condition (JSONB)                                                     |
+| -- | -------------- | ----------------- | -------- | ------ | --------------------------------------------------------------------- |
+| 1  | score\:read    | Đọc điểm học sinh | score    | read   | { "accessible\_student\_ids": \["\<student\_id\_of\_their\_child>"] } |
+| 2  | course\:create | Tạo mới khoá học  | course   | create | null                                                                  |
 
-### Gợi ý triển khai theo trust level:
-- CRM Adapter (nội bộ) → Option 1
-- LMS Proxy → Option 2 hoặc 3
-- Notification Service → Option 1
+> Thêm `code` duy nhất giúp quản lý và truy vết permission dễ dàng. Trường `description` giúp định nghĩa rõ ý nghĩa của từng permission.
 
-## ⚙️ Cache & Hiệu năng
-- Redis key: `rbac:user:{user_id}` → list permissions (TTL 5–15 phút)
-- Redis key: `rbac:pattern:{path}:{method}` → permission cần thiết
-- Invalidate cache khi thay đổi role/permission/user (bằng pub/sub hoặc tag key)
+### Bảng `role_permissions`
 
-## 🛠 Quản lý Roles/Permissions
-- Giao diện quản trị phân quyền nằm trong Admin Webapp
-- API Gateway expose endpoint quản lý RBAC:
-  - `GET /roles`, `GET /permissions`, `PUT /user-role`, v.v.
-- Log lại mọi hành động RBAC (xem ADR Audit Logging)
+| role\_id | permission\_id |
+| -------- | -------------- |
+| 1        | 1              |
+| 2        | 1, 2           |
+
+### Bảng `user_roles`
+
+| user\_id | role\_id |
+| -------- | -------- |
+| u123     | 3        |
+
+---
+
+## 🪂 Caching & preload
+
+* Redis key: `rbac:user:{user_id}` → danh sách permission object (`code`, `resource`, `action`, `condition`)
+* TTL tùy chỉnh (5–15 phút), preload khi login hoặc chạy background task
+* Gateway luôn evaluate lại điều kiện theo context → chỉ forward permission hợp lệ
+
+---
+
+## 🤖 Tích hợp service khác
+
+* Backend (Notification, CRM Adapter...) sử dụng `X-Permissions`, `X-Role`, `X-User-ID` từ Gateway
+* Backend **không cần decode JWT** hoặc re-check permission (trừ khi audit đặc biệt)
+
+---
 
 ## ✅ Lợi ích
 
-- Phân quyền linh hoạt, dễ mở rộng, không hardcode
-- Kiểm soát rõ ràng hành vi truy cập từng user/service
-- Cho phép backend lựa chọn mức tin tưởng phù hợp
-- Tăng khả năng kiểm toán và trace lỗi
+* Phân quyền động, chính xác đến từng request context
+* Cho phép cập nhật permission không cần chỉnh JWT
+* Dễ dàng quản lý nhờ `code` và mô tả rõ ràng trong DB
+
+---
 
 ## ❌ Rủi ro & Giải pháp
 
-| Rủi ro | Giải pháp |
-|--------|-----------|
-| Cache lỗi → quyền sai | TTL ngắn + invalidate bằng pub/sub |
-| Backend tin tưởng sai header | Áp dụng theo trust boundary rõ ràng + JWT fallback |
-| Người dùng thay đổi role nhưng chưa được update | Cache bust ngay khi cập nhật role/permission |
-
-## 🔄 Các phương án đã loại bỏ
-
-| Phương án | Lý do không chọn |
-|-----------|------------------|
-| Hardcode quyền trong mã nguồn | Khó bảo trì, không thay đổi runtime |
-| ACL riêng từng service | Mất đồng bộ, phức tạp khi mở rộng |
-| Kiểm tra quyền chỉ dựa vào role | Không đủ chi tiết cho hành vi truy cập cụ thể |
-
-## 📎 Tài liệu liên quan
-
-- Auth Strategy: [ADR-006](./adr-006-auth-strategy.md)
-- Security Hardening: [ADR-004](./adr-004-security.md)
-- Audit Logging: [ADR-008](./adr-008-audit-logging.md)
+| Rủi ro                                | Giải pháp                                                   |
+| ------------------------------------- | ----------------------------------------------------------- |
+| Cache Redis không đồng bộ             | TTL ngắn + preload khi login + invalidate khi update        |
+| Nhiều role conflict quyền             | Dùng union quyền hoặc định nghĩa rule resolve conflict      |
+| Backend thiếu context để check        | Evaluate tại Gateway, hoặc forward context đầy đủ           |
+| Condition quá phức tạp, khó kiểm soát | Chuẩn hoá key của `condition`, viết test & tài liệu rõ ràng |
 
 ---
-> “RBAC tốt không chỉ kiểm soát quyền – mà còn phản ánh rõ triết lý kiểm soát và tin cậy trong toàn hệ thống.”
+
+## 📌 Tài liệu liên quan
+
+* Auth Strategy: [ADR-006](./adr-006-auth-strategy.md)
+* Audit Logging: [ADR-008](./adr-008-audit-logging.md)
+* Security Strategy: [ADR-004](./adr-004-security.md)
+
+---
+
+> "RBAC tốt không chỉ kiểm soát quyền – mà còn phản ánh rõ triết lý kiểm soát và tin cậy trong toàn hệ thống."

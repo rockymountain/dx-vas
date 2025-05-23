@@ -1,103 +1,119 @@
 ---
 id: adr-006-auth-strategy
-title: ADR-006: Chiến lược Xác thực người dùng (Authentication Strategy) cho hệ thống dx_vas
+title: ADR-006: Chiến lược xác thực người dùng (Authentication) cho hệ thống dx_vas
 status: accepted
-author: DX VAS Security Team
+author: DX VAS Platform Team
 date: 2025-06-22
-tags: [auth, oauth2, jwt, identity, dx_vas, gateway]
+tags: [auth, security, dx_vas, oauth2, otp]
 ---
 
 ## 📌 Bối cảnh
 
-Hệ thống **dx_vas** phục vụ nhiều nhóm người dùng:
-- Học sinh, phụ huynh, giáo viên (qua Portal/LMS)
-- Nhân viên nhà trường (CRM, SIS, quản trị)
-- Dịch vụ nội bộ gọi API qua Gateway hoặc service-to-service
+Hệ thống dx_vas phục vụ nhiều nhóm người dùng:
+- Giáo viên, nhân viên trường học (nội bộ VAS)
+- Học sinh (sử dụng dịch vụ học tập)
+- Phụ huynh (theo dõi kết quả học tập, nhận thông báo)
 
-Tất cả request đều đi qua API Gateway và các dịch vụ phía sau (CRM Adapter, LMS Proxy...). Việc xác thực người dùng và dịch vụ phải:
-- Đảm bảo an toàn, đơn giản, có thể scale
-- Dễ tích hợp với frontend, bên thứ ba (SSO, OAuth2)
-- Cho phép phát hành và xác minh token tiêu chuẩn (JWT)
+Google Workspace for Education hiện được cấp cho học sinh, giáo viên và nhân viên, nhưng **không cấp cho phụ huynh**. Do đó, cần có cơ chế xác thực phù hợp cho từng nhóm người dùng.
+
+---
 
 ## 🧠 Quyết định
 
-**Áp dụng chiến lược xác thực tập trung qua API Gateway sử dụng Google OAuth2, phát hành JWT access token ngắn hạn và refresh token an toàn, hỗ trợ lưu session frontend bằng cookie HttpOnly hoặc sessionStorage.**
+**Hệ thống dx_vas áp dụng cơ chế xác thực phân biệt theo nhóm người dùng:**
+- OAuth2 (Google) cho học sinh, giáo viên, nhân viên nội bộ
+- Email hoặc SĐT + OTP (Firebase hoặc custom OTP backend) cho phụ huynh
 
-## 🔐 Kiến trúc xác thực
+> Quyết định không embed `permissions` vào JWT access token để tránh tăng kích thước và rủi ro stale data. Các quyền được tra cứu từ Redis hoặc DB trong mỗi request nếu cần, và được forward dưới dạng `X-Permissions` từ API Gateway.
 
-### 1. OAuth2 (Google) làm Identity Provider
-- Frontend (Portal, Admin Webapp) sẽ redirect tới Google để xác thực
-- Sau khi đăng nhập thành công, API Gateway sẽ:
-  - Xác minh `id_token`
-  - Tạo JWT access token (`15 phút`) chứa `sub`, `email`, `role`, `permissions`
-  - Tạo refresh token lưu trong DB hoặc Redis (với TTL `30–90 ngày` tùy loại user)
+---
 
-### 2. Frontend nhận token
-- Có 2 cơ chế:
-  - **SPA (JS):** lưu access token trong `sessionStorage`, refresh token không lưu ở client → call `/auth/refresh` định kỳ
-  - **SSR (Next.js):** lưu token trong `HttpOnly cookie`, auto send qua header `Cookie`
+## 🔐 Chi tiết chiến lược xác thực
 
-### 3. Token format (JWT)
+### 1. OAuth2 (Google Workspace Education) làm Identity Provider
+- Áp dụng cho: **học sinh, giáo viên, nhân viên**
+- Sử dụng OAuth2 standard flow
+- Mỗi lần đăng nhập tạo JWT access token + refresh token
+- Refresh token TTL: **30–90 ngày tùy loại user**, lưu Redis hoặc DB (theo [adr-024](./adr-024-data-anonymization-retention.md))
+
+### 2. Xác thực phụ huynh (Không dùng Google)
+- Áp dụng cho: **phụ huynh**
+- Do không có Google Workspace Account → sử dụng **Email hoặc Phone + OTP**
+- Tùy chọn provider:
+  - Firebase Auth (email OTP, phone OTP)
+  - Custom OTP API tích hợp Zalo OA hoặc SMS Gateway
+- Sau xác thực OTP thành công → tạo JWT giống như OAuth2 (gắn claim `auth_method=otp`, `role=parent`)
+- Refresh token TTL: **30–90 ngày tùy loại user** (quy định cụ thể cho `parent` sẽ được config theo chính sách nội bộ)
+
+### 3. Common JWT Structure
 ```json
 {
-  "sub": "user_123",
-  "email": "abc@gmail.com",
-  "role": "student",
-  "permissions": ["student.read", "grades.view"],
-  "exp": 1710000000
+  "sub": "user_id",
+  "email": "parent@example.com",
+  "role": "parent",
+  "auth_method": "otp",
+  "iat": 1710000000,
+  "exp": 1710003600
 }
 ```
-- Ký bằng `HS256` hoặc `ES256`
-- Secret/key được rotate định kỳ (xem [ADR-003](./adr-003-secrets.md))
+- `role`: chuỗi đơn (not array), phản ánh vai trò chính của user: `student`, `teacher`, `parent`, `admin`...
+- `auth_method`: chỉ rõ phương thức xác thực, ví dụ: `oauth2`, `otp`, `internal`
 
-### 4. RBAC và Header forwarding
-- API Gateway phân quyền theo `role` và `permissions` đã embed trong JWT
-- Forward các header chuẩn:
-  - `X-User-Id`
-  - `X-Role`
-  - `X-Permissions`
-  - `X-Token-Exp`
-- Các backend service chỉ cần verify lại chữ ký JWT (nếu không tin gateway), hoặc tin `header` nếu trust gateway
+---
 
-### 5. Anonymous & internal service
-- Một số endpoint public không cần xác thực (VD: `/public/school-info`)
-- Service-to-service dùng JWT ký bởi secret riêng, hoặc xác thực bằng service account với mTLS hoặc WIF
+## 📤 Frontend nhận token
+- Frontend nhận access token từ backend sau khi xác thực thành công
+- **Không nên lưu token trong localStorage**. Thay vào đó:
+  - SPA: lưu trong `sessionStorage`
+  - SSR hoặc frontend truyền thống: lưu trong `HttpOnly Cookie`
+- **Frontend KHÔNG tự thêm các header `X-Role`, `X-User-ID`, `X-Permissions`**. Những header này sẽ được sinh ra bởi API Gateway sau khi JWT được xác thực.
 
-## 🛡️ Bảo mật
-- Access token hết hạn sau 15 phút → cần refresh
-- Refresh token revoke bất cứ lúc nào (offboarding, logout)
-- IP lạ / thiết bị mới → yêu cầu re-auth
-- Middleware kiểm tra token ở tất cả API sensitive
+---
+
+## 🧩 Tích hợp RBAC & Service header forwarding
+- API Gateway xác thực JWT, sau đó:
+  - Tra `role` và `permissions` (từ DB hoặc Redis)
+  - Forward các header sau:
+```
+X-User-ID: user_id
+X-Role: parent
+X-Auth-Method: otp
+X-Permissions: read:score, receive:notification
+```
+- Các service backend có thể tin cậy vào các header này và phân quyền theo RBAC (ADR-007), không cần decode lại JWT.
+
+---
+
+## 🔐 Anonymous & Internal Service Auth
+- Một số API public cho phép truy cập anonymous (có quota/rate-limit riêng)
+- Các internal service (e.g. Notification Service, Cron) sử dụng service account JWT với `auth_method=internal`, `role=system` hoặc `cron` để phân biệt RBAC
+
+---
 
 ## ✅ Lợi ích
+- Phân tách rõ loại người dùng và hình thức xác thực
+- Cho phép mở rộng dễ dàng thêm các provider khác
+- Phụ huynh có thể sử dụng hệ thống mà không cần tạo tài khoản Google riêng
 
-- Dễ dùng với Google Workspace sẵn có của nhà trường
-- Không cần quản lý mật khẩu nội bộ → giảm rủi ro
-- Token-based → dễ tích hợp, mở rộng, stateless
-- Cho phép frontend chủ động kiểm soát phiên
-- Phân quyền linh hoạt qua JWT hoặc Redis cache
+---
 
 ## ❌ Rủi ro & Giải pháp
 
 | Rủi ro | Giải pháp |
 |--------|-----------|
-| Refresh token bị đánh cắp | Lưu server-side (DB/Redis), invalidate theo IP/User Agent |
-| JWT bị dùng quá hạn | TTL ngắn, có check `exp`, middleware reject |
-| Trộn giữa session-based và token-based | Tách rõ Auth flow cho SPA vs SSR |
+| OTP spam hoặc brute force | Limit rate + CAPTCHA |
+| Google OAuth2 token bị lộ | Chỉ chấp nhận domain `@truongvietanh.edu.vn` + refresh token có TTL rõ ràng |
+| JWT reuse từ phụ huynh sang học sinh | Check `role`, `auth_method` strict ở API Gateway + audit |
 
-## 🔄 Các phương án đã loại bỏ
-
-| Phương án | Lý do không chọn |
-|-----------|------------------|
-| Tự quản lý user/password | Tốn công bảo trì, không bảo mật bằng Google SSO |
-| OAuth toàn bộ qua frontend | Khó kiểm soát token issuance, không thống nhất flow |
-| Dùng API Key truyền tay | Không kiểm soát được mức độ truy cập, không rotate được |
+---
 
 ## 📎 Tài liệu liên quan
 
 - RBAC Strategy: [ADR-007](./adr-007-rbac.md)
 - Security Hardening: [ADR-004](./adr-004-security.md)
-- Secrets: [ADR-003](./adr-003-secrets.md)
+- Secrets Management: [ADR-003](./adr-003-secrets.md)
+- Audit Logging: [ADR-008](./adr-008-audit-logging.md)
+- Token TTL & Data policy: [ADR-024](./adr-024-data-anonymization-retention.md)
 
 ---
-> “Xác thực tốt không chỉ bảo vệ hệ thống – mà còn tạo trải nghiệm đăng nhập liền mạch cho người dùng.”
+> “Xác thực không chỉ là cánh cửa — đó là cách bạn kiểm soát ai bước vào hệ thống.”
