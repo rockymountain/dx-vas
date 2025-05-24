@@ -117,13 +117,13 @@ role_permission (role_id, permission_id)
 * Header định danh cần bảo vệ bằng cơ chế ký hoặc mạng tin cậy.
 * Áp dụng các biện pháp bảo vệ nâng cao bao gồm rate limiting chi tiết và CAPTCHA chống brute-force.
 
-### 5. CRM – EspoCRM
+### 5. CRM – SuiteCRM
 
 * Quản lý pipeline tuyển sinh.
 * Khi phụ huynh đăng ký nhập học thành công → tự chuyển sang SIS.
 * Giao tiếp qua API Gateway, kiểm soát RBAC.
 
-### 6. SIS – OpenSIS
+### 6. SIS – Gibbon
 
 * Quản lý học sinh, lớp, điểm danh, học phí.
 * Có export API cho LMS, Portal, Admin Webapp.
