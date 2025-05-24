@@ -61,7 +61,10 @@ paths:
                     items:
                       $ref: '#/components/schemas/UserOut'
                   error:
-                    type: 'null'
+                    type: object
+                    nullable: true
+                    description: Trường error sẽ là null khi thành công
+                    example: null
                   meta:
                     $ref: '#/components/schemas/ResponseMeta'
               examples:
@@ -145,7 +148,10 @@ paths:
                   data:
                     $ref: '#/components/schemas/UserOut'
                   error:
-                    type: 'null'
+                    type: object
+                    nullable: true
+                    description: Trường error sẽ là null khi thành công
+                    example: null
                   meta:
                     $ref: '#/components/schemas/ResponseMeta'
               examples:
@@ -225,7 +231,10 @@ paths:
                   data:
                     $ref: '#/components/schemas/UserOut'
                   error:
-                    type: 'null'
+                    type: object
+                    nullable: true
+                    description: Trường error sẽ là null khi thành công
+                    example: null
                   meta:
                     $ref: '#/components/schemas/ResponseMeta'
               examples:
@@ -301,7 +310,10 @@ paths:
                   data:
                     $ref: '#/components/schemas/UserOut'
                   error:
-                    type: 'null'
+                    type: object
+                    nullable: true
+                    description: Trường error sẽ là null khi thành công
+                    example: null
                   meta:
                     $ref: '#/components/schemas/ResponseMeta'
               examples:
@@ -336,7 +348,11 @@ paths:
                       timestamp: '2025-07-10T11:03:00Z'
                       trace_id: trace-invalid-email-format
         '404':
-          $ref: '#/paths/~1users~1{id}/get/responses/404'
+          description: Không tìm thấy
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
       security:
       - BearerAuth: []
   /users/{id}/status:
@@ -380,7 +396,10 @@ paths:
                   data:
                     $ref: '#/components/schemas/UserOut'
                   error:
-                    type: 'null'
+                    type: object
+                    nullable: true
+                    description: Trường error sẽ là null khi thành công
+                    example: null
                   meta:
                     $ref: '#/components/schemas/ResponseMeta'
               examples:
@@ -415,7 +434,11 @@ paths:
                       timestamp: '2025-07-10T11:11:00Z'
                       trace_id: trace-missing-flag
         '404':
-          $ref: '#/paths/~1users~1{id}/get/responses/404'
+          description: Không tìm thấy
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
       security:
       - BearerAuth: []
   /roles:
@@ -438,7 +461,10 @@ paths:
                     items:
                       $ref: '#/components/schemas/RoleOut'
                   error:
-                    type: 'null'
+                    type: object
+                    nullable: true
+                    description: Trường error sẽ là null khi thành công
+                    example: null
                   meta:
                     $ref: '#/components/schemas/ResponseMeta'
               examples:
@@ -491,7 +517,10 @@ paths:
                   data:
                     $ref: '#/components/schemas/RoleOut'
                   error:
-                    type: 'null'
+                    type: object
+                    nullable: true
+                    description: Trường error sẽ là null khi thành công
+                    example: null
                   meta:
                     $ref: '#/components/schemas/ResponseMeta'
               examples:
@@ -548,7 +577,10 @@ paths:
                     items:
                       $ref: '#/components/schemas/PermissionOut'
                   error:
-                    type: 'null'
+                    type: object
+                    nullable: true
+                    description: Trường error sẽ là null khi thành công
+                    example: null
                   meta:
                     $ref: '#/components/schemas/ResponseMeta'
               examples:
@@ -592,7 +624,10 @@ paths:
                   data:
                     $ref: '#/components/schemas/RoleOut'
                   error:
-                    type: 'null'
+                    type: object
+                    nullable: true
+                    description: Trường error sẽ là null khi thành công
+                    example: null
                   meta:
                     $ref: '#/components/schemas/ResponseMeta'
               examples:
@@ -671,7 +706,10 @@ paths:
                   data:
                     $ref: '#/components/schemas/RoleOut'
                   error:
-                    type: 'null'
+                    type: object
+                    nullable: true
+                    description: Trường error sẽ là null khi thành công
+                    example: null
                   meta:
                     $ref: '#/components/schemas/ResponseMeta'
               examples:
@@ -707,7 +745,11 @@ paths:
                       timestamp: '2025-07-10T12:23:00Z'
                       trace_id: trace-invalid-role
         '404':
-          $ref: '#/paths/~1roles~1{id}/get/responses/404'
+          description: Không tìm thấy
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
       security:
       - BearerAuth: []
     delete:
@@ -740,7 +782,10 @@ paths:
                         type: boolean
                         example: true
                   error:
-                    type: 'null'
+                    type: object
+                    nullable: true
+                    description: Trường error sẽ là null khi thành công
+                    example: null
                   meta:
                     $ref: '#/components/schemas/ResponseMeta'
               examples:
@@ -754,7 +799,11 @@ paths:
                       timestamp: '2025-07-10T12:24:00Z'
                       trace_id: trace-delete-role
         '404':
-          $ref: '#/paths/~1roles~1{id}/get/responses/404'
+          description: Không tìm thấy
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
       security:
       - BearerAuth: []
   /roles/{id}/permissions:
@@ -796,7 +845,10 @@ paths:
                   data:
                     $ref: '#/components/schemas/RoleOut'
                   error:
-                    type: 'null'
+                    type: object
+                    nullable: true
+                    description: Trường error sẽ là null khi thành công
+                    example: null
                   meta:
                     $ref: '#/components/schemas/ResponseMeta'
               examples:
@@ -833,7 +885,11 @@ paths:
                       timestamp: '2025-07-10T12:31:00Z'
                       trace_id: trace-invalid-permission
         '404':
-          $ref: '#/paths/~1roles~1{id}/get/responses/404'
+          description: Không tìm thấy
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
       security:
       - BearerAuth: []
   /roles/{id}/permissions/{permission_code}:
@@ -873,7 +929,10 @@ paths:
                         type: boolean
                         example: true
                   error:
-                    type: 'null'
+                    type: object
+                    nullable: true
+                    description: Trường error sẽ là null khi thành công
+                    example: null
                   meta:
                     $ref: '#/components/schemas/ResponseMeta'
               examples:
@@ -887,7 +946,11 @@ paths:
                       timestamp: '2025-07-10T12:32:00Z'
                       trace_id: trace-remove-permission
         '404':
-          $ref: '#/paths/~1roles~1{id}/get/responses/404'
+          description: Không tìm thấy
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
       security:
       - BearerAuth: []
   /users/{id}/roles:
@@ -929,7 +992,10 @@ paths:
                   data:
                     $ref: '#/components/schemas/UserOut'
                   error:
-                    type: 'null'
+                    type: object
+                    nullable: true
+                    description: Trường error sẽ là null khi thành công
+                    example: null
                   meta:
                     $ref: '#/components/schemas/ResponseMeta'
               examples:
@@ -965,7 +1031,11 @@ paths:
                       timestamp: '2025-07-10T12:41:00Z'
                       trace_id: trace-invalid-role-id
         '404':
-          $ref: '#/paths/~1users~1{id}/get/responses/404'
+          description: Không tìm thấy
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
       security:
       - BearerAuth: []
   /users/{id}/roles/{role_id}:
@@ -1005,7 +1075,10 @@ paths:
                         type: boolean
                         example: true
                   error:
-                    type: 'null'
+                    type: object
+                    nullable: true
+                    description: Trường error sẽ là null khi thành công
+                    example: null
                   meta:
                     $ref: '#/components/schemas/ResponseMeta'
               examples:
@@ -1019,7 +1092,11 @@ paths:
                       timestamp: '2025-07-10T12:42:00Z'
                       trace_id: trace-remove-role-user
         '404':
-          $ref: '#/paths/~1users~1{id}/get/responses/404'
+          description: Không tìm thấy
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
       security:
       - BearerAuth: []
   /audit-logs:
@@ -1086,7 +1163,10 @@ paths:
                     items:
                       $ref: '#/components/schemas/AuditLogEntry'
                   error:
-                    type: 'null'
+                    type: object
+                    nullable: true
+                    description: Trường error sẽ là null khi thành công
+                    example: null
                   meta:
                     $ref: '#/components/schemas/ResponseMeta'
               examples:
@@ -1192,7 +1272,9 @@ components:
               type: string
               example: example value
         error:
-          type: 'null'
+          type: object
+          nullable: true
+          description: Trường error sẽ là null khi thành công
           example: null
         meta:
           $ref: '#/components/schemas/ResponseMeta'
