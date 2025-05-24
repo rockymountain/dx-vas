@@ -23,7 +23,7 @@ Tài liệu này mô tả hợp đồng giao tiếp (interface contract) của *
 | POST   | `/students/{id}/transfer` | Điều chuyển học sinh                           | `TransferRequest`                                                          | `StudentOut`       | `TRANSFER_STUDENT`     |
 | POST   | `/students/batch`         | Lấy danh sách thông tin học sinh theo nhiều ID | `student_ids: List[UUID]`                                                  | `List[StudentOut]` | `VIEW_STUDENT_ALL`     |
 
-### 🏫 Lớp học (bổ sung theo yêu cầu CTO)
+### 🏫 Lớp học
 
 | Method | Endpoint          | Mô tả                           | Input Schema / Query Params    | Output Schema    | Permission Code       |
 |--------|-------------------|----------------------------------|-------------------------------|------------------|------------------------|
