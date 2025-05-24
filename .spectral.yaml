@@ -17,3 +17,5 @@ rules:
       function: pattern
       functionOptions:
         match: "^#\/components\/responses\/ErrorResponse$"
+
+  oas3-unused-component: off
