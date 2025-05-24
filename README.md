@@ -117,13 +117,13 @@ role_permission (role_id, permission_id)
 * Header định danh cần bảo vệ bằng cơ chế ký hoặc mạng tin cậy.
 * Áp dụng các biện pháp bảo vệ nâng cao bao gồm rate limiting chi tiết và CAPTCHA chống brute-force.
 
-### 5. CRM – EspoCRM
+### 5. CRM – SuiteCRM
 
 * Quản lý pipeline tuyển sinh.
 * Khi phụ huynh đăng ký nhập học thành công → tự chuyển sang SIS.
 * Giao tiếp qua API Gateway, kiểm soát RBAC.
 
-### 6. SIS – OpenSIS
+### 6. SIS – Gibbon
 
 * Quản lý học sinh, lớp, điểm danh, học phí.
 * Có export API cho LMS, Portal, Admin Webapp.
@@ -174,58 +174,3 @@ role_permission (role_id, permission_id)
 ### 13. Tổng kết
 
 Hệ thống chuyển đổi số VAS được thiết kế mở rộng linh hoạt đến 2600 người dùng, hỗ trợ xác thực phân tách giữa người dùng có Workspace (OAuth2) và phụ huynh (Local/OTP), đảm bảo bảo mật, giám sát, và khả năng phát triển dài hạn.
-
----
-Tuyệt vời! Với README.md và 24 ADR đã được chuẩn hóa và đồng bộ, bạn đang ở một điểm khởi đầu cực kỳ vững chắc. Trước khi chuyển sang thiết kế chi tiết từng service, tôi đề xuất bạn thực hiện **bước chuẩn bị cuối cùng ở cấp độ nền tảng kiến trúc** để đảm bảo thiết kế service diễn ra suôn sẻ:
-
----
-
-## ✅ Các bước nên làm tiếp theo:
-
-### 1. **Tổng hợp và chuẩn hóa “Interface Contract” giữa các service**
-
-* Xác định rõ các service chính (ví dụ: API Gateway, LMS Adapter, CRM Adapter, Notification Service, SIS Adapter).
-* Với từng service, hãy mô tả:
-
-  * Các **API endpoint chính**
-  * Input/output JSON schema
-  * Ai là **consumer** của API đó?
-  * Yêu cầu **bảo mật** (RBAC, X-Permissions)
-  * Quy tắc về versioning & backward compatibility
-* 🎯 Output: 1 file Markdown riêng hoặc sơ đồ tổng hợp `Service Interface Contracts`.
-
-### 2. **Tạo bảng Mapping giữa ADR và Service**
-
-* Xây dựng bảng đơn giản liệt kê:
-
-  * ADR nào ảnh hưởng tới Service nào
-  * Có service nào yêu cầu override đặc biệt không?
-* 🎯 Mục tiêu: tránh lặp logic hoặc lệch so với chuẩn hệ thống.
-
-### 3. **Chuẩn hóa logging, tracing, audit**
-
-* Có thể bắt đầu từ 3 service chính (API Gateway, LMS Adapter, Notification).
-* Đảm bảo:
-
-  * Mỗi request đều có `trace_id`, log ra theo format thống nhất.
-  * Có các “audit event” chuẩn (login, sửa điểm, gửi thông báo...).
-* 🎯 Có thể mở rộng ADR-005 và ADR-008 với phần “log formatter”, schema mẫu log…
-
-### 4. **Chuẩn hóa folder layout và cấu trúc project**
-
-* Cho mỗi service (ví dụ Python FastAPI hoặc NodeJS), xác định:
-
-  * Thư mục `config/`, `routers/`, `schemas/`, `utils/`, `tests/`
-  * `.env`, README, Makefile hoặc script khởi tạo
-* 🎯 Kết quả: Tạo 1 template repo hoặc `service-template.md`.
-
-### 5. **Đặt nguyên tắc phân phối team**
-
-* Ai sẽ phụ trách service nào?
-* Service nào phụ thuộc service nào? → Giúp tổ chức sprint, giao task.
-
----
-
-## ⏭ Sau khi xong các bước trên, mới bắt đầu:
-
-> Thiết kế chi tiết từng service: Database schema, API logic, background jobs, test plan, observability hooks...

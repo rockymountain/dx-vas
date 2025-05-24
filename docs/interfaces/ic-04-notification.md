@@ -4,32 +4,29 @@
 
 Tài liệu này định nghĩa interface contract cho **Notification Service**, thành phần chịu trách nhiệm:
 
-* Gửi thông báo qua email, SMS, app, và Zalo
-* Nhận yêu cầu từ các hệ thống khác qua API Gateway
-* Tự động hoá các luồng gửi theo template và định tuyến kênh gửi phù hợp
+* Gửi thông báo qua email, app, Zalo, Google Chat
+* Nhận yêu cầu gửi từ các hệ thống khác qua API Gateway
+* Tự động hoá gửi theo template, định tuyến kênh gửi phù hợp
 
 ---
 
-## 🔁 Các cách Notification Service được gọi (Consumer)
+## 📤 Endpoint Notification Service phơi ra (Provider API)
 
-| Source Service | Method | Endpoint                           | Mô tả                                                                     |
-| -------------- | ------ | ---------------------------------- | ------------------------------------------------------------------------- |
-| Admin Webapp   | POST   | `/notifications/send`              | Gửi thông báo đơn lẻ cho người dùng cụ thể (thường là phụ huynh/học sinh) |
-| LMS Adapter    | POST   | `/notifications/schedule-reminder` | Gửi lời nhắc học tập định kỳ                                              |
-| CRM Adapter    | POST   | `/notifications/bulk`              | Gửi thông báo hàng loạt (ví dụ: khai giảng, nghỉ học)                     |
+| Method | Endpoint                       | Mô tả                                                                                          | Input Schema                          | Output Schema           | Permission Code                       |
+|--------|--------------------------------|------------------------------------------------------------------------------------------------|---------------------------------------|--------------------------|----------------------------------------|
+| POST   | `/notifications/send`          | Gửi thông báo đơn lẻ tới user cụ thể (Admin Webapp, SIS Adapter gọi)                         | `NotificationRequest`                 | `NotificationResult`    | `SEND_NOTIFICATION_ALL` / `SEND_NOTIFICATION_STUDENT` |
+| POST   | `/notifications/schedule-reminder` | Gửi nhắc học bài định kỳ (LMS Adapter gọi)                                                   | `ReminderScheduleRequest`             | `NotificationResult`    | `SEND_NOTIFICATION_STUDENT`           |
+| POST   | `/notifications/bulk`          | Gửi thông báo hàng loạt (CRM Adapter gọi)                                                     | `BulkNotificationRequest`             | `NotificationResult`    | `SEND_NOTIFICATION_ALL`               |
+| GET    | `/notifications/{dispatch_id}` | Truy vấn trạng thái gửi của 1 dispatch cụ thể                                                 | `dispatch_id: str`                    | `NotificationStatusOut` | `VIEW_NOTIFICATION_STATUS`            |
+| GET    | `/notifications`               | Lấy danh sách thông báo của người dùng hiện tại (dùng trong Customer Portal)                 | `page: int`                           | `List[NotificationOut]` | `VIEW_NOTIFICATION_SELF` / `VIEW_NOTIFICATION_OWN_CHILD` |
 
----
-
-## 📤 Các API được Notification Service phơi ra (Provider)
-
-| Method | Endpoint                       | Mô tả                                                                                          |
-| ------ | ------------------------------ | ---------------------------------------------------------------------------------------------- |
-| GET    | `/notifications/{dispatch_id}` | Truy vấn trạng thái gửi của 1 dispatch cụ thể (cho phép trace từ service gọi như Admin Webapp) |
+> Tất cả endpoint đều đi qua API Gateway và cần JWT hợp lệ. Gateway sẽ forward các header: `X-User-ID`, `X-Role`, `X-Permissions`, `Trace-ID`. Backend chỉ cần kiểm tra permission code có nằm trong `X-Permissions`.
 
 ---
 
-## 📥 Input Schema tiêu chuẩn cho gửi thông báo
+## 📥 Input Schema
 
+### NotificationRequest (POST /notifications/send)
 ```json
 {
   "recipient_ids": ["u123", "u456"],
@@ -43,19 +40,47 @@ Tài liệu này định nghĩa interface contract cho **Notification Service**,
   "priority": "high",
   "metadata": {
     "trace_id": "abc-xyz",
-    "requested_by": "admin_user_id_123"  // ID của người gọi (user_id nếu là Admin Webapp, hoặc service_id nếu gọi nội bộ)
+    "requested_by": "admin_user_id_123"
   }
 }
 ```
 
-> `template_code` xác định nội dung cụ thể (có thể đa ngôn ngữ) và hành vi từng kênh. `payload` là nội dung động được inject theo template.
-> Trường `priority` (`normal` | `high`) có thể ảnh hưởng đến kênh gửi trước hoặc sau.
-> `metadata.requested_by` dùng cho mục đích audit và trace, có thể là ID người dùng hoặc service.
+### ReminderScheduleRequest (POST /notifications/schedule-reminder)
+```json
+{
+  "student_id": "abc123",
+  "term": "HK1",
+  "reminder_type": "assignment_due",
+  "channels": ["app"],
+  "template_code": "REMINDER_ASSIGNMENT",
+  "payload": { "assignment_count": 2 },
+  "schedule_time": "2025-07-10T18:00:00Z"
+}
+```
+
+### BulkNotificationRequest (POST /notifications/bulk)
+```json
+{
+  "audience_group": "new_parents_2025",
+  "template_code": "WELCOME",
+  "channels": ["zalo", "email"],
+  "payload": {
+    "event_name": "Khai giảng",
+    "event_date": "2025-09-01"
+  },
+  "priority": "normal",
+  "metadata": {
+    "trace_id": "...",
+    "requested_by": "crm_system"
+  }
+}
+```
 
 ---
 
-## 📤 Output Schema (Response từ Notification Service)
+## 📤 Output Schema
 
+### NotificationResult
 ```json
 {
   "data": {
@@ -73,22 +98,47 @@ Tài liệu này định nghĩa interface contract cho **Notification Service**,
 }
 ```
 
+### NotificationStatusOut (GET /notifications/{dispatch_id})
+```json
+{
+  "dispatch_id": "notif-xyz",
+  "status": "sent",
+  "channels": ["email"],
+  "failures": ["zalo"]
+}
+```
+
+### List[NotificationOut] (GET /notifications)
+```json
+[
+  {
+    "id": "n001",
+    "channel": "email",
+    "title": "Điểm học kỳ 1 đã có",
+    "received_at": "2025-07-10T19:00:00Z",
+    "read": false
+  },
+  ...
+]
+```
+
 ---
 
 ## 🛡️ RBAC & Phân quyền
 
-* Chỉ những role có `SEND_NOTIFICATION_*` mới có thể gọi service này
-* Gateway sẽ evaluate permission và forward header:
-
-  * `X-User-ID`, `X-Role`, `X-Permissions`, `Trace-ID`
-* Backend kiểm tra sự hiện diện của `SEND_NOTIFICATION_ALL` hoặc `SEND_NOTIFICATION_STUDENT`
+* Các permission code yêu cầu:
+  - `SEND_NOTIFICATION_ALL` – cho phép gửi mọi loại thông báo
+  - `SEND_NOTIFICATION_STUDENT` – chỉ cho phép gửi đến học sinh/phụ huynh
+  - `VIEW_NOTIFICATION_SELF`, `VIEW_NOTIFICATION_OWN_CHILD` – xem thông báo (qua portal)
+  - `VIEW_NOTIFICATION_STATUS` – xem trạng thái gửi
+* API Gateway evaluate permission và forward các header tương ứng
 
 ---
 
 ## ⚠️ Lỗi đặc thù
 
 | Code                  | Mô tả                                              |
-| --------------------- | -------------------------------------------------- |
+|-----------------------|----------------------------------------------------|
 | `TEMPLATE_NOT_FOUND`  | `template_code` không tồn tại hoặc không được phép |
 | `INVALID_RECIPIENT`   | Có `user_id` không hợp lệ hoặc bị block            |
 | `CHANNEL_UNSUPPORTED` | Channel không khả dụng cho user                    |
@@ -98,9 +148,10 @@ Tài liệu này định nghĩa interface contract cho **Notification Service**,
 
 ## ✅ Ghi chú
 
-* `trace_id` phải được forward đầy đủ từ đầu chuỗi call để observability
-* Mỗi `dispatch_id` có thể được truy vấn trạng thái qua `/notifications/{dispatch_id}` – API public cho trace và kiểm tra trạng thái gửi
-* Template có thể versioned, hoặc hỗ trợ A/B testing nội bộ (được quy định trong `template_code` nâng cao)
+* `trace_id` phải được forward xuyên suốt để đảm bảo observability
+* Mỗi `dispatch_id` có thể được truy vấn qua `/notifications/{dispatch_id}`
+* Template có thể versioned hoặc hỗ trợ A/B testing nội bộ nếu cần
+* Các endpoint phải tuân thủ [ADR-012] và [ADR-011]
 
 ---
 
