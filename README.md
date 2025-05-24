@@ -117,53 +117,69 @@ role_permission (role_id, permission_id)
 * Header định danh cần bảo vệ bằng cơ chế ký hoặc mạng tin cậy.
 * Áp dụng các biện pháp bảo vệ nâng cao bao gồm rate limiting chi tiết và CAPTCHA chống brute-force.
 
-### 5. CRM – SuiteCRM
+### 5. Auth Service
+
+* Xử lý xác thực người dùng: Google OAuth2 (giáo viên, học sinh, nhân viên) và OTP/email (phụ huynh).
+* Phát hành JWT và Refresh Token.
+* Hỗ trợ làm mới token, đăng xuất, và truy vết thông tin đăng nhập.
+* Luồng xác thực diễn ra tại Auth Service, token sau đó được gửi đến API Gateway để đánh giá phân quyền.
+* Không thực hiện kiểm tra RBAC – chỉ phát hành token theo chiến lược đã mô tả tại [ADR-006].
+
+### 6. User Service
+
+* Quản lý toàn bộ người dùng trong hệ thống: định danh, trạng thái hoạt động (`is_active`), quyền truy cập (roles, permissions).
+* Là trung tâm RBAC: quản lý việc định nghĩa role, mối quan hệ user-role, và mối quan hệ role-permission (với các permission được định nghĩa tĩnh và load vào hệ thống)
+* Cung cấp dữ liệu phân quyền động cho API Gateway (thông qua cache Redis).
+* Ghi nhận toàn bộ thao tác phân quyền và quản trị qua audit log.
+* Là backend xử lý chính cho các thao tác `/users`, `/roles`, `/permissions`, `/audit/logs` từ Admin Webapp.
+
+### 7. CRM – SuiteCRM
 
 * Quản lý pipeline tuyển sinh.
 * Khi phụ huynh đăng ký nhập học thành công → tự chuyển sang SIS.
 * Giao tiếp qua API Gateway, kiểm soát RBAC.
 
-### 6. SIS – Gibbon
+### 8. SIS – Gibbon
 
 * Quản lý học sinh, lớp, điểm danh, học phí.
 * Có export API cho LMS, Portal, Admin Webapp.
 * Lưu vết lịch sử: học lực, lớp học, học bạ.
 * Liên kết phụ huynh – học sinh lưu trong bảng tham chiếu.
 
-### 7. LMS – Moodle
+### 9. LMS – Moodle
 
 * Học tập online, giao bài, chấm điểm.
 * SSO với OAuth2.
 * Tự động đồng bộ học sinh từ SIS.
 * Điểm có thể đẩy ngược về SIS.
 
-### 8. Notification Service
+### 10. Notification Service
 
 * Gửi thông báo Web, Email (Gmail API), Zalo OA, Google Chat.
 * Phụ huynh nhận thông báo qua Zalo/Email.
 * Học sinh, giáo viên nhận qua WebPush/Google Chat.
 * Người dùng chọn kênh ưa thích qua giao diện.
 
-### 9. Zalo OA & Google Chat
+### 11. Zalo OA & Google Chat
 
 * Gửi thông báo học phí, sự kiện qua Zalo ZNS.
 * Gửi nội bộ (giáo viên, nhân viên) qua Google Chat.
 * Có xử lý lỗi API, quota, timeout.
 
-### 10. Hạ tầng triển khai
+### 12. Hạ tầng triển khai
 
 * Cloud Run, Cloud SQL (có PITR), Redis, Cloud Storage.
 * Logging & Monitoring: Thu thập log tập trung, giám sát error rate, latency. Triển khai distributed tracing (ví dụ: OpenTelemetry) và alerting theo SLO/SLI.
 * Xem xét triển khai Service Mesh trong tương lai để tăng observability, security.
 
-### 11. CI/CD & DevOps
+### 13. CI/CD & DevOps
 
 * GitHub Actions / Cloud Build → Cloud Run.
 * Staging + production, rollback.
 * Test tự động: unit, integration, End-to-End (E2E, ví dụ: Cypress/Playwright), và contract testing (ví dụ: Pact).
 * Trong tương lai, xem xét triển khai Chaos Testing cho các dịch vụ quan trọng.
 
-### 12. Bảo mật & Giám sát
+### 14. Bảo mật & Giám sát
 
 * Mã hóa dữ liệu nhạy cảm.
 * Chống OWASP Top 10, bao gồm CSRF, XSS, SQL Injection.
@@ -173,4 +189,5 @@ role_permission (role_id, permission_id)
 
 ### 13. Tổng kết
 
-Hệ thống chuyển đổi số VAS được thiết kế mở rộng linh hoạt đến 2600 người dùng, hỗ trợ xác thực phân tách giữa người dùng có Workspace (OAuth2) và phụ huynh (Local/OTP), đảm bảo bảo mật, giám sát, và khả năng phát triển dài hạn.
+Hệ thống chuyển đổi số VAS được thiết kế mở rộng linh hoạt đến 2600 người dùng, hỗ trợ xác thực phân tách giữa người dùng có Workspace (OAuth2) và phụ huynh (Local/OTP), đảm bảo bảo mật, giám sát, và khả năng phát triển dài hạn.  
+Hệ thống hiện đã bao gồm các service cốt lõi phục vụ xác thực, phân quyền động (RBAC), và quản lý định danh tập trung, đảm bảo khả năng tích hợp và mở rộng toàn diện.
