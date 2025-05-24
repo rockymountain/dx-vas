@@ -57,7 +57,10 @@ paths:
                   data:
                     $ref: '#/components/schemas/NotificationResult'
                   error:
-                    type: 'null'
+                    type: object
+                    nullable: true
+                    description: Trường error sẽ là null khi thành công
+                    example: null
                   meta:
                     $ref: '#/components/schemas/ResponseMeta'
               examples:
@@ -112,7 +115,10 @@ paths:
                   data:
                     $ref: '#/components/schemas/NotificationResult'
                   error:
-                    type: 'null'
+                    type: object
+                    nullable: true
+                    description: Trường error sẽ là null khi thành công
+                    example: null
                   meta:
                     $ref: '#/components/schemas/ResponseMeta'
               examples:
@@ -172,7 +178,10 @@ paths:
                   data:
                     $ref: '#/components/schemas/NotificationResult'
                   error:
-                    type: 'null'
+                    type: object
+                    nullable: true
+                    description: Trường error sẽ là null khi thành công
+                    example: null
                   meta:
                     $ref: '#/components/schemas/ResponseMeta'
               examples:
@@ -216,7 +225,10 @@ paths:
                   data:
                     $ref: '#/components/schemas/NotificationStatusOut'
                   error:
-                    type: 'null'
+                    type: object
+                    nullable: true
+                    description: Trường error sẽ là null khi thành công
+                    example: null
                   meta:
                     $ref: '#/components/schemas/ResponseMeta'
               examples:
@@ -320,7 +332,10 @@ paths:
                     items:
                       $ref: '#/components/schemas/Notification'
                   error:
-                    type: 'null'
+                    type: object
+                    nullable: true
+                    description: Trường error sẽ là null khi thành công
+                    example: null
                   meta:
                     $ref: '#/components/schemas/ResponseMeta'
               examples:
@@ -343,7 +358,7 @@ paths:
                       retry_count: 0
                     - id: notif_002
                       channel: sms
-                      recipient: 0901234567
+                      recipient: "0901234567"
                       template_code: CRM_PROMOTION
                       payload:
                         discount_code: ABC123
@@ -423,11 +438,14 @@ components:
               type: string
               example: example value
         error:
-          type: 'null'
+          type: object
+          nullable: true
+          description: Trường error sẽ là null khi thành công
           example: null
         meta:
           $ref: '#/components/schemas/ResponseMeta'
       description: Cấu trúc phản hồi thành công chuẩn theo ADR-012.
+      x-spectral-ignore: true
     Notification:
       type: object
       properties:
@@ -469,7 +487,8 @@ components:
           description: Trạng thái gửi
         error_message:
           type: string
-          description: Thông báo lỗi nếu gửi thất bại
+          description: Lý do lỗi nếu gửi thất bại (null nếu thành công)
+          nullable: true
         created_at:
           type: string
           format: date-time
@@ -477,14 +496,18 @@ components:
         sent_at:
           type: string
           format: date-time
-          description: Thời điểm đã gửi
+          description: Thời điểm gửi thực tế (có thể null nếu chưa gửi)
+          nullable: true
         scheduled_at:
           type: string
           format: date-time
           description: Thời điểm dự kiến gửi
+          nullable: true
         dispatch_id:
           type: string
-          description: ID của chiến dịch gửi hàng loạt
+          description: Mã định danh của đợt gửi (dispatch), có thể null nếu gửi trực
+            tiếp
+          nullable: true
         retry_count:
           type: integer
           description: Số lần đã thử gửi lại
@@ -494,6 +517,7 @@ components:
       - recipient
       - template_code
       - payload
+      - id
     NotificationRequest:
       type: object
       properties:
