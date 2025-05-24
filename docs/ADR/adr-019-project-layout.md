@@ -1,104 +1,139 @@
 ---
+
 id: adr-019-project-layout
-title: ADR-019: Chiến lược tổ chức GCP Project, Network & Quyền hạn cho hệ thống dx_vas
-status: draft
+title: ADR-019: Chiến lược tổ chức GCP Project, Network & Quyền hạn cho hệ thống dx\_vas
+status: accepted
 author: DX VAS Platform Team
 date: 2025-06-22
 tags: [iac, gcp, terraform, networking, multi-project, dx_vas]
----
+----------------------------------------------------------------
 
 ## 📌 Bối cảnh
 
-Hệ thống **dx_vas** đang phát triển với nhiều dịch vụ và môi trường vận hành:
-- `dev`, `staging`, `production` có thể cần tách biệt
-- Một số dịch vụ có thể chia sẻ VPC, DNS, Redis hoặc Cloud SQL
-- Nhiều team cùng tham gia triển khai và cần ranh giới IAM rõ ràng
+Hệ thống **dx\_vas** đang phát triển với nhiều dịch vụ microservice, triển khai qua nhiều môi trường (`dev`, `staging`, `production`) và cần tách biệt rõ ràng để đảm bảo:
 
-Do đó cần chuẩn hoá việc:
-- Tổ chức GCP project và naming convention
-- Chia tách tài nguyên theo môi trường
-- Phân quyền triển khai (CI/CD) và vận hành
-- Kết nối mạng chéo project (Shared VPC hoặc Private Services)
+* An toàn khi thử nghiệm tính năng mới
+* Kiểm soát chi phí và quyền truy cập theo môi trường
+* Quản trị hạ tầng phức tạp với Shared VPC, CI/CD, logging, observability
+
+Do đó, cần một chiến lược tổ chức GCP project và network rõ ràng, hỗ trợ IaC, RBAC, giám sát và scale tốt.
 
 ---
 
 ## 🧠 Quyết định
 
-**Áp dụng mô hình multi-project tách biệt theo môi trường (`dev`, `staging`, `prod`) và theo từng module chức năng (nếu cần). Thiết lập Shared VPC nếu cần, phân quyền IAM theo team và CI/CD theo từng project cụ thể.**
+**Áp dụng mô hình multi-project theo môi trường (`dev`, `staging`, `prod`) và module hạ tầng dùng chung, với phân quyền IAM tách biệt, Shared VPC, và tích hợp CI/CD + cost tracking chuẩn hóa.**
 
 ---
 
-## 🧭 Cấu trúc đề xuất
+## 🧭 Cấu trúc Project đề xuất
 
-### 🌐 Project layout
+### 🌍 GCP Project per environment
 
-| Project ID | Môi trường | Mục đích |
-|------------|------------|----------|
-| dx-vas-dev | development | Dev, QA nội bộ, test CI/CD |
-| dx-vas-staging | staging | Kiểm thử tích hợp trước khi production |
-| dx-vas-prod | production | Vận hành thực tế, SLA cao |
+| Project ID       | Môi trường | Mục đích                                |
+| ---------------- | ---------- | --------------------------------------- |
+| `dx-vas-dev`     | dev        | Local test, staging feature, CI/CD      |
+| `dx-vas-staging` | staging    | Tích hợp liên dịch vụ, QA trước release |
+| `dx-vas-prod`    | production | Vận hành chính thức, SLA cao            |
 
-### 🧱 Chia tách theo module (tuỳ chọn)
-- Nếu mở rộng lớn, có thể tách `dx-vas-network`, `dx-vas-logging`, `dx-vas-data` làm module riêng cho hạ tầng chia sẻ
+> Mỗi project có billing riêng, secret riêng, IAM policy riêng.
 
-### 📡 Network & DNS
-- Dùng **Shared VPC** từ `dx-vas-network`
-- Cloud DNS zone chung (`internal.dxvas.local.`)
-- Firewall, NAT config từ module trung tâm
+### 🧱 Module hạ tầng chung
 
-### 🔐 IAM & CI/CD
-- Mỗi project có nhóm quyền riêng:
-  - `ci-deploy-dev@` → chỉ deploy dev
-  - `platform-admin-prod@` → chỉ vận hành prod
-- Terraform tách `backend.tf` và `provider.tf` theo project + environment
+| Project ID       | Mục đích                           |
+| ---------------- | ---------------------------------- |
+| `dx-vas-network` | Shared VPC, Cloud DNS, NAT gateway |
+| `dx-vas-logging` | Centralized logging + audit        |
+| `dx-vas-data`    | Shared Redis, Cloud SQL, BigQuery  |
+
+Các project này được dùng chung bởi môi trường `dev/staging/prod` qua Shared VPC hoặc VPC Peering.
 
 ---
 
-## 🛠 Terraform Structure
+## 🔐 IAM & CI/CD
+
+* CI/CD phân tách rõ quyền deploy:
+
+  * `ci-deploy-dev@` → chỉ có role deploy vào `dx-vas-dev`
+  * `ci-deploy-staging@` → chỉ staging
+  * `ci-deploy-prod@` → cần phê duyệt theo \[ADR-018]
+
+* Terraform tách `provider.tf` theo `project_id`, biến môi trường xác định `env`
+
+* Dùng Workload Identity Federation để tránh dùng key tĩnh
+
+---
+
+## 📡 Mạng & DNS
+
+* Sử dụng **Shared VPC** từ `dx-vas-network`
+* VPC Subnet theo env (`10.10.0.0/16`, `10.20.0.0/16`, ...)
+* DNS zone nội bộ: `internal.dxvas.local.`
+* Dùng Private Google Access để không cần IP public
+
+---
+
+## 🛠 Terraform Layout
 
 ```bash
 infrastructure/
 ├── modules/
-│   ├── network/
-│   ├── gke/
-│   └── redis/
-├── environments/
+│   ├── cloud_run_service/
+│   ├── redis_instance/
+│   ├── cloud_sql_instance/
+│   └── iam_roles/
+├── envs/
 │   ├── dev/
 │   ├── staging/
 │   └── prod/
-└── shared/
-    ├── project.tf
-    └── dns.tf
+├── shared/
+│   ├── network/
+│   ├── dns.tf
+│   └── logging.tf
+└── backend.tf / README.md
 ```
 
-> Ghi chú: cập nhật thống nhất thư mục `environments/` trong tất cả ADR liên quan như `adr-002-iac.md`.
+> Tất cả `envs/` đều chứa `main.tf`, `variables.tf`, `outputs.tf`, và `.tfvars`
+
+---
+
+## 🏷️ Tag & Cost Tracking
+
+* Gắn label cho mọi tài nguyên:
+
+  * `dx_vas_service`, `env`, `owner`, `critical`
+* Dùng label cho Cloud Billing + BigQuery export (ADR-020)
+* Dashboard chi phí chia theo project, env, module
 
 ---
 
 ## ✅ Lợi ích
 
-- Tách biệt rõ môi trường, dễ kiểm soát và audit
-- Cho phép team phát triển thử nghiệm độc lập
-- Dễ áp dụng chính sách cost, alert và IAM riêng theo env
+* Phân tách rõ ràng giữa các môi trường giúp deploy an toàn hơn
+* Dễ kiểm soát quyền, truy cập, và trace chi phí
+* Hạ tầng mở rộng được theo module: network, log, storage
+* Phù hợp với CI/CD, Terraform, Shared VPC
 
 ---
 
 ## ❌ Rủi ro & Giải pháp
 
-| Rủi ro | Giải pháp |
-|--------|-----------|
-| IAM phức tạp & dễ sai | Chuẩn hoá Terraform module IAM, dùng service account cố định |
-| Chi phí chia nhỏ project khó theo dõi | Gắn label `dx_vas_service`, `env`, `team` để cost attribution |
-| Truy cập chéo project lỗi | Xác định rõ source project ↔ target service, áp dụng VPC peering / PSC |
+| Rủi ro                      | Giải pháp                                            |
+| --------------------------- | ---------------------------------------------------- |
+| IAM phức tạp                | Sử dụng module Terraform + group IAM rõ ràng         |
+| Gọi chéo project không được | Kiểm soát `Service Account`, VPC Peering, Shared VPC |
+| Cost phân tán khó theo dõi  | Gắn label chuẩn hóa + dashboard BI từ BigQuery       |
 
 ---
 
 ## 📎 Tài liệu liên quan
 
-- IaC Strategy: [ADR-002](./adr-002-iac.md)
-- CI/CD: [ADR-001](./adr-001-ci-cd.md)
-- Observability: [ADR-005](./adr-005-observability.md)
-- Cost Observability: [ADR-020](./adr-020-cost-observability.md)
+* IaC Strategy: [ADR-002](./adr-002-iac.md)
+* CI/CD: [ADR-001](./adr-001-ci-cd.md)
+* Cost Observability: [ADR-020](./adr-020-cost-observability.md)
+* Env Deploy Boundary: [ADR-017](./adr-017-env-deploy-boundary.md)
+* Release Approval: [ADR-018](./adr-018-release-approval-policy.md)
 
 ---
-> “Cấu trúc project tốt là nền tảng cho scale, bảo mật và kiểm soát chi phí.”
+
+> “Kiến trúc tốt bắt đầu từ một nền móng project rõ ràng.”

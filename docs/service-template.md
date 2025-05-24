@@ -102,8 +102,9 @@ make test
 - Biến thực tế được chọn từ `config/{ENV}.env` (xem [ADR-005](./ADR/adr-005-env-config.md))
 
 ## 📎 Tài liệu liên quan
-- [Interface Contract](./interfaces/adr-index.md)
-- [ADR liên quan](./ADR/README.md)
+- [Interface Contract](./interfaces/my_service.md)
+- [ADR Index](./ADR/index.md)
+- [ADR liên quan](./ADR/adr-xxx-name.md)
 ```
 
 ---
