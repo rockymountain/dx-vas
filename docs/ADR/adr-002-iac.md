@@ -1,12 +1,12 @@
 ---
 
 id: adr-002-iac
-title: ADR-002: Chiến lược Hạ tầng dưới dạng Mã nguồn (Infrastructure as Code) cho hệ thống dx\_vas
+title: ADR-002: Chiến lược Hạ tầng dưới dạng Mã nguồn (Infrastructure as Code) cho hệ thống dx_vas
 status: accepted
 author: DX VAS DevOps Team
 date: 2025-06-22
-tags: \[iac, terraform, infrastructure, dx\_vas]
-------------------------------------------------
+tags: [iac, terraform, infrastructure, dx_vas]
+---
 
 ## 📌 Bối cảnh
 
