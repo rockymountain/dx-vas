@@ -1,0 +1,90 @@
+# ============================================================
+# HƯỚNG DẪN VIẾT OPENAPI CHO SERVICE MỚI (TUÂN THỦ ADR)
+# ============================================================
+# ✅ Mỗi endpoint (method) phải có:
+#   - operationId: duy nhất và dùng camelCase (theo ADR-009)
+#   - summary: mô tả ngắn
+#   - description: chi tiết luồng hoạt động, lưu ý đặc biệt
+#   - responses:
+#       - 200: có schema { data, error: null, meta } theo ADR-012
+#       - 400/401/403: sử dụng ErrorResponse và ví dụ lỗi rõ ràng theo ADR-011
+#   - security: luôn có BearerAuth nếu cần xác thực
+# ✅ Tên path phải tuân theo chuẩn RESTful + snake_case (ADR-013)
+# ✅ Ưu tiên thêm examples cho requestBody và responses
+# ============================================================
+openapi: 3.0.3
+info:
+  title: '[Tên Service] API'
+  description: API cho [Mô tả ngắn về Service] trong hệ thống dx_vas.
+  version: 0.1.0
+  contact:
+    name: DX VAS Platform Team
+    email: dev@truongvietanh.edu.vn
+servers:
+- url: https://[subdomain].truongvietanh.edu.vn/api/v1
+tags:
+- name: '[Tên Tag Chính]'
+  description: Các API liên quan đến [Mô tả Tag Chính].
+paths: {}
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  responses:
+    ErrorResponse:
+      description: Lỗi xảy ra trong quá trình xử lý
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
+  schemas:
+    ErrorEnvelope:
+      type: object
+      properties:
+        error:
+          type: object
+          required:
+          - code
+          - message
+          properties:
+            code:
+              type: string
+              example: GENERIC_ERROR
+            message:
+              type: string
+              example: Đã có lỗi xảy ra.
+            details:
+              type: object
+              additionalProperties: true
+        meta:
+          $ref: '#/components/schemas/ResponseMeta'
+    ResponseMeta:
+      type: object
+      required:
+      - timestamp
+      - trace_id
+      properties:
+        timestamp:
+          type: string
+          format: date-time
+          description: Thời điểm phản hồi
+        trace_id:
+          type: string
+          description: Mã trace ID để liên kết log/tracing
+    StandardSuccessResponse_Example:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            example_field:
+              type: string
+              example: example value
+        error:
+          type: 'null'
+          example: null
+        meta:
+          $ref: '#/components/schemas/ResponseMeta'
+      description: Cấu trúc phản hồi thành công chuẩn theo ADR-012.
