@@ -45,9 +45,6 @@ Tài liệu này mô tả hợp đồng giao tiếp (interface contract) của *
   * Vẫn đi qua Gateway, có thể sử dụng `X-User-ID` đại diện cho service CRM với role `system`.
   * Permission `CREATE_STUDENT_FROM_LEAD` được cấp cho CRM thông qua cấu hình RBAC.
   * LMS Adapter kiểm tra `X-Permissions` như bình thường, không cần phân biệt user/service.
-  * `X-User-ID`, `X-Role`, `X-Permissions`, `Trace-ID`
-* Backend chỉ cần kiểm tra `X-Permissions` để xác định quyền truy cập
-* Học sinh và phụ huynh dùng cùng endpoint nhưng khác permission code
 
 ---
 
