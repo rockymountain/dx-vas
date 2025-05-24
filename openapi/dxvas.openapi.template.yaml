@@ -1,22 +1,10 @@
-# ============================================================
-# HƯỚNG DẪN VIẾT OPENAPI CHO SERVICE MỚI (TUÂN THỦ ADR)
-# ============================================================
-# ✅ Mỗi endpoint (method) phải có:
-#   - operationId: duy nhất và dùng camelCase (theo ADR-009)
-#   - summary: mô tả ngắn
-#   - description: chi tiết luồng hoạt động, lưu ý đặc biệt
-#   - responses:
-#       - 200: có schema { data, error: null, meta } theo ADR-012
-#       - 400/401/403: sử dụng ErrorResponse và ví dụ lỗi rõ ràng theo ADR-011
-#   - security: luôn có BearerAuth nếu cần xác thực
-# ✅ Tên path phải tuân theo chuẩn RESTful + snake_case (ADR-013)
-# ✅ Ưu tiên thêm examples cho requestBody và responses
-# ============================================================
 openapi: 3.0.3
 info:
-  title: '[Tên Service] API'
-  description: API cho [Mô tả ngắn về Service] trong hệ thống dx_vas.
-  version: 0.1.0
+  title: '[dx_vas Service] API Template'
+  description: 'OpenAPI template chuẩn hóa dành cho các service thuộc hệ thống dx_vas.
+
+    Tuân thủ ADR-009 đến ADR-013.'
+  version: 0.1.0-legendary-template
   contact:
     name: DX VAS Platform Team
     email: dev@truongvietanh.edu.vn
@@ -88,3 +76,4 @@ components:
         meta:
           $ref: '#/components/schemas/ResponseMeta'
       description: Cấu trúc phản hồi thành công chuẩn theo ADR-012.
+x-template-origin: dx_vas
