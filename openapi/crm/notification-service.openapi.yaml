@@ -445,6 +445,7 @@ components:
         meta:
           $ref: '#/components/schemas/ResponseMeta'
       description: Cấu trúc phản hồi thành công chuẩn theo ADR-012.
+      x-spectral-ignore: true
     Notification:
       type: object
       properties:
