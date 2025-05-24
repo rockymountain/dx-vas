@@ -1,0 +1,19 @@
+openapi: 3.0.3
+info:
+  title: API không hợp lệ
+  version: 1.0.0
+
+paths:
+  /test:
+    get:
+      summary: Test
+      responses:
+        '400':
+          description: lỗi inline
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
