@@ -11,6 +11,19 @@ Tài liệu này mô tả hợp đồng giao tiếp (interface contract) cho **A
 
 ---
 
+## 🌐 API Groups by Client
+
+| Client          | API Group                                                                         | Backend Service                                |
+| --------------- | --------------------------------------------------------------------------------- | ---------------------------------------------- |
+| Admin Webapp    | `/users`, `/roles`, `/permissions`, `/audit`, `/classes`, `/notifications/send`   | CRM Adapter, SIS Adapter, Notification Service |
+| Customer Portal | `/students/me`, `/students/me/scores`, `/students/me/timetable`, `/notifications` | LMS Adapter, Notification Service              |
+| Public Forms    | `/crm/leads` (POST)                                                               | CRM Adapter                                    |
+| Auth (shared)   | `/auth/*`                                                                         | Auth Service                                   |
+
+> Mọi gọi API của client đều thông qua Gateway và được định tuyến tới service backend tương ứng, kèm các header `X-User-ID`, `X-Permissions`, `Trace-ID`...
+
+---
+
 ## 🔐 Yêu cầu chung cho mọi request
 
 ### Header bắt buộc từ client:
