@@ -12,7 +12,6 @@ servers:
 tags:
 - name: Auth
   description: Các API xác thực người dùng (OTP, Google OAuth2, Token lifecycle)
-
 paths:
   /request-otp:
     post:
@@ -31,11 +30,13 @@ paths:
                 value:
                   identity: parent@example.com
                   channel: email
+                  contact: parent@example.com
               sms:
                 summary: Gửi OTP qua SMS
                 value:
                   identity: 0123456789
                   channel: sms
+                  contact: 0901234567
       responses:
         '200':
           description: OTP sent successfully
@@ -76,11 +77,13 @@ paths:
                 value:
                   identity: parent@example.com
                   otp: '123456'
+                  contact: parent@example.com
               invalid:
                 summary: OTP sai
                 value:
                   identity: parent@example.com
                   otp: '999999'
+                  contact: parent@example.com
       responses:
         '200':
           description: Token issued
@@ -199,6 +202,8 @@ paths:
         '302':
           description: Redirect đến Google OAuth2 login
       operationId: startGoogleLogin
+      description: Khởi tạo luồng đăng nhập Google OAuth2 và redirect người dùng tới
+        Google.
   /google-callback:
     post:
       tags:
@@ -355,7 +360,10 @@ components:
         data:
           $ref: '#/components/schemas/OtpRequestResult'
         error:
-          type: 'null'
+          type: object
+          nullable: true
+          description: Trường error sẽ là null khi thành công
+          example: null
         meta:
           $ref: '#/components/schemas/ResponseMeta'
     VerifyOtpSuccessResponse:
@@ -369,7 +377,10 @@ components:
             token:
               $ref: '#/components/schemas/TokenPair'
         error:
-          type: 'null'
+          type: object
+          nullable: true
+          description: Trường error sẽ là null khi thành công
+          example: null
         meta:
           $ref: '#/components/schemas/ResponseMeta'
     GoogleLoginSuccessResponse:
@@ -383,7 +394,10 @@ components:
             token:
               $ref: '#/components/schemas/TokenPair'
         error:
-          type: 'null'
+          type: object
+          nullable: true
+          description: Trường error sẽ là null khi thành công
+          example: null
         meta:
           $ref: '#/components/schemas/ResponseMeta'
     RefreshSuccessResponse:
@@ -392,7 +406,10 @@ components:
         data:
           $ref: '#/components/schemas/TokenPair'
         error:
-          type: 'null'
+          type: object
+          nullable: true
+          description: Trường error sẽ là null khi thành công
+          example: null
         meta:
           $ref: '#/components/schemas/ResponseMeta'
     LogoutSuccessResponse:
@@ -401,7 +418,10 @@ components:
         data:
           $ref: '#/components/schemas/LogoutResult'
         error:
-          type: 'null'
+          type: object
+          nullable: true
+          description: Trường error sẽ là null khi thành công
+          example: null
         meta:
           $ref: '#/components/schemas/ResponseMeta'
     ErrorEnvelope:
