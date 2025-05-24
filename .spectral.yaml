@@ -1,0 +1,19 @@
+extends: spectral:oas
+
+rules:
+  info-contact: error
+  info-description: error
+  operation-description: error
+  operation-operationId: error
+  operation-tags: error
+
+  error-response-must-use-standard-ref:
+    description: "Các response lỗi phải tham chiếu đến '#/components/responses/ErrorResponse'"
+    message: "Response lỗi không dùng ErrorResponse chuẩn. Phải dùng $ref: '#/components/responses/ErrorResponse'."
+    severity: error
+    given: "$.paths[*][*].responses[?(@property >= '400' && @property < '600')]"
+    then:
+      field: $ref
+      function: pattern
+      functionOptions:
+        match: "^#\/components\/responses\/ErrorResponse$"
