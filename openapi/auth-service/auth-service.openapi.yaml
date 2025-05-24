@@ -28,13 +28,11 @@ paths:
               email:
                 summary: Gửi OTP qua email
                 value:
-                  identity: parent@example.com
                   channel: email
                   contact: parent@example.com
               sms:
                 summary: Gửi OTP qua SMS
                 value:
-                  identity: 0123456789
                   channel: sms
                   contact: "0901234567"
       responses:
@@ -75,13 +73,11 @@ paths:
               valid:
                 summary: OTP hợp lệ
                 value:
-                  identity: parent@example.com
                   otp: '123456'
                   contact: parent@example.com
               invalid:
                 summary: OTP sai
                 value:
-                  identity: parent@example.com
                   otp: '999999'
                   contact: parent@example.com
       responses:
