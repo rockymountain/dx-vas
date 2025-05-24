@@ -30,7 +30,7 @@ Tài liệu này mô tả hợp đồng giao tiếp (interface contract) của *
 | Target       | Method | Endpoint                 | Mô tả                                             |
 | ------------ | ------ | ------------------------ | ------------------------------------------------- |
 | Notification | POST   | `/notifications/send`    | Gửi thông báo nhập học thành công hoặc chuyển lớp |
-| LMS Adapter  | PUT    | `/lms/sync/student/{id}` | Đồng bộ thông tin hồ sơ mới hoặc đã cập nhật      |
+| LMS Adapter  | PUT    | `/sync/student/{id}`     | Đồng bộ thông tin hồ sơ mới hoặc đã cập nhật      |
 
 ---
 
