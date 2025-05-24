@@ -358,7 +358,7 @@ paths:
                       retry_count: 0
                     - id: notif_002
                       channel: sms
-                      recipient: 0901234567
+                      recipient: "0901234567"
                       template_code: CRM_PROMOTION
                       payload:
                         discount_code: ABC123
