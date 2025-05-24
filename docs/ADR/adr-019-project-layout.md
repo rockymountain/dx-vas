@@ -5,7 +5,7 @@ title: ADR-019: Chiến lược tổ chức GCP Project, Network & Quyền hạn
 status: accepted
 author: DX VAS Platform Team
 date: 2025-06-22
-tags: [iac, gcp, terraform, networking, multi-project, dx_vas]
+tags: \[iac, gcp, terraform, networking, multi-project, dx\_vas]
 ----------------------------------------------------------------
 
 ## 📌 Bối cảnh

@@ -5,7 +5,7 @@ title: ADR-002: Chiến lược Hạ tầng dưới dạng Mã nguồn (Infrastr
 status: accepted
 author: DX VAS DevOps Team
 date: 2025-06-22
-tags: [iac, terraform, infrastructure, dx_vas]
+tags: \[iac, terraform, infrastructure, dx\_vas]
 ------------------------------------------------
 
 ## 📌 Bối cảnh
