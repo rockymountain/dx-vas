@@ -52,7 +52,7 @@ my_service/
 └── pyproject.toml               # cấu hình black, isort, v.v (tuỳ chọn)
 ```
 
-> 🔗 Tham chiếu chuẩn từ [ADR-005](../ADR/adr-005-env-config.md):
+> 🔗 Tham chiếu chuẩn từ [ADR-005](./ADR/adr-005-env-config.md):
 > - `config/` ở gốc chứa các file `.env` cho từng môi trường.
 > - `app/config/` chứa mã nguồn Python/NodeJS để load, parse, và ánh xạ các biến môi trường thành đối tượng settings.
 
@@ -99,11 +99,11 @@ make test
 
 ## 🔐 Secrets & Env
 - `.env.example` chứa các biến môi trường mẫu
-- Biến thực tế được chọn từ `config/{ENV}.env` (xem [ADR-005](../ADR/adr-005-env-config.md))
+- Biến thực tế được chọn từ `config/{ENV}.env` (xem [ADR-005](./ADR/adr-005-env-config.md))
 
 ## 📎 Tài liệu liên quan
-- [Interface Contract](../interfaces/my_service.md)
-- [ADR liên quan](../ADR/adr-XXX.md)
+- [Interface Contract](./interfaces/my_service.md)
+- [ADR liên quan](./ADR/README.md)
 ```
 
 ---
