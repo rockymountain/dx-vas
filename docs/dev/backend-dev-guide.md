@@ -137,6 +137,7 @@ def get_user(id: UUID, user_svc: UserService = Depends(get_user_service)):
 Biến `user_svc: UserService = Depends(get_user_service)` sử dụng Dependency Injection (DI) của FastAPI. Hàm `get_user_service` thường được định nghĩa như sau:
 
 ```python
+# deps.py
 def get_user_service(db: Session = Depends(get_db)) -> UserService:
     repo = UserRepo(db)
     return UserService(repo)
@@ -174,6 +175,9 @@ class UserService:
 
 ```python
 class UserRepo:
+    def __init__(self, session: Session):
+        self.session = session
+
     def get(self, id: UUID) -> Optional[User]:
         return self.session.query(User).filter(User.id == id).first()
 ```
@@ -189,6 +193,12 @@ class UserRepo:
 | Repo       | Model           | Schema, Service |
 
 > ✅ Mô hình này giúp dễ test, dễ refactor, và dễ scale từng tầng khi cần.
+
+> 📎 Service Layer nên trả về DTO (Pydantic Schema), không trả trực tiếp SQLAlchemy model.  
+
+> Điều này giúp API Handler tách biệt khỏi ORM logic và tăng khả năng test.
+
+> 📌 Nếu usecase nghiệp vụ yêu cầu nhiều bước (update + audit + gửi event), hãy cân nhắc tổ chức thành context hoặc pattern Unit of Work để đảm bảo rollback đồng bộ nếu có lỗi.
 
 ---
 
@@ -300,15 +310,22 @@ class StudentService:
 #### 4. Repository (`repositories/student_repo.py`)
 
 ```python
+# repositories/student_repo.py
+
 class StudentRepo:
+    def __init__(self, session: Session):
+        self.session = session
+
     def get(self, id: UUID) -> Optional[Student]:
         return self.session.query(Student).filter(Student.id == id).first()
 
     def save(self, student: Student) -> Student:
         self.session.add(student)
-        self.session.commit()
         return student
+
 ```
+
+📎 Repo chỉ nên thực hiện add() hoặc update() và không gọi commit() – việc commit/rollback sẽ được xử lý bởi get_db() hoặc unit-of-work ở tầng trên.
 
 ---
 
@@ -404,6 +421,16 @@ class StudentCreate(StudentBase):
 
 * Tách riêng `PaginationMeta`, `ErrorEnvelope`... dùng chung toàn hệ thống tại `schemas/common.py`
 
+> 📎 Nếu hệ thống dùng camelCase trong JSON response:
+> ```python
+> class Config:
+>     alias_generator = lambda s: ''.join(
+>         word.capitalize() if i else word for i, word in enumerate(s.split('_'))
+>     )
+>     allow_population_by_field_name = True
+> ```
+
+
 ---
 
 📎 Schema chuẩn của toàn hệ thống được định nghĩa tại:
@@ -486,6 +513,27 @@ except DomainError as e:
 | `InternalError`    | 500       |
 
 > ✅ Service không được raise `HTTPException`, mà chỉ raise domain-level error
+> 📌 Có thể định nghĩa một global exception handler trong FastAPI để tự động map `DomainError` sang HTTPException với `ErrorEnvelope`, giúp code tại route gọn hơn:
+>
+> ```python
+> @app.exception_handler(DomainError)
+> async def domain_error_handler(request: Request, exc: DomainError):
+>     return JSONResponse(
+>         status_code=exc.status_code or 500,
+>         content={
+>             "error": {
+>                 "code": exc.code,
+>                 "message": exc.message,
+>                 "details": exc.detail,
+>             },
+>             "meta": {
+>                 "request_id": request.headers.get("X-Request-ID"),
+>                 "timestamp": datetime.utcnow().isoformat()
+>             }
+>         }
+>     )
+> ```
+
 
 ---
 
@@ -520,12 +568,11 @@ class StudentRepo:
 
     def create(self, student: Student) -> Student:
         self.session.add(student)
-        self.session.commit()
         return student
 
     def update(self, student: Student) -> Student:
-        self.session.commit()
         return student
+
 
     def list_by_class(self, class_id: UUID) -> List[Student]:
         return self.session.query(Student).filter(Student.class_id == class_id).all()
@@ -562,12 +609,12 @@ def get_db() -> Generator:
 Trong service:
 
 ```python
-# Sử dụng trong FastAPI handler
+# Trong FastAPI handler
 @router.get("/students/{id}", response_model=StudentOut)
-def get_student(id: UUID, db: Session = Depends(get_db)):
-    repo = StudentRepo(db)
-    svc = StudentService(repo)
-    student = svc.get_student(id)
+def get_student_api_handler(id: UUID, student_svc: StudentService = Depends(get_student_service)):
+    student = student_svc.get_student_by_id(id)
+    if not student:
+        raise StudentNotFoundError()
     return StudentOut.from_orm(student)
 
 ```
@@ -604,26 +651,43 @@ events/
 
 ### 📥 Viết một subscriber handler
 
+> 📎 Schema bảng `processed_messages`:
+> ```sql
+> CREATE TABLE processed_messages (
+>   message_id VARCHAR(255) PRIMARY KEY,
+>   processed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+>   status VARCHAR(50) DEFAULT 'success'
+> );
+> ```
+
 ```python
 def handle_user_created(message: PubSubMessage):
-    data = json.loads(message.data.decode("utf-8"))  # decode + parse JSON
-    user_id = data[\"user_id\"]
+    db_session_event = SessionLocal()
+    try:
+        repo = UserRepo(db_session_event)
+        data = json.loads(message.data.decode("utf-8"))
+        user_id = data["user_id"]
 
-    if repo.has_processed(message.message_id):
-        return  # Đã xử lý → bỏ qua
+        if repo.has_processed(message.message_id):
+            return
 
-    user = repo.get(user_id)
-    if not user:
-        raise UserNotFoundError()
+        user = repo.get(user_id)
+        if not user:
+            raise UserNotFoundError()
 
-    repo.mark_processed(message.message_id)
-    # repo.has_processed / mark_processed có thể là:
-	# - Ghi vào bảng `processed_messages(message_id TEXT PRIMARY KEY)`
-	# - Hoặc sử dụng Redis set để lưu trạng thái message đã xử lý
+        # ... xử lý sự kiện ...
+
+        repo.mark_processed(message.message_id)
+        db_session_event.commit()
+    except Exception:
+        db_session_event.rollback()
+        raise
+    finally:
+        db_session_event.close()
 
 ````
 
-> ✅ `message_id` do Pub/Sub sinh ra – đảm bảo duy nhất
+> ✅ Sử dụng SessionLocal() riêng cho background worker, đảm bảo quản lý transaction tách biệt với request.
 
 ---
 
@@ -843,5 +907,36 @@ Dưới đây là các tài liệu nội bộ hỗ trợ cho quá trình phát t
 1. `backend-dev-guide.md` (tài liệu này)
 2. System Diagrams → RBAC Deep Dive
 3. Dev Guide → Dev Ops Guide
+
+---
+
+## 13. Logging Best Practices
+
+Hệ thống nên sử dụng logging chuẩn với các nguyên tắc sau để đảm bảo khả năng giám sát và trace dễ dàng:
+
+### 🔍 Cấp độ log
+
+| Level     | Mục đích                              |
+|-----------|----------------------------------------|
+| DEBUG     | Chi tiết kỹ thuật để debug (không log ở production) |
+| INFO      | Bước xử lý chính, hành vi người dùng |
+| WARNING   | Bất thường không gây lỗi               |
+| ERROR     | Lỗi nghiêm trọng, nên có traceback    |
+
+### 📦 Cấu trúc log
+
+- Dùng structured log (JSON format) → dễ tích hợp với Cloud Logging
+- Bao gồm `request_id`, `user_id` nếu có thể
+- Log theo trace-id nếu dùng OpenTelemetry hoặc tương tự
+
+### 🧭 Gợi ý log theo tầng
+
+| Tầng      | Log gì                                |
+|-----------|----------------------------------------|
+| Handler   | Bắt đầu/kết thúc xử lý request, input |
+| Service   | Bước nghiệp vụ quan trọng, điều kiện phân nhánh |
+| Repo      | Truy vấn đặc biệt hoặc lỗi DB         |
+
+> 📎 Không log dữ liệu nhạy cảm (password, token, email học sinh...)
 
 ---
