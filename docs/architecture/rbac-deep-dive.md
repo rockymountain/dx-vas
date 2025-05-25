@@ -98,8 +98,8 @@ sequenceDiagram
 ````
 
 > Lưu ý: Để đơn giản hóa vận hành và tăng hiệu năng, Backend không cần decode JWT hay kiểm tra RBAC lại.
-📎 Xem sơ đồ minh họa luồng RBAC tại:  
-👉 [RBAC Evaluation Flow – System Diagrams](./system-diagrams.md#4-rbac-evaluation-flow--luồng-đánh-giá-phân-quyền-động)
+>📎 Xem sơ đồ minh họa luồng RBAC tại:  
+>👉 [RBAC Evaluation Flow – System Diagrams](./system-diagrams.md#4-rbac-evaluation-flow--luồng-đánh-giá-phân-quyền-động)
 
 ## 4. Cấu trúc dữ liệu RBAC
 
@@ -341,8 +341,8 @@ Sự kiện này được publish qua Redis Pub/Sub hoặc message queue nội b
 ---
 
 > Đây là mô hình hybrid: ưu tiên cache nhưng luôn có cơ chế fallback đảm bảo tính nhất quán.
-📎 Xem cấu trúc tổng thể và hạ tầng Redis/DB được sử dụng tại:  
-👉 [Deployment Overview Diagram – System Diagrams](./system-diagrams.md#9-deployment-overview-diagram--sơ-đồ-triển-khai-tổng-quan)
+>📎 Xem cấu trúc tổng thể và hạ tầng Redis/DB được sử dụng tại:  
+>👉 [Deployment Overview Diagram – System Diagrams](./system-diagrams.md#9-deployment-overview-diagram--sơ-đồ-triển-khai-tổng-quan)
 
 ---
 
