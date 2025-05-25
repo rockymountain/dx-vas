@@ -305,7 +305,7 @@ flowchart LR
   Pending[Xác minh OTP hoặc nhận OAuth2]
   Active[is_active = true\nUser có thể đăng nhập]
   Inactive[is_active = false\nTài khoản bị vô hiệu hóa]
-  Deleted[Tài khoản bị xóa (logic delete)\nis_deleted = true]
+  Deleted[Tài khoản bị xóa - is_deleted = true]
 
   Create --> Pending
   Pending --> Active
@@ -358,3 +358,50 @@ flowchart LR
 📌 Việc kiểm soát vòng đời user giúp hệ thống đảm bảo bảo mật, tuân thủ và giám sát chặt chẽ trạng thái tài khoản.
 
 ---
+
+## 📘 Chú giải sơ đồ (Legend) & Hướng dẫn đọc
+
+### 🧩 Ký hiệu các thành phần (dùng trong flowchart & sequenceDiagram):
+
+| Ký hiệu / Label | Ý nghĩa |
+|-----------------|---------|
+| **Hình chữ nhật** | Dịch vụ lõi trong hệ thống (Core Service, Adapter) |
+| **Hình chữ nhật bo góc** | Giao diện người dùng (SPA, PWA, Webform) hoặc hệ thống bên ngoài |
+| **Mũi tên →** | Gọi API hoặc hành động chính theo thứ tự thời gian |
+| **Mũi tên -->>** | Trả kết quả hoặc phản hồi |
+| **Alt** (sequence) | Nhánh điều kiện (ví dụ: cache hit/miss, quyền pass/fail) |
+| **Subgraph** | Phân nhóm logic (Frontend, Adapter, External Service...) |
+
+> 📝 Các label như `POST /users`, `X-Permissions`, `student_id`, v.v. dùng để minh họa request cụ thể trong sơ đồ.
+
+---
+
+### 🧭 Cách đọc sơ đồ
+
+1. **Flowchart** (luồng trạng thái, nghiệp vụ):  
+   - Đọc từ trái qua phải hoặc trên xuống.
+   - Theo dõi các node thể hiện trạng thái hoặc hành động chính.
+   - Các nhóm `subgraph` giúp hiểu mối liên hệ giữa thành phần.
+
+2. **Sequence Diagram** (chuỗi tương tác):  
+   - Đọc theo chiều dọc từ trên xuống.
+   - Cột là các thành phần tương tác (participants).
+   - Dòng là request/response hoặc gọi API nội bộ.
+   - Nhánh `alt` dùng để phân nhánh xử lý.
+
+---
+
+### 🔐 Lưu ý vận hành
+
+- Tất cả các sơ đồ đều phản ánh kiến trúc chuẩn hóa có API Gateway làm trung tâm điều phối.
+- Không có tương tác trực tiếp giữa các service với nhau hoặc với hệ thống kế thừa.
+- Phân quyền (RBAC), xác thực (OAuth2/OTP/mTLS), cache Redis, event-driven đều được mô hình hóa trong sơ đồ.
+
+---
+
+### 🛠 Duy trì & cập nhật
+
+- Sơ đồ được viết bằng mã **Mermaid** trực tiếp trong file Markdown.
+- Được version control cùng source code, giúp dễ chỉnh sửa khi kiến trúc thay đổi.
+- Có thể xuất thành ảnh (SVG/PNG) nếu cần đưa vào slide, wiki, hoặc tài liệu PDF.
+
