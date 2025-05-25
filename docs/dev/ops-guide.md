@@ -110,8 +110,11 @@ Hệ thống dx-vas gồm nhiều service độc lập, mỗi service là một 
     service: user-service
     image: gcr.io/$PROJECT_ID/user-service:$GITHUB_SHA
     region: asia-southeast1
-    env_vars: ENV=production
+    env_vars: ENV=${{ github.ref == 'refs/heads/main' && 'production' || 'staging' }}
+
 ````
+
+📌 Trong workflow thực tế, biến ENV không gán cứng mà được xác định tự động dựa trên nhánh (hoặc GitHub environment). Có thể sử dụng biến github.ref hoặc GitHub Environments (production, staging) để thiết lập đúng biến môi trường cho Cloud Run.
 
 ---
 
@@ -345,12 +348,14 @@ Hệ thống dx-vas sử dụng **Google Cloud Run** để triển khai toàn b�
 
 ### ⚙️ Autoscaling mặc định
 
-| Service | Min instance | Max instance | Concurrency | Ghi chú |
-|---------|--------------|--------------|-------------|---------|
+| Service | Min instance | Max instance | Concurrency (requests/instance) | Ghi chú |
+|---------|--------------|--------------|-------------------------------|---------|
 | Gateway | 2 | 50 | 10 | Luôn duy trì sẵn sàng |
 | Auth/User | 1 | 20 | 10 | Core services, nhạy cảm với độ trễ |
 | Notification | 0 | 30 | 20 | Có thể burst cao khi gửi hàng loạt |
 | Adapters | 0 | 10 | 10 | Tùy theo mức độ tích hợp (CRM, SIS, LMS) |
+
+📌 Giá trị concurrency mặc định của Cloud Run là `80 requests/instance`. Hệ thống dx-vas đã cấu hình lại (giảm) để đảm bảo độ trễ thấp cho các service xử lý dữ liệu nhạy cảm như Auth và User.
 
 ---
 
@@ -562,9 +567,10 @@ gcloud billing budgets create --display-name="VAS Monthly Budget" ...
 
 ### ⚠️ Cảnh báo thực tế
 
-* Cloud SQL chiếm \~50% tổng bill nếu không tối ưu idle time
-* Redis billing theo GB RAM provisioned, không autoscale
-* Pub/Sub có thể phát sinh retry loop gây bill ẩn
+- Cloud SQL chiếm ~50% tổng bill nếu không tối ưu idle time
+- Redis billing theo GB RAM provisioned  
+  > 📌 dx-vas hiện sử dụng **Memorystore for Redis (standard tier, non-cluster)** – không tự động scale. Nếu cần scaling theo chiều ngang, có thể cân nhắc nâng cấp lên **Memorystore for Redis Cluster**.
+- Pub/Sub có thể phát sinh retry loop gây bill ẩn
 
 ---
 
