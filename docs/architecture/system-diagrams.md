@@ -432,7 +432,8 @@ flowchart TD
     SIS[SIS Adapter<br>Cloud Run]
     LMS[LMS Adapter<br>Cloud Run]
     Redis[Redis Cache<br>MemoryStore]
-    DB[MySQL<br>Cloud SQL]
+    PG[PostgreSQL<br>Cloud SQL (Core Services)]
+    MySQL[MySQL<br>Cloud SQL (Adapters)]
     PubSub[Pub/Sub<br>Event Bus]
     Storage[GCS<br>Static Content]
   end
@@ -445,12 +446,13 @@ flowchart TD
   Gateway --> SIS
   Gateway --> LMS
 
-  Auth --> DB
-  User --> DB
-  Noti --> DB
-  CRM --> DB
-  SIS --> DB
-  LMS --> DB
+  Auth --> PG
+  User --> PG
+  Noti --> PG
+
+  CRM --> MySQL
+  SIS --> MySQL
+  LMS --> MySQL
 
   Gateway --> Redis
   User --> Redis
@@ -460,21 +462,25 @@ flowchart TD
   LMS --> PubSub
 
   Gateway --> Storage
+
 ```
 
 **Diễn giải sơ đồ triển khai tổng quan:**
 
 1. **Client (Browser/Mobile App)** giao tiếp qua HTTPS → truy cập vào điểm vào duy nhất: `API Gateway`.
 2. **API Gateway**, cùng tất cả các service (Auth, User, Notification, CRM/SIS/LMS Adapter), đều được triển khai dưới dạng container serverless trên **Google Cloud Run**.
-3. Các service nội bộ sử dụng chung một **CSDL MySQL** qua **Cloud SQL**.
-4. Dữ liệu RBAC và token được cache qua **Redis (MemoryStore)**.
-5. Giao tiếp bất đồng bộ (sự kiện) sử dụng **Pub/Sub** – các service phát/sử dụng sự kiện qua event bus này.
-6. **Static file (ảnh, logo, config...)** được phục vụ qua **Google Cloud Storage (GCS)**.
-7. Mọi lời gọi giữa các service đều phải qua Gateway (hoặc gọi nội bộ qua Envoy/mTLS) để bảo đảm xác thực, phân quyền và trace.
+3. **Các Core Services** (Auth, User, Notification) sử dụng **PostgreSQL** qua **Cloud SQL** để tận dụng khả năng xử lý JSONB, concurrency cao và các tính năng SQL nâng cao.
+4. **Các Adapter (CRM, SIS, LMS)** sử dụng **MySQL**, tương thích với hệ quản trị mặc định của các hệ thống tích hợp (SuiteCRM, Gibbon, Moodle).
+5. Dữ liệu RBAC và token được cache qua **Redis (MemoryStore)**.
+6. Giao tiếp bất đồng bộ (event-driven) sử dụng **Pub/Sub** – các service phát/sử dụng sự kiện qua event bus này.
+7. **Static file** (ảnh, logo, config...) được phục vụ qua **Google Cloud Storage (GCS)**.
+8. Mọi lời gọi giữa các service đều phải qua Gateway (hoặc gọi nội bộ có kiểm soát qua Envoy/mTLS) để đảm bảo xác thực, phân quyền và khả năng theo dõi (traceability).
 
 📌 Cấu trúc triển khai này đảm bảo:
 - Khả năng mở rộng linh hoạt (Cloud Run autoscale)
+- Tối ưu hiệu năng và tính năng theo từng nhóm thành phần
 - Tách biệt logic rõ ràng (each service = 1 container)
-- Bảo mật chặt chẽ và vận hành ổn định
+- Bảo mật chặt chẽ và dễ dàng giám sát vận hành
+
 
 ---
