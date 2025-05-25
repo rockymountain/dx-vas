@@ -172,7 +172,7 @@ Dự án dx\_vas sử dụng các Quyết định Kiến trúc (Architecture Dec
 
 ## Phụ lục C – Sơ đồ Kiến trúc
 
-```memaid
+```mermaid
 flowchart TD
   subgraph External
     Webform[Public Webform]
