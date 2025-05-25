@@ -12,7 +12,7 @@ Tài liệu này tập hợp tất cả các sơ đồ kiến trúc quan trọng
 
 ```mermaid
 flowchart TD
-  subgraph External
+  subgraph Client_Apps
     Webform[Public Webform]
     Parent[PWA - Customer Portal]
     Staff[SPA - Admin Webapp]
@@ -53,36 +53,33 @@ flowchart TD
   Noti --> Gmail
   Noti --> Chat
   Auth --> GSuite
+
 ```
 
 ---
 
 ## Diễn giải sơ đồ tổng quan
 
-### 1. 🧑‍🤝‍🧑 External
+### 1. 🖥️ Client Applications (Giao diện người dùng)
 
-* **Public Webform**: Cổng thu lead tuyển sinh.
-* **Customer Portal (PWA)**: Ứng dụng dành cho phụ huynh & học sinh, đăng nhập qua OTP.
-* **Admin Webapp (SPA)**: Giao diện dành cho nhân viên, đăng nhập qua Google OAuth2.
+- **Public Webform**: Cổng thu lead tuyển sinh.
+- **Customer Portal (PWA)**: Giao diện dành cho phụ huynh & học sinh – OTP login, xem điểm, lịch học, thông báo...
+- **Admin Webapp (SPA)**: Giao diện dành cho nhân viên, giáo viên – quản lý học sinh, lớp, RBAC, thông báo...
 
-### 2. 🖥️ Frontend Apps
+> Hai ứng dụng này thay thế hoàn toàn việc truy cập trực tiếp vào UI của SuiteCRM, Gibbon, Moodle.
 
-* **Admin Webapp (SPA)**: Giao diện dành cho nhân viên, giáo viên – quản lý học sinh, lớp, điểm danh, RBAC...
-* **Customer Portal (PWA)**: Giao diện dành cho phụ huynh và học sinh – truy cập điểm, lịch học, thông báo...
-* Hai frontend này thay thế hoàn toàn nhu cầu truy cập trực tiếp vào giao diện UI của các hệ thống như SuiteCRM, Gibbon, Moodle.
-
-### 3. 🧠 Core Services
+### 2. 🧠 Core Services
 
 * **API Gateway**: Điểm kiểm soát chính, thực hiện xác thực, RBAC và định tuyến request.
 * **Auth Service**: Xác thực Google OAuth2 và OTP.
 * **User Service**: Quản lý thông tin người dùng, phân quyền.
 * **Notification**: Gửi thông báo đa kênh.
 
-### 4. 🔌 Business Adapters
+### 3. 🔌 Business Adapters
 
 * Các lớp tích hợp với hệ thống CRM, SIS, LMS qua API.
 
-### 5. 🌐 External Services
+### 4. 🌐 External Services
 
 * Các dịch vụ ngoài như Google OAuth2, Gmail API, Zalo OA, Google Chat API.
 
