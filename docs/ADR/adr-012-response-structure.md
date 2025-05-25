@@ -1,15 +1,15 @@
 ---
 id: adr-012-response-structure
-title: ADR-012: Chuẩn hóa cấu trúc phản hồi (API Response Structure) cho hệ thống dx_vas
+title: ADR-012: Chuẩn hóa cấu trúc phản hồi (API Response Structure) cho hệ thống dx-vas
 status: accepted
 author: DX VAS Architecture Team
 date: 2025-06-22
-tags: [api, design, response, standard, dx_vas]
+tags: [api, design, response, standard, dx-vas]
 ---
 
 ## 📌 Bối cảnh
 
-Các API trong hệ thống **dx\_vas** cần đảm bảo:
+Các API trong hệ thống **dx-vas** cần đảm bảo:
 
 * Frontend có thể xử lý response dễ dàng và đồng nhất
 * Các service có thể tích hợp với nhau với ít công sức chuyển đổi định dạng

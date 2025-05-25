@@ -1,15 +1,15 @@
 ---
 id: adr-011-api-error-format
-title: ADR-011: Chuẩn hóa định dạng lỗi API trong hệ thống dx_vas
+title: ADR-011: Chuẩn hóa định dạng lỗi API trong hệ thống dx-vas
 status: accepted
 author: DX VAS Platform Team
 date: 2025-06-22
-tags: [api, error, format, dx_vas]
+tags: [api, error, format, dx-vas]
 ---
 
 ## 📌 Bối cảnh
 
-Các dịch vụ API trong hệ thống dx_vas phục vụ nhiều loại client: frontend web, mobile app, admin dashboard, service-to-service. Để đảm bảo nhất quán, dễ debug và dễ hiển thị thông báo lỗi cho người dùng, cần một định dạng lỗi chuẩn hóa trên toàn hệ thống.
+Các dịch vụ API trong hệ thống dx-vas phục vụ nhiều loại client: frontend web, mobile app, admin dashboard, service-to-service. Để đảm bảo nhất quán, dễ debug và dễ hiển thị thông báo lỗi cho người dùng, cần một định dạng lỗi chuẩn hóa trên toàn hệ thống.
 
 > 🔄 Quyết định sử dụng `trace_id` (thay vì `request_id`) để đồng bộ với hệ thống quan sát phân tán (tracing), thống nhất với ADR-005 (Observability) và ADR-008 (Audit Logging).
 
