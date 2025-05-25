@@ -863,7 +863,7 @@ Hệ thống dx-vas được triển khai theo kiến trúc phân tán, yêu c�
     "message": "User updated",
     "user_id": "u789"
   }
-````
+```
 
 * Trace header (`X-Request-ID`) cần được truyền xuyên suốt mọi service
 * Bắt timeout, quota error từ external API (Zalo, Gmail...) → log cảnh báo

@@ -1,10 +1,10 @@
-# Dự án Chuyển đổi số Trường Việt Anh (dx_vas)
+# Dự án Chuyển đổi số Trường Việt Anh (dx-vas)
 
-Chào mừng bạn đến với dự án dx_vas! Đây là hệ thống chuyển đổi số toàn diện được phát triển cho Trường Quốc tế Việt Anh (VAS), nhằm hiện đại hóa và tối ưu hóa các quy trình vận hành, quản lý và tương tác trong nhà trường.
+Chào mừng bạn đến với dự án dx-vas! Đây là hệ thống chuyển đổi số toàn diện được phát triển cho Trường Quốc tế Việt Anh (VAS), nhằm hiện đại hóa và tối ưu hóa các quy trình vận hành, quản lý và tương tác trong nhà trường.
 
 ## 🎯 Mục tiêu dự án
 
-Dự án dx_vas hướng tới việc xây dựng một nền tảng tích hợp, bao gồm các chức năng chính như:
+Dự án dx-vas hướng tới việc xây dựng một nền tảng tích hợp, bao gồm các chức năng chính như:
 
 * Quản lý thông tin học sinh, giáo viên, và phụ huynh.
 * Quản lý lớp học, lịch học, điểm danh.

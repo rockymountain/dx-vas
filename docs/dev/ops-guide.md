@@ -333,7 +333,7 @@ gcloud secrets versions list dx-auth-jwt-secret
 
 📎 Chính sách bảo mật chi tiết: [`adr-003-secrets.md`](../ADR/adr-003-secrets.md)
 
-📎 Tổng quan bảo mật toàn hệ thống: [Dev Guide – Mục 11.1](./dev-guide.md#11-theo-dõi--vận-hành)
+📎 Tổng quan bảo mật toàn hệ thống: [Dev Guide – Mục 11.3](./dev-guide.md#11-theo-dõi--vận-hành)
 
 ---
 
