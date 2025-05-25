@@ -16,11 +16,11 @@ Tài liệu này tập hợp tất cả các sơ đồ kiến trúc quan trọng
 6. [Service-to-Service Auth Flow – Giao tiếp giữa các dịch vụ nội bộ](#6-service-to-service-auth-flow--giao-tiếp-giữa-các-dịch-vụ-nội-bộ)
 7. [User Account Lifecycle Flow – Vòng đời tài khoản người dùng](#7-user-account-lifecycle-flow--vòng-đời-tài-khoản-người-dùng)
 8. [Chú giải sơ đồ (Legend) - Hướng dẫn đọc](#8-chú-giải-sơ-đồ-legend---hướng-dẫn-đọc)
+9. [Deployment Overview Diagram – Sơ đồ triển khai tổng quan](#9-deployment-overview-diagram--sơ-đồ-triển-khai-tổng-quan)
 
 ---
 
 ## 1. Sơ đồ tổng quan hệ thống
-
 ```mermaid
 flowchart TD
   subgraph Client_Apps
@@ -87,7 +87,6 @@ flowchart TD
 ---
 
 ## 2. Admission Flow – Luồng Tuyển sinh
-
 ```mermaid
 flowchart TD
   A[Public Webform] --> B[CRM Adapter]
@@ -133,7 +132,6 @@ flowchart TD
 ---
 
 ## 3. Notification Flow – Luồng Gửi Thông báo
-
 ```mermaid
 sequenceDiagram
   participant Service as Hệ thống phát sinh sự kiện (CRM/SIS/LMS)
@@ -177,7 +175,6 @@ sequenceDiagram
 ---
 
 ## 4. RBAC Evaluation Flow – Luồng Đánh giá Phân quyền Động
-
 ```mermaid
 sequenceDiagram
   participant Client as Client App (PWA/SPA)
@@ -232,7 +229,6 @@ sequenceDiagram
 ---
 
 ## 5. Data Synchronization Flow – Đồng bộ học sinh CRM → SIS → LMS
-
 ```mermaid
 sequenceDiagram
   participant CRM as SuiteCRM
@@ -274,7 +270,6 @@ sequenceDiagram
 ---
 
 ## 6. Service-to-Service Auth Flow – Giao tiếp giữa các dịch vụ nội bộ
-
 ```mermaid
 sequenceDiagram
   participant ServiceA as Notification Service
@@ -309,7 +304,6 @@ sequenceDiagram
 ---
 
 ## 7. User Account Lifecycle Flow – Vòng đời tài khoản người dùng
-
 ```mermaid
 flowchart LR
   Create[User được tạo\nPOST /users]
@@ -416,3 +410,71 @@ flowchart LR
 - Được version control cùng source code, giúp dễ chỉnh sửa khi kiến trúc thay đổi.
 - Có thể xuất thành ảnh (SVG/PNG) nếu cần đưa vào slide, wiki, hoặc tài liệu PDF.
 
+---
+
+## 9. Deployment Overview Diagram – Sơ đồ triển khai tổng quan
+```mermaid
+flowchart TD
+  subgraph User Devices
+    Browser[Browser / Mobile App]
+  end
+
+  subgraph Internet
+    HTTPS[HTTPS Entrypoint]
+  end
+
+  subgraph Google Cloud
+    Gateway[API Gateway<br>Cloud Run]
+    Auth[Auth Service<br>Cloud Run]
+    User[User Service<br>Cloud Run]
+    Noti[Notification Service<br>Cloud Run]
+    CRM[CRM Adapter<br>Cloud Run]
+    SIS[SIS Adapter<br>Cloud Run]
+    LMS[LMS Adapter<br>Cloud Run]
+    Redis[Redis Cache<br>MemoryStore]
+    DB[PostgreSQL<br>Cloud SQL]
+    PubSub[Pub/Sub<br>Event Bus]
+    Storage[GCS<br>Static Content]
+  end
+
+  Browser --> HTTPS --> Gateway
+  Gateway --> Auth
+  Gateway --> User
+  Gateway --> Noti
+  Gateway --> CRM
+  Gateway --> SIS
+  Gateway --> LMS
+
+  Auth --> DB
+  User --> DB
+  Noti --> DB
+  CRM --> DB
+  SIS --> DB
+  LMS --> DB
+
+  Gateway --> Redis
+  User --> Redis
+  Gateway --> PubSub
+  Noti --> PubSub
+  SIS --> PubSub
+  LMS --> PubSub
+
+  Gateway --> Storage
+```
+
+**Diễn giải sơ đồ triển khai tổng quan:**
+
+1. **Client (Browser/Mobile App)** giao tiếp qua HTTPS → truy cập vào điểm vào duy nhất: `API Gateway`.
+2. **API Gateway**, cùng tất cả các service (Auth, User, Notification, CRM/SIS/LMS Adapter), đều được triển khai dưới dạng container serverless trên **Google Cloud Run**.
+3. Các service nội bộ sử dụng chung một **CSDL PostgreSQL** qua **Cloud SQL**.
+4. Dữ liệu RBAC và token được cache qua **Redis (MemoryStore)**.
+5. Giao tiếp bất đồng bộ (sự kiện) sử dụng **Pub/Sub** – các service phát/sử dụng sự kiện qua event bus này.
+6. **Static file (ảnh, logo, config...)** được phục vụ qua **Google Cloud Storage (GCS)**.
+7. Mọi lời gọi giữa các service đều phải qua Gateway (hoặc gọi nội bộ qua Envoy/mTLS) để bảo đảm xác thực, phân quyền và trace.
+
+📌 Cấu trúc triển khai này đảm bảo:
+- Khả năng mở rộng linh hoạt (Cloud Run autoscale)
+- Tách biệt logic rõ ràng (each service = 1 container)
+- Bảo mật chặt chẽ và vận hành ổn định
+
+---
