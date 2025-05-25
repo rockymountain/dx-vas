@@ -23,7 +23,7 @@ Tài liệu này cung cấp hướng dẫn phát triển hệ thống dx-vas cho
 
 ## 1. Giới thiệu tổng quan
 
-* Hệ thống dx-vas bao gồm các thành phần:
+* Tài liệu kỹ thuật và hướng dẫn được đặt tại repo `dx-vas`, đóng vai trò như **repo điều phối trung tâm**, chứa tài liệu hệ thống, sơ đồ kiến trúc, ADR, IC và Dev Guide. Hệ thống dx-vas bao gồm các thành phần:
 
   * API Gateway (FastAPI)
   * Core Services: Auth Service, User Service, Notification Service
@@ -392,7 +392,7 @@ make rbac-migrate
 
 ## 6. Thiết kế API & OpenAPI
 
-Toàn bộ hệ thống dx-vas tuân theo nguyên tắc API chuẩn RESTful, được định nghĩa bằng **OpenAPI 3.0.3** (sử dụng FastAPI).
+Toàn bộ hệ thống dx-vas tuân theo nguyên tắc API chuẩn RESTful, được định nghĩa bằng **OpenAPI 3.x** (sử dụng FastAPI).
 
 ---
 
@@ -439,7 +439,7 @@ Khi lỗi:
 
 ### 📘 Định nghĩa API bằng OpenAPI
 
-* Mỗi service có một file `openapi.yaml` định nghĩa OpenAPI 3.0.3
+* Mỗi service có một file `openapi.yaml` định nghĩa OpenAPI 3.x
 * Có thể generate tự động từ FastAPI hoặc viết tay với VS Code plugin
 * Dùng Redoc, Swagger UI hoặc Stoplight Studio để xem
 
@@ -453,7 +453,7 @@ dx-user-service/
 │   ├── api/
 │   │   └── users.py         # Define @router.get("/users")
 ├── docs/
-│   └── openapi.yaml         # OpenAPI 3.0.3 schema
+│   └── openapi.yaml         # OpenAPI 3.x schema
 ```
 
 ---
@@ -625,8 +625,10 @@ jobs:
         uses: actions/setup-python@v4
         with:
           python-version: '3.11'
-      - run: pip install -r requirements.txt
-      - run: pytest --cov=app tests/
+      # Trong GitHub Actions hoặc Google Cloud Build
+      - run: make test
+      - run: make format
+
 ```
 
 ---
@@ -648,14 +650,16 @@ jobs:
 Mỗi repo nên có:
 
 ```make
-test:
-    pytest --cov=app tests/
-
-format:
-    black app/ && isort app/
+# Makefile ví dụ
 
 run:
-    uvicorn app.main:app --reload --port=8001
+  uvicorn app.main:app --reload --port=8001
+
+test:
+  pytest --cov=app tests/
+
+format:
+  black app/ && isort app/
 ```
 
 ---
@@ -866,6 +870,21 @@ Hệ thống dx-vas được triển khai theo kiến trúc phân tán, yêu c�
 
 ---
 
+### 🔐 Bảo mật tổng thể (Security Overview)
+
+Các chính sách và cơ chế bảo mật chính:
+
+- **RBAC động:** Kiểm soát truy cập chi tiết theo ngữ cảnh
+- **Xác thực token:** OAuth2, JWT, OTP theo user group
+- **Giới hạn truy cập:** Rate limiting, CAPTCHA với public endpoint
+- **Audit log:** Ghi lại thay đổi RBAC, lỗi xác thực, hành vi bất thường
+- **Header signing / mTLS:** Cho giao tiếp giữa các service nội bộ
+
+> 📎 Tham khảo: [`adr-004-security.md`](../ADR/adr-004-security.md)  
+> 📎 Chi tiết RBAC: [RBAC Deep Dive](../architecture/rbac-deep-dive.md)
+
+---
+
 ### 🔐 Log bảo mật
 
 * Log RBAC: `permission_denied`, `rbac_modified_by`, `invalid_token`
@@ -977,5 +996,5 @@ Dưới đây là danh sách một số lỗi thường gặp trong quá trình 
 ---
 
 📎 Xem log và trace tại: [System Diagrams](../architecture/system-diagrams.md#9-deployment-overview-diagram--sơ-đồ-triển-khai-tổng-quan)
-  
+
 📎 Vấn đề liên quan đến RBAC: [RBAC Deep Dive](../architecture/rbac-deep-dive.md)
