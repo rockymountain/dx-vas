@@ -160,6 +160,8 @@ Dự án dx\_vas sử dụng các Quyết định Kiến trúc (Architecture Dec
 
 📘 Để xem danh sách đầy đủ và chi tiết các ADRs đã được phê duyệt, vui lòng truy cập: 👉 [Danh sách ADRs của dự án](./ADR/index.md)
 
+---
+
 ## Phụ lục B – Nguyên tắc Kiến trúc Cốt lõi
 
 * **UX-first:** Ưu tiên trải nghiệm người dùng (đặc biệt phụ huynh không rành công nghệ)
@@ -167,6 +169,8 @@ Dự án dx\_vas sử dụng các Quyết định Kiến trúc (Architecture Dec
 * **Security-by-Design:** Tích hợp bảo mật từ đầu vào thiết kế
 * **Data Consistency > Availability:** Trong môi trường giáo dục, dữ liệu đúng quan trọng hơn phản hồi nhanh
 * **Infra-as-Code:** Hạ tầng và CI/CD đều được mô hình hóa, kiểm soát bằng mã nguồn
+
+---
 
 ## Phụ lục C – Sơ đồ Kiến trúc
 
@@ -179,7 +183,35 @@ Tài liệu này bao gồm:
 - Sơ đồ triển khai hạ tầng trên Google Cloud
 - Chú giải và hướng dẫn đọc sơ đồ
 
-## Phụ lục D – Hướng dẫn đóng góp & phát triển
+---
+
+## Phụ lục D – Interface Contracts (ICs)
+
+Tất cả các dịch vụ trong hệ thống dx_vas đều có tài liệu định nghĩa giao tiếp (Interface Contracts), sử dụng định dạng Markdown mô tả OpenAPI hoặc UI behavior.
+
+📁 Các tài liệu IC được lưu trữ tại thư mục: [`docs/interfaces/`](./docs/interfaces/)
+
+| Dịch vụ | Mô tả | File IC |
+|--------|-------|---------|
+| API Gateway | Cổng vào trung tâm của hệ thống, xử lý xác thực và kiểm tra RBAC | [`ic-01-api-gateway.md`](./docs/interfaces/ic-01-api-gateway.md) |
+| Admin Webapp | Ứng dụng quản trị nội bộ cho nhân viên và giáo viên | [`ic-02-admin-webapp.md`](./docs/interfaces/ic-02-admin-webapp.md) |
+| Customer Portal | PWA dành cho phụ huynh và học sinh | [`ic-03-customer-portal.md`](./docs/interfaces/ic-03-customer-portal.md) |
+| Notification Service | Dịch vụ gửi thông báo đa kênh (Web, Email, Zalo, Chat) | [`ic-04-notification.md`](./docs/interfaces/ic-04-notification.md) |
+| CRM Adapter | Giao tiếp với SuiteCRM trong quá trình tuyển sinh | [`ic-05-crm.md`](./docs/interfaces/ic-05-crm.md) |
+| SIS Adapter | Giao tiếp với hệ thống Gibbon SIS | [`ic-06-sis.md`](./docs/interfaces/ic-06-sis.md) |
+| LMS Adapter | Giao tiếp với hệ thống Moodle LMS | [`ic-07-lms.md`](./docs/interfaces/ic-07-lms.md) |
+| Auth Service | Dịch vụ xác thực và phát hành token (OAuth2, OTP) | [`ic-08-auth-service.md`](./docs/interfaces/ic-08-auth-service.md) |
+| User Service | Quản lý người dùng, phân quyền động RBAC, trạng thái hoạt động | [`ic-09-user-service.md`](./docs/interfaces/ic-09-user-service.md) |
+
+📌 Mỗi IC có thể bao gồm:
+- Mô tả các API endpoint hoặc UI behavior chính
+- Các schema (request/response)
+- Quy tắc RBAC áp dụng nếu có
+- Link tham chiếu đến các ADR hoặc schema dùng chung
+
+---
+
+## Phụ lục E – Hướng dẫn đóng góp & phát triển
 
 * Quy trình pull request & review code tại: `CONTRIBUTING.md`
 * Coding style: theo PEP8 + Black (Python), ESLint (JS)

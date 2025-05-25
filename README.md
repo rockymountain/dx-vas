@@ -12,12 +12,12 @@ Dự án dx_vas hướng tới việc xây dựng một nền tảng tích hợp
 * Hệ thống thông báo đa kênh.
 * Cổng thông tin cho phụ huynh và học sinh (Customer Portal - PWA).
 * Ứng dụng quản trị cho nhân viên và giáo viên (Admin Webapp - SPA).
-* Tích hợp với các hệ thống hiện có như CRM, SIS (Gibbon), và LMS (Moodle).
+* Tích hợp với các hệ thống hiện có như CRM (SuiteCRM), SIS (Gibbon), và LMS (Moodle).
 * Quy trình tuyển sinh trực tuyến.
 
 ## 🚀 Công nghệ sử dụng (Tổng quan)
 
-* **Backend:** Microservices phát triển bằng Python (FastAPI/Flask - *tùy chọn của bạn*), triển khai trên Google Cloud Run.
+* **Backend:** Microservices phát triển bằng Python (FastAPI), triển khai trên Google Cloud Run.
 * **Frontend:**
     * Customer Portal: Progressive Web App (PWA) - (React/Vue/Angular - *tùy chọn của bạn*)
     * Admin Webapp: Single Page Application (SPA) - (React/Vue/Angular - *tùy chọn của bạn*)
@@ -56,4 +56,4 @@ Chúng tôi luôn chào đón sự đóng góp! Vui lòng xem qua [hướng dẫ
 
 ---
 
-> Made with ❤️ by the Legendary DevOps & Backend Team @ VAS
+> Made with ❤️ by the Legendary Dev Team @ VAS
