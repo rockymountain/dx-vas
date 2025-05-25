@@ -158,9 +158,18 @@ Toàn bộ các phản hồi chiến lược từ anh Bill đã được đưa v
 
 ## Phụ lục A – Danh sách Quyết định Kiến trúc (ADRs)
 
-Dự án dx\_vas sử dụng các Quyết định Kiến trúc (Architecture Decision Records - ADRs) để ghi lại những lựa chọn thiết kế quan trọng về mặt kiến trúc, bao gồm lý do, bối cảnh và các phương án đã được cân nhắc.
-
-📘 Để xem danh sách đầy đủ và chi tiết các ADRs đã được phê duyệt, vui lòng truy cập: [Danh sách ADRs của dự án](./docs/ADR/index.md)
+| Mã      | Tên                | Ghi chú                                                         |
+| ------- | ------------------ | --------------------------------------------------------------- |
+| ADR-001 | CI/CD Strategy     | Quy trình triển khai GitHub Actions → Cloud Run                 |
+| ADR-002 | IaC Terraform      | Quản lý hạ tầng theo môi trường qua module rõ ràng              |
+| ADR-003 | Secrets Management | Sử dụng Secret Manager, GitHub Secrets và rotate định kỳ        |
+| ADR-004 | Security Strategy  | Bảo vệ nhiều lớp: headers, JWT, rate-limit, token expiry        |
+| ADR-005 | Env Config         | Cấu hình theo ENV, tách biệt dev/staging/prod                   |
+| ADR-006 | Auth Strategy      | Tách xác thực OAuth2 và OTP, không embed permission trong token |
+| ADR-007 | RBAC Dynamic       | Phân quyền động theo condition, tra cache Redis                 |
+| ADR-008 | Audit Logging      | Ghi log phân quyền, truy vết hành vi người dùng                 |
+| ADR-009 | API Governance     | Tuân thủ OpenAPI, versioning, backward compatibility            |
+| …       | …                  | (Xem toàn bộ tại thư mục `docs/adr/`)                           |
 
 ## Phụ lục B – Nguyên tắc Kiến trúc Cốt lõi
 
