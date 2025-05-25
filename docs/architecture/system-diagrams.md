@@ -425,7 +425,7 @@ flowchart TD
 
   subgraph Google Cloud
     %% Core Services
-    subgraph Core_Services[Core Services (Cloud Run)]
+    subgraph Core_Services[Core Services - Cloud Run]
       Gateway[API Gateway]
       Auth[Auth Service]
       User[User Service]
@@ -433,7 +433,7 @@ flowchart TD
     end
 
     %% Adapters
-    subgraph Adapters[Adapters (Cloud Run)]
+    subgraph Adapters[Adapters - Cloud Run]
       CRM[CRM Adapter]
       SIS[SIS Adapter]
       LMS[LMS Adapter]
@@ -441,11 +441,11 @@ flowchart TD
 
     %% Infrastructure
     subgraph Infrastructure[Data Infrastructure]
-      Redis[Redis Cache (MemoryStore)]
-      PG[PostgreSQL (Cloud SQL - Core)]
-      MySQL[MySQL (Cloud SQL - Adapters)]
-      PubSub[Pub/Sub (Event Bus)]
-      Storage[GCS (Static Files)]
+      Redis[Redis Cache - MemoryStore]
+      PG[PostgreSQL - Cloud SQL - Core]
+      MySQL[MySQL - Cloud SQL - Adapters]
+      PubSub[Pub/Sub - Event Bus]
+      Storage[GCS - Static Files]
     end
   end
 
