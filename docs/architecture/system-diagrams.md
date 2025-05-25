@@ -432,8 +432,8 @@ flowchart TD
     SIS[SIS Adapter<br>Cloud Run]
     LMS[LMS Adapter<br>Cloud Run]
     Redis[Redis Cache<br>MemoryStore]
-    PG[PostgreSQL<br>Cloud SQL (Core Services)]
-    MySQL[MySQL<br>Cloud SQL (Adapters)]
+    PG[PostgreSQL<br>Cloud SQL - Core Services]
+    MySQL[MySQL<br>Cloud SQL - Adapters]
     PubSub[Pub/Sub<br>Event Bus]
     Storage[GCS<br>Static Content]
   end
