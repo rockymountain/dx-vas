@@ -189,19 +189,19 @@ Tài liệu này bao gồm:
 
 Tất cả các dịch vụ trong hệ thống dx_vas đều có tài liệu định nghĩa giao tiếp (Interface Contracts), sử dụng định dạng Markdown mô tả OpenAPI hoặc UI behavior.
 
-📁 Các tài liệu IC được lưu trữ tại thư mục: [`docs/interfaces/`](./docs/interfaces/)
+📁 Các tài liệu IC được lưu trữ tại thư mục: [`interfaces`](./interfaces/)
 
 | Dịch vụ | Mô tả | File IC |
 |--------|-------|---------|
-| API Gateway | Cổng vào trung tâm của hệ thống, xử lý xác thực và kiểm tra RBAC | [`ic-01-api-gateway.md`](./docs/interfaces/ic-01-api-gateway.md) |
-| Admin Webapp | Ứng dụng quản trị nội bộ cho nhân viên và giáo viên | [`ic-02-admin-webapp.md`](./docs/interfaces/ic-02-admin-webapp.md) |
-| Customer Portal | PWA dành cho phụ huynh và học sinh | [`ic-03-customer-portal.md`](./docs/interfaces/ic-03-customer-portal.md) |
-| Notification Service | Dịch vụ gửi thông báo đa kênh (Web, Email, Zalo, Chat) | [`ic-04-notification.md`](./docs/interfaces/ic-04-notification.md) |
-| CRM Adapter | Giao tiếp với SuiteCRM trong quá trình tuyển sinh | [`ic-05-crm.md`](./docs/interfaces/ic-05-crm.md) |
-| SIS Adapter | Giao tiếp với hệ thống Gibbon SIS | [`ic-06-sis.md`](./docs/interfaces/ic-06-sis.md) |
-| LMS Adapter | Giao tiếp với hệ thống Moodle LMS | [`ic-07-lms.md`](./docs/interfaces/ic-07-lms.md) |
-| Auth Service | Dịch vụ xác thực và phát hành token (OAuth2, OTP) | [`ic-08-auth-service.md`](./docs/interfaces/ic-08-auth-service.md) |
-| User Service | Quản lý người dùng, phân quyền động RBAC, trạng thái hoạt động | [`ic-09-user-service.md`](./docs/interfaces/ic-09-user-service.md) |
+| API Gateway | Cổng vào trung tâm của hệ thống, xử lý xác thực và kiểm tra RBAC | [`ic-01-api-gateway.md`](./interfaces/ic-01-api-gateway.md) |
+| Admin Webapp | Ứng dụng quản trị nội bộ cho nhân viên và giáo viên | [`ic-02-admin-webapp.md`](./interfaces/ic-02-admin-webapp.md) |
+| Customer Portal | PWA dành cho phụ huynh và học sinh | [`ic-03-customer-portal.md`](./interfaces/ic-03-customer-portal.md) |
+| Notification Service | Dịch vụ gửi thông báo đa kênh (Web, Email, Zalo, Chat) | [`ic-04-notification.md`](./interfaces/ic-04-notification.md) |
+| CRM Adapter | Giao tiếp với SuiteCRM trong quá trình tuyển sinh | [`ic-05-crm.md`](./interfaces/ic-05-crm.md) |
+| SIS Adapter | Giao tiếp với hệ thống Gibbon SIS | [`ic-06-sis.md`](./interfaces/ic-06-sis.md) |
+| LMS Adapter | Giao tiếp với hệ thống Moodle LMS | [`ic-07-lms.md`](./interfaces/ic-07-lms.md) |
+| Auth Service | Dịch vụ xác thực và phát hành token (OAuth2, OTP) | [`ic-08-auth-service.md`](./interfaces/ic-08-auth-service.md) |
+| User Service | Quản lý người dùng, phân quyền động RBAC, trạng thái hoạt động | [`ic-09-user-service.md`](./interfaces/ic-09-user-service.md) |
 
 📌 Mỗi IC có thể bao gồm:
 - Mô tả các API endpoint hoặc UI behavior chính
