@@ -225,6 +225,7 @@ sequenceDiagram
    - Nếu fail: trả về `403 Forbidden`.
 
 📌 RBAC được đánh giá hoàn toàn tại Gateway, backend không cần decode JWT hay tái kiểm tra quyền.
+
 📎 Tham khảo chi tiết logic phân quyền động tại: [RBAC Deep Dive](./rbac-deep-dive.md)
 
 ---
