@@ -56,24 +56,22 @@ flowchart TD
 
 ```
 
----
-
 **Diễn giải sơ đồ tổng quan**
 
 1. 🖥️ Client Applications (Giao diện người dùng)
-- **Public Webform**: Cổng thu lead tuyển sinh.
-- **Customer Portal (PWA)**: Giao diện dành cho phụ huynh & học sinh – OTP login, xem điểm, lịch học, thông báo...
-- **Admin Webapp (SPA)**: Giao diện dành cho nhân viên, giáo viên – quản lý học sinh, lớp, RBAC, thông báo...
+  - **Public Webform**: Cổng thu lead tuyển sinh.
+  - **Customer Portal (PWA)**: Giao diện dành cho phụ huynh & học sinh – OTP login, xem điểm, lịch học, thông báo...
+  - **Admin Webapp (SPA)**: Giao diện dành cho nhân viên, giáo viên – quản lý học sinh, lớp, RBAC, thông báo...
 > Hai ứng dụng này (Admin Webapp, Customer Portal) thay thế hoàn toàn việc truy cập trực tiếp vào UI của SuiteCRM, Gibbon, Moodle.
 2. 🧠 Core Services
-* **API Gateway**: Điểm kiểm soát chính, thực hiện xác thực, RBAC và định tuyến request.
-* **Auth Service**: Xác thực Google OAuth2 và OTP.
-* **User Service**: Quản lý thông tin người dùng, phân quyền.
-* **Notification Service**: Gửi thông báo đa kênh.
+  * **API Gateway**: Điểm kiểm soát chính, thực hiện xác thực, RBAC và định tuyến request.
+  * **Auth Service**: Xác thực Google OAuth2 và OTP.
+  * **User Service**: Quản lý thông tin người dùng, phân quyền.
+  * **Notification Service**: Gửi thông báo đa kênh.
 3. 🔌 Business Adapters
-* Các lớp tích hợp với hệ thống CRM, SIS, LMS qua API.
+  * Các lớp tích hợp với hệ thống CRM, SIS, LMS qua API.
 4. 🌐 External Services
-* Các dịch vụ ngoài như Google OAuth2, Gmail API, Zalo OA, Google Chat API.
+  * Các dịch vụ ngoài như Google OAuth2, Gmail API, Zalo OA, Google Chat API.
 
 ---
 
@@ -107,8 +105,6 @@ flowchart TD
   end
 
 ```
-
----
 
 **Diễn giải Admission Flow:**
 
@@ -151,8 +147,6 @@ sequenceDiagram
   end
 
 ```
-
----
 
 **Diễn giải Notification Flow:**
 
@@ -201,8 +195,6 @@ sequenceDiagram
   end
 ```
 
----
-
 **Diễn giải RBAC Evaluation Flow:**
 
 1. **Client App (PWA/SPA)** gửi request REST đến API Gateway, kèm theo JWT (Bearer token).
@@ -225,5 +217,47 @@ sequenceDiagram
    - Nếu fail: trả về `403 Forbidden`.
 
 📌 RBAC được đánh giá hoàn toàn tại Gateway, backend không cần decode JWT hay tái kiểm tra quyền.
+
+---
+
+## 5. Data Synchronization Flow – Đồng bộ học sinh CRM → SIS → LMS
+
+```mermaid
+sequenceDiagram
+  participant CRM as SuiteCRM
+  participant CRMA as CRM Adapter
+  participant Gateway as API Gateway
+  participant SISA as SIS Adapter
+  participant SIS as Gibbon SIS
+  participant LMSA as LMS Adapter
+  participant LMS as Moodle LMS
+
+  CRM->>CRMA: Gửi sự kiện Lead chuyển thành Học sinh
+  CRMA->>Gateway: POST /admissions
+  Gateway->>SISA: Forward request
+
+  SISA->>SIS: Tạo hồ sơ học sinh + gán lớp
+  SIS-->>SISA: Trả về mã học sinh (student_id)
+  SISA->>Gateway: POST /students/{id}/sync-to-lms
+  Gateway->>LMSA: Forward request
+  LMSA->>LMS: Tạo user Moodle + phân lớp
+
+  LMS-->>LMSA: OK
+  LMSA-->>Gateway: OK
+```
+
+**Diễn giải Data Synchronization Flow (CRM → SIS → LMS):**
+
+1. **Trong SuiteCRM**, khi một `Lead` được đánh dấu là “đã trúng tuyển”, CRM sẽ phát sinh sự kiện chuyển đổi.
+2. **CRM Adapter** tiếp nhận sự kiện và gửi `POST /admissions` qua API Gateway.
+3. **API Gateway** forward đến **SIS Adapter**, nơi thực hiện:
+   - Tạo học sinh mới trong **Gibbon SIS**
+   - Gán vào lớp, campus tương ứng
+4. SIS trả về `student_id`, được lưu tại Adapter.
+5. SIS Adapter gọi tiếp `POST /students/{id}/sync-to-lms` qua Gateway → forward đến **LMS Adapter**.
+6. **LMS Adapter** tạo tài khoản Moodle cho học sinh và phân lớp tương ứng.
+7. Sau khi tạo thành công, phản hồi xác nhận được gửi ngược về.
+
+📌 Mọi hành động đều đi qua API Gateway và được kiểm soát phân quyền nếu có liên quan đến user. Quá trình sync có thể được lặp lại định kỳ hoặc phát động theo event.
 
 ---
