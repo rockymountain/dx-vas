@@ -58,29 +58,21 @@ flowchart TD
 
 ---
 
-### Diễn giải sơ đồ tổng quan
+**Diễn giải sơ đồ tổng quan**
 
-#### 1. 🖥️ Client Applications (Giao diện người dùng)
-
+1. 🖥️ Client Applications (Giao diện người dùng)
 - **Public Webform**: Cổng thu lead tuyển sinh.
 - **Customer Portal (PWA)**: Giao diện dành cho phụ huynh & học sinh – OTP login, xem điểm, lịch học, thông báo...
 - **Admin Webapp (SPA)**: Giao diện dành cho nhân viên, giáo viên – quản lý học sinh, lớp, RBAC, thông báo...
-
 > Hai ứng dụng này (Admin Webapp, Customer Portal) thay thế hoàn toàn việc truy cập trực tiếp vào UI của SuiteCRM, Gibbon, Moodle.
-
-#### 2. 🧠 Core Services
-
+2. 🧠 Core Services
 * **API Gateway**: Điểm kiểm soát chính, thực hiện xác thực, RBAC và định tuyến request.
 * **Auth Service**: Xác thực Google OAuth2 và OTP.
 * **User Service**: Quản lý thông tin người dùng, phân quyền.
 * **Notification Service**: Gửi thông báo đa kênh.
-
-#### 3. 🔌 Business Adapters
-
+3. 🔌 Business Adapters
 * Các lớp tích hợp với hệ thống CRM, SIS, LMS qua API.
-
-#### 4. 🌐 External Services
-
+4. 🌐 External Services
 * Các dịch vụ ngoài như Google OAuth2, Gmail API, Zalo OA, Google Chat API.
 
 ---
@@ -208,9 +200,6 @@ sequenceDiagram
     Gateway-->>Client: 403 Forbidden
   end
 ```
-
----
-
 
 ---
 
