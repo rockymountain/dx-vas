@@ -289,6 +289,24 @@ Tất cả thông tin nhạy cảm như token, secret, key API đều được q
 
 ---
 
+### 🧩 Quản lý cấu hình động (không nhạy cảm)
+
+Ngoài credentials, hệ thống có thể cần cấu hình các giá trị động như:
+
+- Feature flags
+- Ngưỡng cảnh báo tùy chỉnh
+- Cấu hình luồng nghiệp vụ
+
+📌 dx_vas hiện hỗ trợ đọc các cấu hình động từ:
+
+- **Google Cloud Storage (GCS)**: chứa file `.json` cấu hình chung (VD: `config/global.json`)
+- **Firestore (option)**: nếu cần cập nhật realtime (VD: cấu hình theo người dùng, theo campus)
+- **Hardcoded YAML** (có kiểm soát qua Git): dùng cho cấu hình ít thay đổi như RBAC schema
+
+> ✅ Mọi thay đổi cấu hình cần version, audit và tránh cập nhật runtime nếu không kiểm soát rollback.
+
+---
+
 ### 🧱 Quy trình quản lý secret
 
 1. Tạo secret trên GCP:
@@ -537,6 +555,26 @@ Hệ thống dx-vas sử dụng nhiều dịch vụ managed (Cloud Run, SQL, Pub
 | Pub/Sub | Event-driven flow | Message volume + retention |
 | GCS | Static assets, backup | GB lưu trữ + truy xuất |
 | IAM/Secret Manager | Token, config | Rất nhỏ nhưng có định mức |
+
+---
+
+### 🌐 Network Egress Costs
+
+- Cloud Run bị tính phí **egress** nếu gọi ra ngoài VPC, đặc biệt là:
+  - Gọi API bên thứ ba (Zalo, Gmail...)
+  - Truy cập GCS nếu không bật **Private Google Access**
+  - Giao tiếp liên vùng (multi-region)
+
+📌 Cách tối ưu:
+
+| Giải pháp | Mô tả |
+|-----------|-------|
+| Private Google Access | Cho phép Cloud Run gọi GCS/PubSub mà không tính egress |
+| VPC Service Controls | Hạn chế egress trái phép từ service nội bộ |
+| Region matching | Đảm bảo Redis, SQL, Cloud Run cùng region (vd: `asia-southeast1`) |
+| API Gateway batching | Gộp nhiều API outbound thành 1 request nếu được |
+
+> ⚠️ Một số quota miễn phí của GCP không áp dụng cho traffic egress giữa vùng hoặc ra Internet.
 
 ---
 
