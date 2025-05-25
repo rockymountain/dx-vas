@@ -62,8 +62,8 @@ flowchart TD
 ### 1. 🧑‍🤝‍🧑 External
 
 * **Public Webform**: Cổng thu lead tuyển sinh.
-* **PWA**: Ứng dụng dành cho phụ huynh & học sinh, đăng nhập qua OTP.
-* **Admin Webapp**: Giao diện dành cho nhân viên, đăng nhập qua Google OAuth2.
+* **Customer Portal (PWA)**: Ứng dụng dành cho phụ huynh & học sinh, đăng nhập qua OTP.
+* **Admin Webapp (SPA)**: Giao diện dành cho nhân viên, đăng nhập qua Google OAuth2.
 
 ### 2. 🖥️ Frontend Apps
 
@@ -76,7 +76,7 @@ flowchart TD
 * **API Gateway**: Điểm kiểm soát chính, thực hiện xác thực, RBAC và định tuyến request.
 * **Auth Service**: Xác thực Google OAuth2 và OTP.
 * **User Service**: Quản lý thông tin người dùng, phân quyền.
-* **Notification Service**: Gửi thông báo đa kênh.
+* **Notification**: Gửi thông báo đa kênh.
 
 ### 4. 🔌 Business Adapters
 
