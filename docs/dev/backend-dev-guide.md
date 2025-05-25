@@ -28,20 +28,24 @@ Tài liệu này dành cho lập trình viên backend trong hệ thống dx-vas.
 
 Tài liệu này dành riêng cho các thành viên phát triển backend trong hệ thống dx-vas – nơi mọi service backend được viết theo kiến trúc microservice, mỗi service là 1 repo riêng biệt (multi-repo), triển khai qua Cloud Run.
 
-Mục tiêu chính:
+### Mục tiêu
+Hướng dẫn lập trình viên backend phát triển service trong hệ thống dx_vas một cách nhất quán, bảo mật, dễ mở rộng và dễ bảo trì.
 
-- Làm rõ cách phân tầng, tổ chức logic nghiệp vụ
-- Chuẩn hóa cách viết schema, xử lý lỗi và truy cập DB
-- Đảm bảo testability, maintainability và khả năng mở rộng của codebase
+### Phạm vi áp dụng
+- Tất cả các backend service viết bằng Python 3.11+ (FastAPI + SQLAlchemy + Pydantic)
+- Cấu trúc dựa trên mô hình microservice (multi-repo)
 
-### ✳️ Nguyên tắc cốt lõi
+### Nguyên tắc cốt lõi
+- Separation of concerns: tách biệt rõ từng tầng (Handler – Service – Repo)
+- Đảm bảo **idempotency** và **transactional consistency** cho các nghiệp vụ
+- Response chuẩn hóa theo envelope (meta + data / error)
+- Service không raise HTTPException | chỉ raise DomainError
+- Schema rõ ràng: phân biệt DTO (schema), model (ORM), entity (nếu có)
+- Phân quyền theo RBAC động – backend chỉ nhận `X-Permissions`
+- **Security by Design**: mọi input đều phải validate – kể cả event nội bộ
+- **Context**: phân biệt rõ DTO, ORM model, user context (vai trò người dùng, điều kiện RBAC), và request context (trace_id, source_ip...)
 
-1. **Tách rõ domain logic khỏi framework** (FastAPI chỉ là adapter)
-2. **Mỗi service phải dễ test từng tầng độc lập**
-3. **Không để logic nghiệp vụ rò rỉ vào controller (route handler)**
-4. **Tránh hardcode – dùng config & DI hợp lý**
-5. **Phân biệt rõ DTO (schema), model, entity và context**
-6. **Tôn trọng đơn nhiệm – mỗi hàm/class có 1 vai trò**
+📌 Lưu ý: Service không phụ thuộc gateway – có thể test độc lập
 
 📎 Tài liệu này không lặp lại CI/CD hay cấu trúc repo (đã có ở Dev Guide), mà tập trung vào:
 - Usecase backend (handlers, service, repo)
@@ -233,6 +237,32 @@ flowchart LR
 📌 Sơ đồ mô tả rõ flow xử lý từ API Gateway → Handler → Service → Repo → DB
 Các call phụ như Pub/Sub, Cache, hoặc Notification thường xuất phát từ Service Layer.
 
+### 💡 Gợi ý nâng cao – Unit of Work (UoW)
+
+Khi usecase bao gồm nhiều bước quan trọng (VD: cập nhật học sinh, ghi audit, gửi thông báo), nên gói các hành động này trong một context hoặc pattern "Unit of Work" để đảm bảo rollback đồng bộ nếu có lỗi:
+
+```python
+class StudentUoW:
+    def __init__(self, db: Session):
+        self.db = db
+        self.student_repo = StudentRepo(db)
+        self.audit_repo = AuditRepo(db)
+
+    def commit(self):
+        self.db.commit()
+
+    def rollback(self):
+        self.db.rollback()
+
+# Trong service
+def update_student_and_audit(self, payload: StudentUpdateIn, uow: StudentUoW):
+    student = uow.student_repo.update(payload)
+    uow.audit_repo.log("Cập nhật HS", student.id)
+    uow.commit()
+```
+
+📌 UoW pattern giúp gom logic nghiệp vụ đa bước vào một transaction duy nhất, và giảm rủi ro bỏ sót commit hoặc rollback.
+
 ---
 
 ## 4. Đặt tên & convention code
@@ -373,6 +403,12 @@ class StudentRepo:
 
 ---
 
+### 🔁 Lưu ý nâng cao: Idempotency cho usecase đồng bộ
+
+Với các API `POST`, `PATCH` quan trọng (VD: tạo hợp đồng, gửi đơn), nên cân nhắc cho phép client gửi `Idempotency-Key` để tránh xử lý trùng nếu retry. Service layer nên kiểm tra key này trước khi tiếp tục.
+
+📌 Nếu hệ thống không dùng Idempotency-Key, có thể dựa vào unique constraint (VD: email học sinh) để đảm bảo gọi nhiều lần không gây lỗi hoặc xử lý trùng.
+
 📎 Tham khảo mẫu toàn diện tại: [`dx-user-service`](https://github.com/vas-org/dx-user-service)
 
 ---
@@ -509,6 +545,11 @@ dx-vas chuẩn hoá cơ chế xử lý lỗi để API consistent, dễ debug v�
 
 ```python
 class DomainError(Exception):
+	def __init__(self, code: str, message: str, status_code: int = 400):
+        self.code = code
+        self.message = message
+        self.status_code = status_code
+
     code = \"UNSPECIFIED_ERROR\"
     message = \"Có lỗi xảy ra\"
 
@@ -547,26 +588,19 @@ except DomainError as e:
 
 > ✅ Service không được raise `HTTPException`, mà chỉ raise domain-level error
 > 📌 Có thể định nghĩa một global exception handler trong FastAPI để tự động map `DomainError` sang HTTPException với `ErrorEnvelope`, giúp code tại route gọn hơn:
->
-> ```python
-> @app.exception_handler(DomainError)
-> async def domain_error_handler(request: Request, exc: DomainError):
->     return JSONResponse(
->         status_code=exc.status_code or 500,
->         content={
->             "error": {
->                 "code": exc.code,
->                 "message": exc.message,
->                 "details": exc.detail,
->             },
->             "meta": {
->                 "request_id": request.headers.get("X-Request-ID"),
->                 "timestamp": datetime.utcnow().isoformat()
->             }
->         }
->     )
-> ```
 
+```python
+@app.exception_handler(DomainError)
+def handle_domain_error(request: Request, exc: DomainError):
+    return JSONResponse(
+        status_code=exc.status_code,
+        content=ErrorEnvelope(error={
+            "code": exc.code,
+            "message": exc.message,
+        }).dict()
+    )
+
+```
 
 ---
 
@@ -837,6 +871,12 @@ def client():
 | Test không phụ thuộc nhau | Không dùng shared global state          |
 | Bao phủ logic rẽ nhánh    | Test success, fail, edge case           |
 | Mock đúng chỗ             | Repo, API external, Pub/Sub client      |
+
+- Có thể dùng `pytest-mock` hoặc `unittest.mock` để mock nhanh logic phụ thuộc (Pub/Sub, Redis)
+- Đối với integration test:
+  - Dùng Alembic để apply schema lên test DB (hoặc tạo file `.sql`)
+  - Seed data mẫu bằng fixture (VD: 1 học sinh, 1 lớp học)
+  - Rollback sau mỗi test để đảm bảo isolation
 
 ---
 
