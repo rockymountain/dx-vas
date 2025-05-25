@@ -18,6 +18,9 @@ Tài liệu này dành cho lập trình viên backend trong hệ thống dx-vas.
 10. [Test đơn vị & tích hợp](#10-test-đơn-vị--tích-hợp)
 11. [Checklist khi tạo PR backend](#11-checklist-khi-tạo-pr-backend)
 12. [Tài liệu liên quan](#12-tài-liệu-liên-quan)
+13. [Logging Best Practices](#13-logging-best-practices)
+14. [Security Considerations – Cân nhắc bảo mật cho Backend](#14-security-considerations–-cân-nhắc-bảo-mật-cho-backend)
+15. [Performance Tips – Tối ưu hiệu năng Backend](#15-performance-tips–-tối-ưu-hiệu-năng-backend)
 
 ---
 
