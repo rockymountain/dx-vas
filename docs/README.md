@@ -28,7 +28,8 @@ VAS sử dụng cơ chế RBAC động được đánh giá và thực thi tại
   * Phân tách rõ vai trò (role), hành động (action) và điều kiện (condition) theo từng người dùng.
   * API Gateway chịu trách nhiệm xác thực token, kiểm tra trạng thái hoạt động và đánh giá phân quyền trước khi chuyển tiếp request.
 
-📘 Để tìm hiểu sâu hơn về cơ chế RBAC, vui lòng xem tài liệu chi tiết tại: [Chi tiết Kiến trúc RBAC](./architecture/rbac-deep-dive.md)
+📘 Để tìm hiểu sâu hơn về cơ chế RBAC, vui lòng xem tài liệu chi tiết tại:
+👉 [Chi tiết Kiến trúc RBAC](./architecture/rbac-deep-dive.md)
 
 ### 2. Customer Portal (PWA)
 
@@ -110,8 +111,8 @@ VAS sử dụng cơ chế RBAC động được đánh giá và thực thi tại
 * Đang thiết kế kế hoạch DR (Disaster Recovery) đầy đủ với RTO/RPO theo từng service.
 * 📘 Xem thêm:
 
-  * [DR Playbook – `docs/runbooks/dr-playbook.md`](./runbooks/dr-playbook.md)
-  * [Checklist xử lý sự cố – `docs/runbooks/incident-checklist.md`](./runbooks/incident-checklist.md)
+  👉 [DR Playbook – `docs/runbooks/dr-playbook.md`](./runbooks/dr-playbook.md)
+  👉 [Checklist xử lý sự cố – `docs/runbooks/incident-checklist.md`](./runbooks/incident-checklist.md)
 
 ### 13. CI/CD & DevOps
 
@@ -160,7 +161,8 @@ Toàn bộ các phản hồi chiến lược từ anh Bill đã được đưa v
 
 Dự án dx\_vas sử dụng các Quyết định Kiến trúc (Architecture Decision Records - ADRs) để ghi lại những lựa chọn thiết kế quan trọng về mặt kiến trúc, bao gồm lý do, bối cảnh và các phương án đã được cân nhắc.
 
-📘 Để xem danh sách đầy đủ và chi tiết các ADRs đã được phê duyệt, vui lòng truy cập: [Danh sách ADRs của dự án](./ADR/index.md)
+📘 Để xem danh sách đầy đủ và chi tiết các ADRs đã được phê duyệt, vui lòng truy cập:
+👉 [Danh sách ADRs của dự án](./ADR/index.md)
 
 ## Phụ lục B – Nguyên tắc Kiến trúc Cốt lõi
 
@@ -172,123 +174,15 @@ Dự án dx\_vas sử dụng các Quyết định Kiến trúc (Architecture Dec
 
 ## Phụ lục C – Sơ đồ Kiến trúc
 
-```mermaid
-flowchart TD
-  subgraph External
-    Webform[Public Webform]
-    Parent[PWA - Phụ huynh & HS]
-    Staff[Admin Webapp - Nhân viên]
-  end
+📁 Các sơ đồ kiến trúc hệ thống được lưu trữ và cập nhật chi tiết tại:
+👉 [System Diagrams](./architecture/system-diagrams.md)
 
-  subgraph Frontend_Apps
-    CRM_UI[SuiteCRM UI]
-    SIS_UI[Gibbon UI]
-    LMS_UI[Moodle UI]
-  end
-
-  subgraph Core_Services
-    Gateway[API Gateway]
-    Auth[Auth Service]
-    User[User Service]
-    Noti[Notification Service]
-  end
-
-  subgraph Business_Adapters
-    CRM[CRM Adapter]
-    SIS[SIS Adapter]
-    LMS[LMS Adapter]
-  end
-
-  subgraph External_Services
-    GSuite[Google OAuth2]
-    Zalo[Zalo OA API]
-    Gmail[Gmail API]
-    Chat[Google Chat API]
-  end
-
-  Webform -->|lead| CRM
-  Parent --> Gateway
-  Staff --> Gateway
-
-  Gateway -->|OAuth2 / OTP| Auth
-  Gateway -->|RBAC check| User
-  Gateway -->|Notify| Noti
-  Gateway --> CRM
-  Gateway --> SIS
-  Gateway --> LMS
-
-  CRM --> CRM_UI
-  SIS --> SIS_UI
-  LMS --> LMS_UI
-
-  Noti --> Zalo
-  Noti --> Gmail
-  Noti --> Chat
-  Auth --> GSuite
-
-```
-
-### 🧭 Diễn giải sơ đồ kiến trúc tổng thể hệ thống dx_vas
-
-Hệ thống dx_vas được chia thành 5 nhóm thành phần chính:
-
----
-
-#### 1. 🧑‍🤝‍🧑 External
-
-- **Public Webform**: Cổng thu lead tuyển sinh từ website chính thức.
-- **PWA (Phụ huynh & Học sinh)**: Ứng dụng Progressive Web App, dùng OTP để đăng nhập và truy cập điểm, thông báo, lịch học.
-- **Admin Webapp (Nhân viên)**: Ứng dụng dành cho nhân viên, giáo viên – sử dụng Google OAuth2, tích hợp giao diện quản trị học sinh, lớp, thông báo, RBAC.
-
----
-
-#### 2. 🖥️ Frontend Apps
-
-- Giao diện người dùng chính của hệ thống, chia theo đối tượng sử dụng:
-  - **PWA**: Phụ huynh/học sinh.
-  - **SPA**: Nhân viên, giáo viên.
-  - **WebUI (legacy)**: Giao diện trực tiếp của các hệ thống như SuiteCRM, Gibbon, Moodle – dùng cho thao tác nâng cao không qua API.
-
----
-
-#### 3. 🧠 Core Services
-
-- **API Gateway**: Trung tâm định tuyến, xác thực, đánh giá RBAC và forward request đến các service.
-- **Auth Service**: Xác thực OAuth2 (GV/NV/HS), OTP (PH); phát hành JWT và refresh token.
-- **User Service**: Quản lý định danh người dùng, trạng thái `is_active`, RBAC động (role, permission, condition).
-- **Notification Service**: Gửi thông báo đa kênh (email, Zalo, Google Chat, WebPush) dựa trên preference người dùng.
-
----
-
-#### 4. 🔌 Business Adapters
-
-- Adapter trung gian giao tiếp với hệ thống quản lý nghiệp vụ sẵn có:
-  - **CRM Adapter** (SuiteCRM): Thu lead, xử lý pipeline tuyển sinh.
-  - **SIS Adapter** (Gibbon): Quản lý hồ sơ học sinh, lớp học, học phí, điểm danh.
-  - **LMS Adapter** (Moodle): Quản lý học liệu, bài tập, điểm số – đồng bộ từ SIS.
-
----
-
-#### 5. 🌐 External Services
-
-- **Google OAuth2**: Đăng nhập cho GV/NV/HS.
-- **Zalo OA API**: Gửi thông báo ZNS đến phụ huynh.
-- **Gmail API**: Gửi email (chấm công, học phí…).
-- **Google Chat API**: Thông báo nội bộ cho GV/NV.
-
----
-
-📌 API Gateway là điểm kết nối trung tâm: mọi request từ user frontend đều đi qua Gateway → Auth/User/CRM/SIS/LMS/Notification tùy vào nghiệp vụ. Điều này đảm bảo logic bảo mật, phân quyền và traceability được thống nhất toàn hệ thống.
-
----
-
-📁 Tài liệu sơ đồ hệ thống nằm trong thư mục `docs/diagrams/`, gồm:
-
-* `system-context.png`: Tổng quan các thành phần chính
-* `service-interaction.png`: Giao tiếp giữa các microservice
-* `flow-admission-sync.png`: Luồng tuyển sinh CRM → SIS → LMS
-
-> Sẽ cập nhật link trực tiếp khi sơ đồ hoàn thiện trên draw\.io hoặc mermaid.
+Tài liệu này bao gồm:
+- Sơ đồ tổng quan hệ thống
+- Các luồng nghiệp vụ chính (tuyển sinh, thông báo, phân quyền...)
+- Sơ đồ vòng đời tài khoản
+- Sơ đồ triển khai hạ tầng trên Google Cloud
+- Chú giải và hướng dẫn đọc sơ đồ
 
 ## Phụ lục D – Hướng dẫn đóng góp & phát triển
 

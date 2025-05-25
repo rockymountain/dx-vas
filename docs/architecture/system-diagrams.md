@@ -225,6 +225,7 @@ sequenceDiagram
    - Nếu fail: trả về `403 Forbidden`.
 
 📌 RBAC được đánh giá hoàn toàn tại Gateway, backend không cần decode JWT hay tái kiểm tra quyền.
+📎 Tham khảo chi tiết logic phân quyền động tại: [RBAC Deep Dive](./rbac-deep-dive.md)
 
 ---
 
@@ -497,5 +498,6 @@ flowchart TD
 - Tách biệt logic rõ ràng (each service = 1 container)
 - Bảo mật chặt chẽ và dễ dàng giám sát vận hành
 
+📎 Cơ chế sử dụng hai CSDL (PostgreSQL & MySQL) được trình bày rõ tại: [README](../README.md#hạ-tầng-triển-khai)
 
 ---
