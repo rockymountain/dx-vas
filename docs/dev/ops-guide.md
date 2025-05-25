@@ -131,7 +131,7 @@ PUBSUB_PROJECT_ID=...
 
 ---
 
-📎 Chi tiết CI/CD: [Dev Guide](../dev-guide.md#8-quy-trình-test--ci-cd)
+📎 Chi tiết CI/CD: [Dev Guide](./dev-guide.md#8-quy-trình-test--ci-cd)
 
 📎 Cấu trúc môi trường Cloud Run: [System Diagrams](../architecture/system-diagrams.md#9-deployment-overview-diagram--sơ-đồ-triển-khai-tổng-quan)
 
@@ -333,7 +333,7 @@ gcloud secrets versions list dx-auth-jwt-secret
 
 📎 Chính sách bảo mật chi tiết: [`adr-003-secrets.md`](../ADR/adr-003-secrets.md)
 
-📎 Tổng quan bảo mật toàn hệ thống: [Dev Guide – Mục 11.1](../dev-guide.md#11-theo-dõi--vận-hành)
+📎 Tổng quan bảo mật toàn hệ thống: [Dev Guide – Mục 11.1](./dev-guide.md#11-theo-dõi--vận-hành)
 
 ---
 
@@ -380,7 +380,7 @@ Hệ thống dx-vas sử dụng **Google Cloud Run** để triển khai toàn b�
 
 📎 Cấu trúc triển khai: [System Diagrams](../architecture/system-diagrams.md#9-deployment-overview-diagram--sơ-đồ-triển-khai-tổng-quan)  
 
-📎 Tham khảo thêm: [Dev Guide](../dev-guide.md#8-quy-trình-test--ci-cd)
+📎 Tham khảo thêm: [Dev Guide](./dev-guide.md#8-quy-trình-test--ci-cd)
 
 ---
 
@@ -442,7 +442,7 @@ gcloud run services update-traffic user-service \
 
 ---
 
-📎 Hướng dẫn CI/CD chi tiết: [Dev Guide](../dev-guide.md#8-quy-trình-test--ci-cd)
+📎 Hướng dẫn CI/CD chi tiết: [Dev Guide](./dev-guide.md#8-quy-trình-test--ci-cd)
 
 📎 Checklist sự cố: [Mục 11 – Ứng phó sự cố](#11-ứng-phó-sự-cố--khôi-phục)
 
@@ -863,5 +863,5 @@ Hệ thống dx-vas áp dụng cơ chế kiểm soát bảo mật chặt chẽ n
 📎 Mọi dashboard nên được lưu trữ version (JSON export) tại:  
 `dx-vas/docs/observability/dashboards/`
 
-📎 Liên kết CI/CD – xem Dev Guide: [Dev Guide](../dev-guide.md#8-quy-trình-test--ci-cd)
+📎 Liên kết CI/CD – xem Dev Guide: [Dev Guide](./dev-guide.md#8-quy-trình-test--ci-cd)
 
