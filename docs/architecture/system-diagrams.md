@@ -6,6 +6,17 @@ Tài liệu này tập hợp tất cả các sơ đồ kiến trúc quan trọng
 * Diễn giải các khối chức năng
 * Các sơ đồ con chi tiết theo từng luồng nghiệp vụ (ví dụ: Tuyển sinh, Thông báo, Phân quyền RBAC...)
 
+## 📚 Mục lục
+
+1. [Sơ đồ tổng quan hệ thống](#1-sơ-đồ-tổng-quan-hệ-thống)
+2. [Admission Flow – Luồng Tuyển sinh](#2-admission-flow--luồng-tuyển-sinh)
+3. [Notification Flow – Luồng Gửi Thông báo](#3-notification-flow--luồng-gửi-thông-báo)
+4. [RBAC Evaluation Flow – Luồng Đánh giá Phân quyền Động](#4-rbac-evaluation-flow--luồng-đánh-giá-phân-quyền-động)
+5. [Data Synchronization Flow – Đồng bộ học sinh CRM → SIS → LMS](#5-data-synchronization-flow--đồng-bộ-học-sinh-crm--sis--lms)
+6. [Service-to-Service Auth Flow – Giao tiếp giữa các dịch vụ nội bộ](#6-service-to-service-auth-flow--giao-tiếp-giữa-các-dịch-vụ-nội-bộ)
+7. [User Account Lifecycle Flow – Vòng đời tài khoản người dùng](#7-user-account-lifecycle-flow--vòng-đời-tài-khoản-người-dùng)
+8. [📘 Legend & Hướng dẫn đọc sơ đồ](#8-legend--hướng-dẫn-đọc-sơ-đồ)
+
 ---
 
 ## 1. Sơ đồ tổng quan hệ thống
@@ -359,7 +370,7 @@ flowchart LR
 
 ---
 
-## 📘 Chú giải sơ đồ (Legend) & Hướng dẫn đọc
+## 8. 📘 Chú giải sơ đồ (Legend) & Hướng dẫn đọc
 
 ### 🧩 Ký hiệu các thành phần (dùng trong flowchart & sequenceDiagram):
 
