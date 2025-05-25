@@ -68,7 +68,9 @@ app/
 ├── core/             # Cấu hình, DI, security
 │   ├── config.py
 │   └── security.py
-├── events/           # Pub/Sub subscriber, publisher
+├── events/           # Xử lý Pub/Sub
+│   ├── subscriber/   # Nhận sự kiện, xử lý
+│   └── publisher/    # Gửi sự kiện đi
 ├── deps.py           # Dependency Injection (DB, current\_user...)
 └── main.py           # Entry point FastAPI
 
@@ -85,6 +87,26 @@ app/
 
 - Nếu service có phần xử lý RBAC riêng → có thể thêm `rbac/`
 - Nếu cần chia nhỏ service lớn (VD: SIS Adapter) → chia thành module theo domain (`student/`, `classroom/`, `fee/`)
+
+### 🔧 Quản lý Dependency (deps.py)
+
+Tập tin `deps.py` là nơi định nghĩa các **provider function** để inject dependency như `db_session`, `current_user`, hoặc `service instance` vào các route.
+
+Ví dụ:
+
+```python
+def get_db() -> Generator:
+    session = SessionLocal()
+    try:
+        yield session
+    finally:
+        session.close()
+
+def get_user_service(db: Session = Depends(get_db)) -> UserService:
+    return UserService(UserRepo(db))
+```
+
+> 📎 Tách riêng các provider vào deps.py giúp dễ tái sử dụng, test và thay thế (mock).
 
 ---
 
@@ -109,6 +131,18 @@ dx-vas áp dụng mô hình **3-layer architecture** cho backend, nhằm tách b
 def get_user(id: UUID, user_svc: UserService = Depends(get_user_service)):
     return user_svc.get_user(id)
 ````
+
+#### 📎 Ghi chú về Dependency
+
+Biến `user_svc: UserService = Depends(get_user_service)` sử dụng Dependency Injection (DI) của FastAPI. Hàm `get_user_service` thường được định nghĩa như sau:
+
+```python
+def get_user_service(db: Session = Depends(get_db)) -> UserService:
+    repo = UserRepo(db)
+    return UserService(repo)
+```
+
+> ✅ Điều này giúp tách rõ logic khởi tạo và inject các thành phần như session, repository, và service – hỗ trợ test và maintain dễ dàng.
 
 ---
 
@@ -171,6 +205,10 @@ Việc đặt tên rõ ràng, nhất quán giúp code dễ đọc, dễ review v
 | Thư mục module | snake_case | `user_service/`, `classroom/` |
 | File schema | snake_case | `user.py`, `role.py` |
 | File repo/service | snake_case | `user_repo.py`, `user_service.py` |
+
+> 📎 Nếu microservice có nhiều domain (VD: SIS Adapter) → nên chia theo module con:  
+> `app/student/schemas/`, `app/student/services/`, `app/student/repositories/`  
+> Khi đó, mỗi module sẽ có thư mục `services/`, `schemas/` riêng thay vì dùng thư mục cấp cao.
 
 ---
 
@@ -320,6 +358,24 @@ class StudentOut(BaseModel):
     birthday: date
     class_name: Optional[str]
 ````
+
+---
+
+### 🧪 Custom validator ví dụ
+
+```python
+class StudentCreate(BaseModel):
+    name: str
+    birthday: date
+
+    @validator("name")
+    def validate_name(cls, value):
+        if not value.isalpha():
+            raise ValueError("Tên chỉ được chứa chữ cái")
+        return value
+```
+
+📎 Dùng @validator khi cần kiểm tra hoặc chuẩn hóa dữ liệu đầu vào – rất hữu ích cho rule nghiệp vụ như kiểm tra định dạng mã học sinh, tên không chứa số, v.v.
 
 ---
 
@@ -506,11 +562,17 @@ def get_db() -> Generator:
 Trong service:
 
 ```python
-def get_student(self, id: UUID) -> StudentOut:
-    with get_db() as session:
-        repo = StudentRepo(session)
-        return StudentOut.from_orm(repo.get_by_id(id))
+# Sử dụng trong FastAPI handler
+@router.get("/students/{id}", response_model=StudentOut)
+def get_student(id: UUID, db: Session = Depends(get_db)):
+    repo = StudentRepo(db)
+    svc = StudentService(repo)
+    student = svc.get_student(id)
+    return StudentOut.from_orm(student)
+
 ```
+
+> 📎 StudentService và StudentRepo nên được khởi tạo thông qua DI – hoặc thông qua hàm get_student_service() như mô tả ở Mục 3.
 
 ---
 
@@ -544,7 +606,7 @@ events/
 
 ```python
 def handle_user_created(message: PubSubMessage):
-    data = message.data  # đã decode JSON
+    data = json.loads(message.data.decode("utf-8"))  # decode + parse JSON
     user_id = data[\"user_id\"]
 
     if repo.has_processed(message.message_id):
@@ -555,6 +617,10 @@ def handle_user_created(message: PubSubMessage):
         raise UserNotFoundError()
 
     repo.mark_processed(message.message_id)
+    # repo.has_processed / mark_processed có thể là:
+	# - Ghi vào bảng `processed_messages(message_id TEXT PRIMARY KEY)`
+	# - Hoặc sử dụng Redis set để lưu trạng thái message đã xử lý
+
 ````
 
 > ✅ `message_id` do Pub/Sub sinh ra – đảm bảo duy nhất
@@ -712,7 +778,8 @@ Mỗi Pull Request (PR) backend trong dx-vas cần tuân theo checklist sau đ�
 
 - [ ] Nếu có sửa DB → đã viết migration
 - [ ] Nếu thêm permission → cập nhật file RBAC `permissions.yaml`
-- [ ] Nếu thay đổi API → cập nhật OpenAPI / `interface-contracts/`
+	📎 Xem cách định nghĩa permission tại [RBAC Deep Dive](../architecture/rbac-deep-dive.md#5-permission-có-điều-kiện-condition-jsonb)
+- [ ] Nếu thay đổi API → cập nhật OpenAPI / Interface Contracts
 - [ ] Nếu ảnh hưởng cross-service → đã thông báo/ghi chú rõ
 - [ ] Nếu cần sync dữ liệu → viết rõ flow trong commit message
 
@@ -729,7 +796,7 @@ Mỗi Pull Request (PR) backend trong dx-vas cần tuân theo checklist sau đ�
 
 📎 Format commit message → xem Dev Guide  
 
-📎 Quản lý permission → xem `rbac-deep-dive.md`  
+📎 Quản lý permission → xem RBAC Deep Dive  
 
 📎 Migration & version DB → xem Dev Ops Guide mục 7
 
@@ -746,8 +813,8 @@ Dưới đây là các tài liệu nội bộ hỗ trợ cho quá trình phát t
 | Tài liệu | Mục tiêu |
 |---------|----------|
 | [System Diagrams](../architecture/system-diagrams.md) | Tổng quan kiến trúc, sơ đồ các luồng nghiệp vụ |
-| [`rbac-deep-dive.md`](../rbac-deep-dive.md) | Kiến trúc RBAC động, JSONB, phân quyền & cache |
-| [`interface-contracts/`](../interface-contracts/) | Định nghĩa OpenAPI + schema liên service |
+| [RBAC Deep Dive](../architecture/rbac-deep-dive.md) | Kiến trúc RBAC động, JSONB, phân quyền & cache |
+| [Interface Contracts](../interfaces/) | Định nghĩa OpenAPI + schema liên service |
 
 ---
 
@@ -757,7 +824,7 @@ Dưới đây là các tài liệu nội bộ hỗ trợ cho quá trình phát t
 |---------|----------|
 | [Dev Guide](./dev-guide.md) | Hướng dẫn CI/CD, test, lint, docker hóa, PR flow |
 | [Dev Ops Guide](./ops-guide.md) | Hướng dẫn vận hành: Cloud Run, Redis, Pub/Sub |
-| [`adr-index.md`](../ADR/adr-index.md) | Danh sách các quyết định kiến trúc quan trọng |
+| [ADR Index](../ADR/index.md) | Danh sách các quyết định kiến trúc quan trọng |
 
 ---
 
@@ -774,7 +841,7 @@ Dưới đây là các tài liệu nội bộ hỗ trợ cho quá trình phát t
 📎 Developer mới nên đọc theo thứ tự:
 
 1. `backend-dev-guide.md` (tài liệu này)
-2. System Diagrams → `rbac-deep-dive.md`
+2. System Diagrams → RBAC Deep Dive
 3. Dev Guide → Dev Ops Guide
 
 ---
