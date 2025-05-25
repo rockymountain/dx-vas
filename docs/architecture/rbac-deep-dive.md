@@ -133,10 +133,10 @@ role_permission (role_id, permission_id)
 
 ## 9. Tài liệu liên quan
 
-* [ADR-006: Auth Strategy](../../ADR/adr-006-auth-strategy.md)
-* [ADR-007: RBAC Dynamic](../../ADR/adr-007-rbac.md)
-* [ADR-008: Audit Logging](../../ADR/adr-008-audit-logging.md)
-* [ADR-012: Response Structure](../../ADR/adr-012-response-structure.md)
+* [ADR-006: Auth Strategy](../ADR/adr-006-auth-strategy.md)
+* [ADR-007: RBAC Dynamic](../ADR/adr-007-rbac.md)
+* [ADR-008: Audit Logging](../ADR/adr-008-audit-logging.md)
+* [ADR-012: Response Structure](../ADR/adr-012-response-structure.md)
 
 ---
 
