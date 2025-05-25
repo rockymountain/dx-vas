@@ -15,7 +15,7 @@ Tài liệu này tập hợp tất cả các sơ đồ kiến trúc quan trọng
 5. [Data Synchronization Flow – Đồng bộ học sinh CRM → SIS → LMS](#5-data-synchronization-flow--đồng-bộ-học-sinh-crm--sis--lms)
 6. [Service-to-Service Auth Flow – Giao tiếp giữa các dịch vụ nội bộ](#6-service-to-service-auth-flow--giao-tiếp-giữa-các-dịch-vụ-nội-bộ)
 7. [User Account Lifecycle Flow – Vòng đời tài khoản người dùng](#7-user-account-lifecycle-flow--vòng-đời-tài-khoản-người-dùng)
-8. [Legend & Hướng dẫn đọc sơ đồ](#8-legend--hướng-dẫn-đọc-sơ-đồ)
+8. [Chú giải sơ đồ (Legend) - Hướng dẫn đọc](#8-chú-giải-sơ-đồ-legend---hướng-dẫn-đọc)
 
 ---
 
