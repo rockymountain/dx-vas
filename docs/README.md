@@ -176,30 +176,30 @@ Dự án dx\_vas sử dụng các Quyết định Kiến trúc (Architecture Dec
 flowchart TD
   subgraph External
     Webform[Public Webform]
-    Parent[PWA: Phụ huynh & HS]
-    Staff[Admin Webapp: Nhân viên]
+    Parent[PWA - Phụ huynh & HS]
+    Staff[Admin Webapp - Nhân viên]
   end
 
-  subgraph Frontend Apps
-    CRM_UI[CRM Adapter (SuiteCRM)]
-    SIS_UI[SIS Adapter (Gibbon)]
-    LMS_UI[LMS Adapter (Moodle)]
+  subgraph Frontend_Apps
+    CRM_UI[SuiteCRM UI]
+    SIS_UI[Gibbon UI]
+    LMS_UI[Moodle UI]
   end
 
-  subgraph Core Services
+  subgraph Core_Services
     Gateway[API Gateway]
     Auth[Auth Service]
     User[User Service]
     Noti[Notification Service]
   end
 
-  subgraph Business Adapters
+  subgraph Business_Adapters
     CRM[CRM Adapter]
     SIS[SIS Adapter]
     LMS[LMS Adapter]
   end
 
-  subgraph External Services
+  subgraph External_Services
     GSuite[Google OAuth2]
     Zalo[Zalo OA API]
     Gmail[Gmail API]
