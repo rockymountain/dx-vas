@@ -73,7 +73,7 @@ flowchart TD
 * **API Gateway**: Điểm kiểm soát chính, thực hiện xác thực, RBAC và định tuyến request.
 * **Auth Service**: Xác thực Google OAuth2 và OTP.
 * **User Service**: Quản lý thông tin người dùng, phân quyền.
-* **Notification**: Gửi thông báo đa kênh.
+* **Notification Service**: Gửi thông báo đa kênh.
 
 #### 3. 🔌 Business Adapters
 
@@ -116,13 +116,12 @@ flowchart TD
 
 ```
 
-
 ---
 
 **Diễn giải Admission Flow:**
 
-1. **Phụ huynh điền thông tin tại Public Webform** → tạo một bản ghi lead trong CRM Adapter.
-2. **CRM Adapter** chuyển dữ liệu này sang **SuiteCRM**, nơi quản lý pipeline tuyển sinh (ví dụ: liên hệ, thử lớp, đóng phí...).
+1. **Phụ huynh điền thông tin tại Public Webform** → **CRM Adapter** tiếp nhận dữ liệu.
+2. **CRM Adapter** chuyển tiếp qua API Gateway để tạo bản ghi lead trong **SuiteCRM**, nơi quản lý pipeline tuyển sinh (ví dụ: liên hệ, thử lớp, đóng phí...).
 3. Khi lead đủ điều kiện nhập học:
    - CRM gửi thông tin sang **SIS Adapter** để tạo học sinh trong **Gibbon SIS**.
 4. SIS xử lý:
@@ -131,3 +130,111 @@ flowchart TD
 5. Học sinh được khởi tạo trong **Moodle LMS** với liên kết SIS-ID, được phân lớp và kích hoạt lộ trình học trực tuyến.
 
 📌 Toàn bộ quá trình này đi qua API Gateway và các adapter, không tương tác trực tiếp với cơ sở dữ liệu nội bộ của SuiteCRM, Gibbon, Moodle.
+
+---
+
+## 3. Notification Flow – Luồng Gửi Thông báo
+
+```mermaid
+sequenceDiagram
+  participant Service as Hệ thống phát sinh sự kiện (CRM/SIS/LMS)
+  participant Gateway as API Gateway
+  participant Noti as Notification Service
+  participant Zalo as Zalo OA
+  participant Gmail as Gmail API
+  participant Chat as Google Chat
+
+  Service->>Gateway: Gửi yêu cầu gửi thông báo (POST /notifications)
+  Gateway->>Noti: Forward request + X-User-ID + RBAC check
+
+  Noti->>Noti: Kiểm tra phân quyền + Tra cấu hình kênh ưa thích
+  alt Gửi qua Zalo OA
+    Noti->>Zalo: ZNS API
+  end
+  alt Gửi qua Gmail
+    Noti->>Gmail: Gmail API
+  end
+  alt Gửi qua Google Chat
+    Noti->>Chat: Chat webhook
+  end
+
+```
+
+---
+
+**Diễn giải Notification Flow:**
+
+1. **Một service nghiệp vụ (CRM, SIS, LMS...) phát sinh sự kiện** – ví dụ:
+   - CRM: phụ huynh đăng ký thành công
+   - SIS: học sinh điểm danh trễ
+   - LMS: bài tập đến hạn
+2. Service gọi `POST /notifications` qua API Gateway, đính kèm JWT hoặc service token.
+3. **API Gateway thực hiện kiểm tra phân quyền** (nếu là người dùng cuối), rồi forward tới Notification Service.
+4. **Notification Service** kiểm tra:
+   - User có quyền nhận loại thông báo này không?
+   - Kênh ưa thích là gì? (Zalo / Gmail / Google Chat / WebPush...)
+5. Thông báo được gửi đi qua các API tương ứng, với retry và xử lý lỗi nếu cần.
+
+📌 Notification Service hỗ trợ gửi đồng thời nhiều kênh và có thể log lại từng trạng thái gửi, cho phép tracking và alert nếu gửi thất bại.
+
+---
+
+## 4. RBAC Evaluation Flow – Luồng Đánh giá Phân quyền Động
+
+```mermaid
+sequenceDiagram
+  participant Client as Client App (PWA/SPA)
+  participant Gateway as API Gateway
+  participant Redis as Redis Cache
+  participant UserSvc as User Service
+  participant Backend as Backend Service
+
+  Client->>Gateway: Gửi request + JWT
+  Gateway->>Gateway: Giải mã + xác thực JWT
+  Gateway->>UserSvc: Kiểm tra is_active (optional)
+  Gateway->>Redis: Tra RBAC:{user_id} cache
+  alt Cache hit
+    Gateway->>Gateway: Lấy danh sách permission + condition
+  else Cache miss
+    Gateway->>UserSvc: GET /users/{id}/permissions
+    UserSvc-->>Gateway: Trả về danh sách role, permission, condition
+    Gateway->>Redis: Ghi lại cache
+  end
+
+  Gateway->>Gateway: Evaluate permission + condition theo context
+  alt Pass
+    Gateway->>Backend: Forward request + X-Permissions + X-User-ID
+  else Fail
+    Gateway-->>Client: 403 Forbidden
+  end
+```
+
+---
+
+
+---
+
+**Diễn giải RBAC Evaluation Flow:**
+
+1. **Client App (PWA/SPA)** gửi request REST đến API Gateway, kèm theo JWT (Bearer token).
+2. **API Gateway**:
+   - Giải mã và xác thực token (kiểm tra chữ ký, thời hạn).
+   - Kiểm tra trạng thái `is_active` của user từ User Service (nếu cần).
+   - Tra Redis: key `RBAC:{user_id}` để lấy danh sách permissions.
+3. Nếu Redis cache **hit**:
+   - Gateway lấy danh sách `permission` kèm `condition` JSONB.
+4. Nếu cache **miss**:
+   - Gateway gọi `GET /users/{id}/permissions` từ User Service.
+   - Ghi dữ liệu RBAC mới vào Redis với TTL.
+5. **Evaluate**:
+   - Gateway so sánh từng permission + condition với context từ request.
+   - Nếu có ít nhất một permission thỏa: cho phép request.
+6. **Kết quả**:
+   - Nếu pass: forward đến Backend Service, kèm các header:
+     - `X-Permissions`: danh sách mã quyền (đã pass)
+     - `X-User-ID`, `X-Role`, `Trace-ID`...
+   - Nếu fail: trả về `403 Forbidden`.
+
+📌 RBAC được đánh giá hoàn toàn tại Gateway, backend không cần decode JWT hay tái kiểm tra quyền.
+
+---
