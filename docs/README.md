@@ -172,6 +172,116 @@ Dự án dx\_vas sử dụng các Quyết định Kiến trúc (Architecture Dec
 
 ## Phụ lục C – Sơ đồ Kiến trúc
 
+```memaid
+flowchart TD
+  subgraph External
+    Webform[Public Webform]
+    Parent[PWA: Phụ huynh & HS]
+    Staff[Admin Webapp: Nhân viên]
+  end
+
+  subgraph Frontend Apps
+    CRM_UI[CRM Adapter (SuiteCRM)]
+    SIS_UI[SIS Adapter (Gibbon)]
+    LMS_UI[LMS Adapter (Moodle)]
+  end
+
+  subgraph Core Services
+    Gateway[API Gateway]
+    Auth[Auth Service]
+    User[User Service]
+    Noti[Notification Service]
+  end
+
+  subgraph Business Adapters
+    CRM[CRM Adapter]
+    SIS[SIS Adapter]
+    LMS[LMS Adapter]
+  end
+
+  subgraph External Services
+    GSuite[Google OAuth2]
+    Zalo[Zalo OA API]
+    Gmail[Gmail API]
+    Chat[Google Chat API]
+  end
+
+  Webform -->|lead| CRM
+  Parent --> Gateway
+  Staff --> Gateway
+
+  Gateway -->|OAuth2 / OTP| Auth
+  Gateway -->|RBAC check| User
+  Gateway -->|Notify| Noti
+  Gateway --> CRM
+  Gateway --> SIS
+  Gateway --> LMS
+
+  CRM --> CRM_UI
+  SIS --> SIS_UI
+  LMS --> LMS_UI
+
+  Noti --> Zalo
+  Noti --> Gmail
+  Noti --> Chat
+  Auth --> GSuite
+
+```
+
+### 🧭 Diễn giải sơ đồ kiến trúc tổng thể hệ thống dx_vas
+
+Hệ thống dx_vas được chia thành 5 nhóm thành phần chính:
+
+---
+
+#### 1. 🧑‍🤝‍🧑 External
+
+- **Public Webform**: Cổng thu lead tuyển sinh từ website chính thức.
+- **PWA (Phụ huynh & Học sinh)**: Ứng dụng Progressive Web App, dùng OTP để đăng nhập và truy cập điểm, thông báo, lịch học.
+- **Admin Webapp (Nhân viên)**: Ứng dụng dành cho nhân viên, giáo viên – sử dụng Google OAuth2, tích hợp giao diện quản trị học sinh, lớp, thông báo, RBAC.
+
+---
+
+#### 2. 🖥️ Frontend Apps
+
+- Giao diện người dùng chính của hệ thống, chia theo đối tượng sử dụng:
+  - **PWA**: Phụ huynh/học sinh.
+  - **SPA**: Nhân viên, giáo viên.
+  - **WebUI (legacy)**: Giao diện trực tiếp của các hệ thống như SuiteCRM, Gibbon, Moodle – dùng cho thao tác nâng cao không qua API.
+
+---
+
+#### 3. 🧠 Core Services
+
+- **API Gateway**: Trung tâm định tuyến, xác thực, đánh giá RBAC và forward request đến các service.
+- **Auth Service**: Xác thực OAuth2 (GV/NV/HS), OTP (PH); phát hành JWT và refresh token.
+- **User Service**: Quản lý định danh người dùng, trạng thái `is_active`, RBAC động (role, permission, condition).
+- **Notification Service**: Gửi thông báo đa kênh (email, Zalo, Google Chat, WebPush) dựa trên preference người dùng.
+
+---
+
+#### 4. 🔌 Business Adapters
+
+- Adapter trung gian giao tiếp với hệ thống quản lý nghiệp vụ sẵn có:
+  - **CRM Adapter** (SuiteCRM): Thu lead, xử lý pipeline tuyển sinh.
+  - **SIS Adapter** (Gibbon): Quản lý hồ sơ học sinh, lớp học, học phí, điểm danh.
+  - **LMS Adapter** (Moodle): Quản lý học liệu, bài tập, điểm số – đồng bộ từ SIS.
+
+---
+
+#### 5. 🌐 External Services
+
+- **Google OAuth2**: Đăng nhập cho GV/NV/HS.
+- **Zalo OA API**: Gửi thông báo ZNS đến phụ huynh.
+- **Gmail API**: Gửi email (chấm công, học phí…).
+- **Google Chat API**: Thông báo nội bộ cho GV/NV.
+
+---
+
+📌 API Gateway là điểm kết nối trung tâm: mọi request từ user frontend đều đi qua Gateway → Auth/User/CRM/SIS/LMS/Notification tùy vào nghiệp vụ. Điều này đảm bảo logic bảo mật, phân quyền và traceability được thống nhất toàn hệ thống.
+
+---
+
 📁 Tài liệu sơ đồ hệ thống nằm trong thư mục `docs/diagrams/`, gồm:
 
 * `system-context.png`: Tổng quan các thành phần chính
