@@ -109,7 +109,7 @@ VAS sử dụng cơ chế RBAC động được đánh giá và thực thi tại
 * Triển khai distributed tracing (ví dụ: OpenTelemetry).
 * Đang thiết kế kế hoạch DR (Disaster Recovery) đầy đủ với RTO/RPO theo từng service.
 * 📘 Xem thêm:
-  👉 [DR Playbook – `docs/runbooks/dr-playbook.md`](./runbooks/dr-playbook.md) [Checklist xử lý sự cố – `docs/runbooks/incident-checklist.md`](./runbooks/incident-checklist.md)
+  👉 [DR Playbook](./runbooks/dr-playbook.md) [Checklist xử lý sự cố](./runbooks/incident-checklist.md)
 
 ### 13. CI/CD & DevOps
 
