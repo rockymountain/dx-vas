@@ -424,21 +424,35 @@ flowchart TD
   end
 
   subgraph Google Cloud
-    Gateway[API Gateway<br>Cloud Run]
-    Auth[Auth Service<br>Cloud Run]
-    User[User Service<br>Cloud Run]
-    Noti[Notification Service<br>Cloud Run]
-    CRM[CRM Adapter<br>Cloud Run]
-    SIS[SIS Adapter<br>Cloud Run]
-    LMS[LMS Adapter<br>Cloud Run]
-    Redis[Redis Cache<br>MemoryStore]
-    PG[PostgreSQL<br>Cloud SQL - Core Services]
-    MySQL[MySQL<br>Cloud SQL - Adapters]
-    PubSub[Pub/Sub<br>Event Bus]
-    Storage[GCS<br>Static Content]
+    %% Core Services
+    subgraph Core_Services[Core Services (Cloud Run)]
+      Gateway[API Gateway]
+      Auth[Auth Service]
+      User[User Service]
+      Noti[Notification Service]
+    end
+
+    %% Adapters
+    subgraph Adapters[Adapters (Cloud Run)]
+      CRM[CRM Adapter]
+      SIS[SIS Adapter]
+      LMS[LMS Adapter]
+    end
+
+    %% Infrastructure
+    subgraph Infrastructure[Data Infrastructure]
+      Redis[Redis Cache (MemoryStore)]
+      PG[PostgreSQL (Cloud SQL - Core)]
+      MySQL[MySQL (Cloud SQL - Adapters)]
+      PubSub[Pub/Sub (Event Bus)]
+      Storage[GCS (Static Files)]
+    end
   end
 
+  %% External access
   Browser --> HTTPS --> Gateway
+
+  %% Routing to services
   Gateway --> Auth
   Gateway --> User
   Gateway --> Noti
@@ -446,14 +460,15 @@ flowchart TD
   Gateway --> SIS
   Gateway --> LMS
 
+  %% DB connections
   Auth --> PG
   User --> PG
   Noti --> PG
-
   CRM --> MySQL
   SIS --> MySQL
   LMS --> MySQL
 
+  %% Event & Cache
   Gateway --> Redis
   User --> Redis
   Gateway --> PubSub
