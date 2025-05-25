@@ -1127,3 +1127,11 @@ Hiệu năng hệ thống không chỉ phụ thuộc vào hạ tầng mà còn b
 📌 Xem thêm cấu trúc log và trace tại Mục [`13. Logging`](#13-logging-best-practices) và cấu hình hạ tầng tại [Dev Ops Guide](./ops-guide.md)
 
 ---
+
+> 📎 Developer mới nên đọc theo thứ tự:
+>
+> 1. `backend-dev-guide.md` (tài liệu này)
+> 2. System Diagrams → RBAC Deep Dive
+> 3. Dev Guide → Dev Ops Guide
+
+---
