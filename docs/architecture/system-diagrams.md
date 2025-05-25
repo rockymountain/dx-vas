@@ -301,11 +301,11 @@ sequenceDiagram
 
 ```mermaid
 flowchart LR
-  Create[User được tạo<br>POST /users]
+  Create[User được tạo\nPOST /users]
   Pending[Xác minh OTP hoặc nhận OAuth2]
-  Active[is_active = true<br>User có thể đăng nhập]
-  Inactive[is_active = false<br>Tài khoản bị vô hiệu hóa]
-  Deleted[Tài khoản bị xóa (logic delete)<br>is_deleted = true]
+  Active[is_active = true\nUser có thể đăng nhập]
+  Inactive[is_active = false\nTài khoản bị vô hiệu hóa]
+  Deleted[Tài khoản bị xóa (logic delete)\nis_deleted = true]
 
   Create --> Pending
   Pending --> Active
