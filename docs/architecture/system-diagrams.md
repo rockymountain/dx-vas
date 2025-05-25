@@ -432,7 +432,7 @@ flowchart TD
     SIS[SIS Adapter<br>Cloud Run]
     LMS[LMS Adapter<br>Cloud Run]
     Redis[Redis Cache<br>MemoryStore]
-    DB[PostgreSQL<br>Cloud SQL]
+    DB[MySQL<br>Cloud SQL]
     PubSub[Pub/Sub<br>Event Bus]
     Storage[GCS<br>Static Content]
   end
@@ -466,7 +466,7 @@ flowchart TD
 
 1. **Client (Browser/Mobile App)** giao tiếp qua HTTPS → truy cập vào điểm vào duy nhất: `API Gateway`.
 2. **API Gateway**, cùng tất cả các service (Auth, User, Notification, CRM/SIS/LMS Adapter), đều được triển khai dưới dạng container serverless trên **Google Cloud Run**.
-3. Các service nội bộ sử dụng chung một **CSDL PostgreSQL** qua **Cloud SQL**.
+3. Các service nội bộ sử dụng chung một **CSDL MySQL** qua **Cloud SQL**.
 4. Dữ liệu RBAC và token được cache qua **Redis (MemoryStore)**.
 5. Giao tiếp bất đồng bộ (sự kiện) sử dụng **Pub/Sub** – các service phát/sử dụng sự kiện qua event bus này.
 6. **Static file (ảnh, logo, config...)** được phục vụ qua **Google Cloud Storage (GCS)**.
