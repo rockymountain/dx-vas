@@ -261,3 +261,100 @@ sequenceDiagram
 📌 Mọi hành động đều đi qua API Gateway và được kiểm soát phân quyền nếu có liên quan đến user. Quá trình sync có thể được lặp lại định kỳ hoặc phát động theo event.
 
 ---
+
+## 6. Service-to-Service Auth Flow – Giao tiếp giữa các dịch vụ nội bộ
+
+```mermaid
+sequenceDiagram
+  participant ServiceA as Notification Service
+  participant Gateway as API Gateway
+  participant UserSvc as User Service
+
+  ServiceA->>Gateway: POST /users/{id}/status + Internal Auth Header
+  Gateway->>Gateway: Xác thực token nội bộ / mTLS
+  Gateway->>UserSvc: Forward request + X-Service-Name + X-Signature
+  UserSvc->>UserSvc: Kiểm tra định danh service gọi
+  UserSvc-->>Gateway: Response
+  Gateway-->>ServiceA: Response
+```
+
+**Diễn giải Service-to-Service Auth Flow:**
+
+1. **Service A (ví dụ: Notification Service)** cần lấy thông tin người dùng, nên gọi `POST /users/{id}/status` qua API Gateway.
+2. **Gateway xác thực danh tính Service A**:
+   - Thông qua token nội bộ (Bearer token dành cho service)
+   - Hoặc qua cơ chế mTLS (Mutual TLS)
+3. Sau khi xác thực, Gateway forward request đến **User Service**, kèm theo:
+   - `X-Service-Name`: Tên service gọi (ví dụ: `notification-service`)
+   - `X-Signature`: Chữ ký HMAC hoặc JWT bảo vệ integrity
+4. **User Service** kiểm tra xem:
+   - Request có đến từ một service tin cậy không?
+   - Header có hợp lệ và khớp cấu hình gọi nội bộ không?
+5. Nếu hợp lệ: tiếp tục xử lý và trả kết quả về.
+6. Nếu sai định danh/mất chữ ký: trả lỗi `403` hoặc `401`.
+
+📌 Dù là service nội bộ, tất cả lời gọi đều phải qua API Gateway để kiểm soát, trace và log đầy đủ. Không cho phép service gọi nhau trực tiếp để tránh rò rỉ phân quyền hoặc bypass giám sát.
+
+---
+
+## 7. User Account Lifecycle Flow – Vòng đời tài khoản người dùng
+
+```mermaid
+flowchart LR
+  Create[User được tạo<br>POST /users]
+  Pending[Xác minh OTP hoặc nhận OAuth2]
+  Active[is_active = true<br>User có thể đăng nhập]
+  Inactive[is_active = false<br>Tài khoản bị vô hiệu hóa]
+  Deleted[Tài khoản bị xóa (logic delete)<br>is_deleted = true]
+
+  Create --> Pending
+  Pending --> Active
+  Active --> Inactive
+  Inactive --> Active
+  Active --> Deleted
+  Inactive --> Deleted
+
+  subgraph Events & Side Effects
+    RBAC[Emit: rbac_updated]
+    STATUS[Emit: user_status_changed]
+    Cache[Invalidate RBAC cache]
+  end
+
+  Active --> RBAC
+  Inactive --> STATUS
+  Deleted --> STATUS
+  RBAC --> Cache
+  STATUS --> Cache
+```
+
+**Diễn giải User Account Lifecycle Flow:**
+
+1. **Tài khoản người dùng được tạo**:
+   - Qua `POST /users` (do nhân viên tạo), hoặc
+   - Tự động tạo từ hệ thống CRM/SIS/LMS
+2. **Trạng thái ban đầu: Pending**
+   - Nếu là phụ huynh: chờ xác minh OTP
+   - Nếu là GV/NV/HS: chờ xác thực qua Google OAuth2
+3. Khi xác minh thành công:
+   - Trạng thái chuyển sang `is_active = true`
+   - Người dùng có thể đăng nhập, JWT được cấp
+4. Trong quá trình vận hành:
+   - Tài khoản có thể bị khóa tạm thời → `is_active = false`
+   - Khi đó, mọi request bị chặn tại Gateway
+5. Khi tài khoản bị xóa (logic delete):
+   - Trạng thái `is_deleted = true` (nếu hỗ trợ)
+   - Không thể khôi phục nếu đã xóa vĩnh viễn
+
+---
+
+**Sự kiện liên quan:**
+
+- Khi trạng thái user thay đổi:
+  - Gửi sự kiện `user_status_changed`
+  - API Gateway hoặc các service có thể xử lý để invalidate cache, log bảo mật...
+- Khi vai trò hoặc phân quyền thay đổi:
+  - Gửi sự kiện `rbac_updated` → cập nhật cache RBAC của người dùng
+
+📌 Việc kiểm soát vòng đời user giúp hệ thống đảm bảo bảo mật, tuân thủ và giám sát chặt chẽ trạng thái tài khoản.
+
+---
