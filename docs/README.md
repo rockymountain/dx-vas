@@ -28,7 +28,7 @@ VAS sử dụng cơ chế RBAC động được đánh giá và thực thi tại
   * Phân tách rõ vai trò (role), hành động (action) và điều kiện (condition) theo từng người dùng.
   * API Gateway chịu trách nhiệm xác thực token, kiểm tra trạng thái hoạt động và đánh giá phân quyền trước khi chuyển tiếp request.
 
-📘 Để tìm hiểu sâu hơn về cơ chế RBAC, vui lòng xem tài liệu chi tiết tại: [Chi tiết Kiến trúc RBAC](./docs/architecture/rbac-deep-dive.md)
+📘 Để tìm hiểu sâu hơn về cơ chế RBAC, vui lòng xem tài liệu chi tiết tại: [Chi tiết Kiến trúc RBAC](./architecture/rbac-deep-dive.md)
 
 ### 2. Customer Portal (PWA)
 
@@ -110,8 +110,8 @@ VAS sử dụng cơ chế RBAC động được đánh giá và thực thi tại
 * Đang thiết kế kế hoạch DR (Disaster Recovery) đầy đủ với RTO/RPO theo từng service.
 * 📘 Xem thêm:
 
-  * [DR Playbook – `docs/runbooks/dr-playbook.md`](docs/runbooks/dr-playbook.md)
-  * [Checklist xử lý sự cố – `docs/runbooks/incident-checklist.md`](docs/runbooks/incident-checklist.md)
+  * [DR Playbook – `docs/runbooks/dr-playbook.md`](./runbooks/dr-playbook.md)
+  * [Checklist xử lý sự cố – `docs/runbooks/incident-checklist.md`](./runbooks/incident-checklist.md)
 
 ### 13. CI/CD & DevOps
 
@@ -160,7 +160,7 @@ Toàn bộ các phản hồi chiến lược từ anh Bill đã được đưa v
 
 Dự án dx\_vas sử dụng các Quyết định Kiến trúc (Architecture Decision Records - ADRs) để ghi lại những lựa chọn thiết kế quan trọng về mặt kiến trúc, bao gồm lý do, bối cảnh và các phương án đã được cân nhắc.
 
-📘 Để xem danh sách đầy đủ và chi tiết các ADRs đã được phê duyệt, vui lòng truy cập: [Danh sách ADRs của dự án](./docs/ADR/index.md)
+📘 Để xem danh sách đầy đủ và chi tiết các ADRs đã được phê duyệt, vui lòng truy cập: [Danh sách ADRs của dự án](./ADR/index.md)
 
 ## Phụ lục B – Nguyên tắc Kiến trúc Cốt lõi
 
