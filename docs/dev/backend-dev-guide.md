@@ -202,6 +202,36 @@ class UserRepo:
 
 ---
 
+### 📊 Sơ đồ kiến trúc 3-layer – luồng xử lý điển hình trong một backend service
+
+```mermaid
+flowchart LR
+  subgraph Client Request
+    UI[API Client / Gateway]
+  end
+
+  subgraph FastAPI App
+    UI --> Handler[API Handler - Router]
+    Handler --> Service[Service Layer]
+    Service --> Repo[Repository Layer]
+    Repo --> DB[Database]
+  end
+
+  subgraph External
+    Service --> PubSub[Pub/Sub]
+    Service --> Redis[Cache]
+    Service --> NotiAPI[Notification Service]
+  end
+
+  classDef main fill:#e8f0fe,stroke:#4285f4,stroke-width:1px;
+  class Handler,Service,Repo main
+```
+
+📌 Sơ đồ mô tả rõ flow xử lý từ API Gateway → Handler → Service → Repo → DB
+Các call phụ như Pub/Sub, Cache, hoặc Notification thường xuất phát từ Service Layer.
+
+---
+
 ## 4. Đặt tên & convention code
 
 Việc đặt tên rõ ràng, nhất quán giúp code dễ đọc, dễ review và dễ bảo trì. dx-vas sử dụng convention theo kiểu **snake_case cho file/biến**, **CamelCase cho class**, và **lowercase-with-dash cho route**.
@@ -938,5 +968,119 @@ Hệ thống nên sử dụng logging chuẩn với các nguyên tắc sau để
 | Repo      | Truy vấn đặc biệt hoặc lỗi DB         |
 
 > 📎 Không log dữ liệu nhạy cảm (password, token, email học sinh...)
+
+---
+
+## 14. Security Considerations – Cân nhắc bảo mật cho Backend
+
+### 🔐 Nguyên tắc cốt lõi
+
+- **Security by Design:** Bảo mật không phải là tính năng phụ trợ – nó phải được tích hợp ngay từ kiến trúc và quy trình phát triển.
+- **Zero Trust**: Không giả định bất kỳ nguồn dữ liệu nào là an toàn, kể cả từ nội bộ.
+
+---
+
+### 🧪 Input validation & Sanity Check
+
+- **Luôn dùng Pydantic Schema** để kiểm soát input cho API & Pub/Sub.
+- **Validation bổ sung ở tầng Service** nếu logic phức tạp hơn (ví dụ: chỉ giáo viên chủ nhiệm mới sửa điểm).
+- **Không tin tưởng payload nội bộ** – không được skip validation khi nhận request từ API Gateway hoặc từ event Pub/Sub.
+
+---
+
+### 🔐 Quản lý secret & cấu hình an toàn
+
+- **Không bao giờ commit file `.env`** hoặc biến môi trường chứa token, DB URL, v.v.
+- **Secrets nên được quản lý qua**:
+  - Google Secret Manager (hoặc `doppler`, `Vault` nếu dùng self-hosted)
+  - Inject vào môi trường Cloud Run qua `env var` hoặc `mount volume`
+- Tách biệt `config.py` chứa biến công khai và `env var` chứa thông tin nhạy cảm.
+
+---
+
+### 📦 Token & phân quyền
+
+- Không decode token JWT tại backend nếu đã có API Gateway kiểm tra rồi – thay vào đó:
+  - **Tin tưởng `X-User-ID`, `X-User-Role`, `X-Permissions`** được Gateway gắn vào header đã được ký (`X-Signature`)
+  - **Không dùng token client-side trực tiếp gọi vào backend** – mọi truy cập bắt buộc qua Gateway.
+
+---
+
+### 📛 OWASP API Security – Các lỗ hổng cần đề phòng
+
+| Vấn đề | Biện pháp |
+|--------|-----------|
+| Injection | Dùng ORM (SQLAlchemy), tránh query raw nếu không escape |
+| Broken Auth | Không dùng xác thực riêng tại backend – chỉ kiểm tra phân quyền |
+| Excessive Data Exposure | Dùng `response_model` để giới hạn dữ liệu trả ra |
+| Improper Asset Mgmt | Không expose `/docs`, `/openapi.json` trên production |
+| Lack of Rate Limit | Đã xử lý ở API Gateway, nhưng vẫn cần audit log local |
+
+---
+
+### 🧯 Logging & Auditing
+
+- Không log dữ liệu nhạy cảm (email học sinh, mã OTP, token).
+- Luôn log `request_id`, `user_id`, `endpoint`, và `status`.
+- Xem thêm phần [`13. Logging Best Practices`](#13-logging-best-practices)
+
+---
+
+📌 Xem thêm chính sách bảo mật toàn hệ thống tại ADR: [`adr-004-security.md`](../ADR/adr-004-security.md)
+
+---
+
+## 15. Performance Tips – Tối ưu hiệu năng Backend
+
+Hiệu năng hệ thống không chỉ phụ thuộc vào hạ tầng mà còn bị ảnh hưởng trực tiếp bởi cách viết code ở tầng service và repository.
+
+---
+
+### 📥 Truy vấn DB hiệu quả
+
+| Mẹo | Ghi chú |
+|-----|--------|
+| Dùng `.limit()` thay vì `.all()` nếu dữ liệu nhiều | Tránh load toàn bộ bảng vào RAM |
+| Dùng `selectinload()` hoặc `joinedload()` khi cần truy cập nhiều bản ghi liên quan | Tránh N+1 query |
+| Tránh `.count()` trong bảng lớn | Nếu có thể, dùng limit + exists/check |
+| Tách các truy vấn phân tích/phức tạp ra background | Tránh block API request |
+
+---
+
+### 📤 Caching nếu cần thiết
+
+- **Không nên cache sớm** – chỉ cache khi thấy rõ bottleneck
+- Ưu tiên cache kết quả `read-only` (VD: danh sách ngành học)
+- Dùng Redis hoặc local in-memory cache (VD: `lru_cache`) nếu phù hợp
+- Cẩn trọng với cache invalidation nếu dữ liệu thường xuyên thay đổi
+
+---
+
+### 🪄 Tối ưu luồng xử lý
+
+| Kỹ thuật | Dùng khi nào |
+|---------|---------------|
+| `BackgroundTasks` (FastAPI) | Gửi email, sync webhook, audit, log external |
+| `Pub/Sub` hoặc message queue | Tách các hành động không cần blocking user |
+| Batch insert/update | Nếu cần ghi hàng loạt (VD: điểm học sinh) |
+
+---
+
+### 🧮 Giảm thiểu I/O Blocking
+
+- Luôn dùng `async def` ở API handler nếu gọi I/O (DB, HTTP)
+- Tránh các blocking call trong async context (VD: `requests.get()` → dùng `httpx.AsyncClient`)
+
+---
+
+### 🧪 Đo lường và theo dõi
+
+- Dùng `OpenTelemetry` để trace request & đo thời gian xử lý từng tầng
+- Đo `latency` và `throughput` theo từng API
+- Giám sát số lượng request lỗi (5xx), timeout, và retry qua các biểu đồ Cloud Monitoring
+
+---
+
+📌 Xem thêm cấu trúc log và trace tại Mục [`13. Logging`](#13-logging-best-practices) và cấu hình hạ tầng tại [Dev Ops Guide](./ops-guide.md)
 
 ---
