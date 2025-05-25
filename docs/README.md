@@ -156,7 +156,7 @@ Toàn bộ các phản hồi chiến lược từ anh Bill đã được đưa v
 
 ## Phụ lục A – Danh sách Quyết định Kiến trúc (ADRs)
 
-Dự án dx\_vas sử dụng các Quyết định Kiến trúc (Architecture Decision Records - ADRs) để ghi lại những lựa chọn thiết kế quan trọng về mặt kiến trúc, bao gồm lý do, bối cảnh và các phương án đã được cân nhắc.
+Dự án dx-vas sử dụng các Quyết định Kiến trúc (Architecture Decision Records - ADRs) để ghi lại những lựa chọn thiết kế quan trọng về mặt kiến trúc, bao gồm lý do, bối cảnh và các phương án đã được cân nhắc.
 
 📘 Để xem danh sách đầy đủ và chi tiết các ADRs đã được phê duyệt, vui lòng truy cập: 👉 [Danh sách ADRs của dự án](./ADR/index.md)
 
@@ -187,7 +187,7 @@ Tài liệu này bao gồm:
 
 ## Phụ lục D – Interface Contracts (ICs)
 
-Tất cả các dịch vụ trong hệ thống dx_vas đều có tài liệu định nghĩa giao tiếp (Interface Contracts), sử dụng định dạng Markdown mô tả OpenAPI hoặc UI behavior.
+Tất cả các dịch vụ trong hệ thống dx-vas đều có tài liệu định nghĩa giao tiếp (Interface Contracts), sử dụng định dạng Markdown mô tả OpenAPI hoặc UI behavior.
 
 📁 Các tài liệu IC được lưu trữ tại thư mục: [`interfaces`](./interfaces/)
 

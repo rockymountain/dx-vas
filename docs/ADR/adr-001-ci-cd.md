@@ -1,15 +1,15 @@
 ---
 id: adr-001-ci-cd
-title: ADR-001: Chiến lược CI/CD chung cho toàn hệ thống dx_vas
+title: ADR-001: Chiến lược CI/CD chung cho toàn hệ thống dx-vas
 status: accepted
 author: DX VAS DevOps Team
 date: 2025-06-22
-tags: [ci, cd, github-actions, cloud-run, dx_vas]
+tags: [ci, cd, github-actions, cloud-run, dx-vas]
 ---
 
 ## 📌 Bối cảnh
 
-Dự án **Chuyển đổi số VAS (dx_vas)** bao gồm nhiều thành phần:
+Dự án **Chuyển đổi số VAS (dx-vas)** bao gồm nhiều thành phần:
 - API Gateway
 - Các backend service tích hợp (CRM Adapter, SIS Adapter, Notification Service, LMS Proxy...)
 - Frontend (Admin Webapp, Customer Portal)
@@ -21,7 +21,7 @@ Các thành phần này đều được triển khai trên nền tảng **Google
 
 ## 🧠 Quyết định
 
-**Áp dụng chiến lược CI/CD tập trung sử dụng GitHub Actions, deploy các service dx_vas lên Cloud Run, phân tách branch theo môi trường và enforce kiểm tra bảo mật/tài liệu trước khi release.**
+**Áp dụng chiến lược CI/CD tập trung sử dụng GitHub Actions, deploy các service dx-vas lên Cloud Run, phân tách branch theo môi trường và enforce kiểm tra bảo mật/tài liệu trước khi release.**
 
 ## 🛠 Chi tiết thiết kế
 

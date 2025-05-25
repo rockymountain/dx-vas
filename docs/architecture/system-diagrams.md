@@ -1,6 +1,6 @@
-# Sơ đồ Kiến trúc Hệ thống dx\_vas
+# Sơ đồ Kiến trúc Hệ thống dx-vas
 
-Tài liệu này tập hợp tất cả các sơ đồ kiến trúc quan trọng của hệ thống chuyển đổi số dx\_vas, bao gồm:
+Tài liệu này tập hợp tất cả các sơ đồ kiến trúc quan trọng của hệ thống chuyển đổi số dx-vas, bao gồm:
 
 * Sơ đồ kiến trúc tổng thể
 * Diễn giải các khối chức năng

@@ -1,6 +1,6 @@
-# Kiến trúc Đăng nhập & Phân quyền động (RBAC) – Hệ thống dx_vas
+# Kiến trúc Đăng nhập & Phân quyền động (RBAC) – Hệ thống dx-vas
 
-Tài liệu này trình bày chi tiết cách hệ thống dx_vas thực hiện việc xác thực và phân quyền người dùng một cách động (RBAC – Role-Based Access Control) thông qua các thành phần chính như API Gateway, User Service, Auth Service và Redis Cache.
+Tài liệu này trình bày chi tiết cách hệ thống dx-vas thực hiện việc xác thực và phân quyền người dùng một cách động (RBAC – Role-Based Access Control) thông qua các thành phần chính như API Gateway, User Service, Auth Service và Redis Cache.
 
 ## 📚 Mục lục
 
@@ -21,7 +21,7 @@ Tài liệu này trình bày chi tiết cách hệ thống dx_vas thực hiện 
 
 ## 1. Triết lý thiết kế
 
-Hệ thống dx_vas được thiết kế dựa trên triết lý phân quyền động, đảm bảo mỗi hành động của người dùng trong hệ thống đều được kiểm soát chặt chẽ, linh hoạt và có thể mở rộng theo bối cảnh thực tế của ngành giáo dục.
+Hệ thống dx-vas được thiết kế dựa trên triết lý phân quyền động, đảm bảo mỗi hành động của người dùng trong hệ thống đều được kiểm soát chặt chẽ, linh hoạt và có thể mở rộng theo bối cảnh thực tế của ngành giáo dục.
 
 Các nguyên tắc cốt lõi:
 
@@ -348,7 +348,7 @@ Sự kiện này được publish qua Redis Pub/Sub hoặc message queue nội b
 
 ## 7. Hiệu năng & khả năng mở rộng
 
-Cơ chế RBAC động tại API Gateway phải đảm bảo xử lý hàng nghìn request/giây mà không làm chậm hệ thống. Thiết kế hệ thống RBAC trong dx_vas đã được tối ưu theo các khía cạnh sau:
+Cơ chế RBAC động tại API Gateway phải đảm bảo xử lý hàng nghìn request/giây mà không làm chậm hệ thống. Thiết kế hệ thống RBAC trong dx-vas đã được tối ưu theo các khía cạnh sau:
 
 ---
 
@@ -399,7 +399,7 @@ Cơ chế RBAC động tại API Gateway phải đảm bảo xử lý hàng ngh�
 
 ## 8. Bảo mật chuyên sâu cho RBAC
 
-RBAC không chỉ là logic phân quyền mà còn là lớp kiểm soát truy cập quan trọng nhất trong hệ thống. Hệ thống dx_vas đã thiết kế nhiều lớp bảo vệ như sau:
+RBAC không chỉ là logic phân quyền mà còn là lớp kiểm soát truy cập quan trọng nhất trong hệ thống. Hệ thống dx-vas đã thiết kế nhiều lớp bảo vệ như sau:
 
 ---
 
@@ -501,7 +501,7 @@ RBAC là lớp kiểm soát truy cập quan trọng và cũng là điểm ngư�
 
 ## 10. Best Practices trong quản trị role/permission
 
-Một hệ thống RBAC mạnh nhưng cũng cần dễ quản trị và không trở thành “ma trận quyền lực”. Dưới đây là các thực hành được rút ra từ triển khai dx_vas.
+Một hệ thống RBAC mạnh nhưng cũng cần dễ quản trị và không trở thành “ma trận quyền lực”. Dưới đây là các thực hành được rút ra từ triển khai dx-vas.
 
 ---
 
