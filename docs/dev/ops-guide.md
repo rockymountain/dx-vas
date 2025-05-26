@@ -192,9 +192,40 @@ Hệ thống dx-vas sử dụng Google Cloud Monitoring để theo dõi trạng 
 
 ---
 
+### 🛎️ Sơ đồ luồng cảnh báo (Monitoring Alerts)
+
+```mermaid
+flowchart TD
+    A[Service Metrics<br>(Cloud Run, Redis, DB...)]
+    B[Cloud Monitoring]
+    C[Alert Policy<br>(Threshold Rules)]
+    D[Notification Channel<br>(Google Chat, Email)]
+    E[Incident Response<br>(Ops team)]
+
+    A --> B
+    B --> C
+    C --> D
+    D --> E
+
+    click C href "https://console.cloud.google.com/monitoring/alerting" "View Alerting Policy"
+    click D href "https://console.cloud.google.com/monitoring/settings" "View Notification Settings"
+```
+
+**Giải thích:**
+
+1. **Service Metrics:** Metrics được export từ Cloud Run, Redis, Cloud SQL, v.v. (VD: CPU usage, 5xx error rate).
+2. **Cloud Monitoring:** Thu thập và phân tích các metric.
+3. **Alert Policy:** Định nghĩa ngưỡng cảnh báo (ví dụ: nếu error rate > 5% trong 1 phút).
+4. **Notification Channel:** Khi có cảnh báo, hệ thống gửi tới các kênh như Google Chat, Email, PagerDuty (nếu có).
+5. **Incident Response:** Đội ngũ vận hành nhận cảnh báo và thực hiện xử lý theo Runbook.
+
+📌 Các bước tiếp theo có thể được trigger tự động (gửi cảnh báo qua bot, mở ticket, cập nhật dashboard…). Bạn có thể nhúng thêm link hoặc mở rộng nếu dùng Alertmanager hoặc bên thứ ba như OpsGenie, PagerDuty.
+
+---
+
 📎 Xem thêm cấu trúc trace/log tại: [Mục 4 – Logging & Trace](#4-logging--trace-phân-tán)  
 
-📎 Định nghĩa dashboard: [`docs/observability/`](../observability/)
+📎 Định nghĩa dashboard: [Observability](../observability/)
 
 ---
 
@@ -465,6 +496,41 @@ gcloud run services update-traffic user-service \
 
 ---
 
+### ✨ Zero Downtime Deployment & Canary Release (Cloud Run)
+
+Cloud Run hỗ trợ triển khai **không downtime** bằng cách tự động route traffic sang revision mới sau khi build & deploy thành công. Bạn không cần cấu hình load balancer phức tạp như VM/Container truyền thống.
+
+**Chiến lược triển khai có thể áp dụng:**
+
+#### ✅ 1. All-or-nothing (Mặc định)
+- Sau khi deploy, toàn bộ traffic được chuyển sang revision mới.
+- Nếu có sự cố, rollback về revision cũ bằng lệnh:
+```bash
+gcloud run services update-traffic my-service \
+  --to-revisions=rev-abc123=100
+```
+
+#### 🧪 2. Canary Release (Traffic Splitting)
+
+* Cho phép chia traffic giữa revision cũ và mới (VD: 90% - 10%)
+
+```bash
+gcloud run services update-traffic my-service \
+  --to-revisions=rev-old=90,rev-new=10
+```
+
+* Theo dõi metric (error rate, latency) trong vài phút, sau đó tăng dần lên 100%.
+
+#### 🛡️ Lưu ý:
+
+* Mỗi revision là một phiên bản độc lập (immutable).
+* Đảm bảo backward compatibility trong DB schema nếu cần rollback.
+* Có thể tự động hóa canary via GitHub Actions + monitoring alert.
+
+📌 Canary release giúp giảm rủi ro sản xuất – rất phù hợp cho các service nhạy cảm (như User Service, Notification).
+
+---
+
 📎 Hướng dẫn CI/CD chi tiết: [Dev Guide](./dev-guide.md#8-quy-trình-test--ci-cd)
 
 📎 Checklist sự cố: [Mục 11 – Ứng phó sự cố](#11-ứng-phó-sự-cố--khôi-phục)
@@ -675,6 +741,24 @@ Trong mọi hệ thống sản phẩm, khả năng phản ứng nhanh khi xảy 
 
 ---
 
+### 🧑‍🚒 Vai trò trong quy trình ứng phó sự cố (Incident Response Roles)
+
+Khi xảy ra sự cố nghiêm trọng (ví dụ: gián đoạn dịch vụ, mất dữ liệu, sự cố bảo mật), việc phân vai rõ ràng giúp đội ngũ phản ứng nhanh và hiệu quả hơn.
+
+| Vai trò | Mô tả nhiệm vụ chính |
+|--------|----------------------|
+| **Incident Commander (IC)** | Điều phối toàn bộ quy trình ứng phó, đưa ra quyết định cuối cùng về rollback, escalations. |
+| **Technical Lead (TL)** | Phân tích nguyên nhân, đưa ra hướng xử lý kỹ thuật, làm việc trực tiếp với hệ thống. |
+| **Communications Lead (Comms)** | Gửi update nội bộ, thông báo tới stakeholder, khách hàng (nếu cần). |
+| **Scribe / Logger** | Ghi lại timeline xử lý sự cố, action đã thực hiện – phục vụ postmortem. |
+| **Service Owner (nếu khác IC)** | Cung cấp kiến thức hệ thống, chịu trách nhiệm khôi phục dịch vụ. |
+
+🧭 Trong đội ngũ nhỏ, một người có thể kiêm nhiều vai. Tuy nhiên, IC nên luôn là người tách biệt với thao tác kỹ thuật để giữ được "tầm nhìn chiến lược".
+
+📌 Template postmortem có thể đặt trong `docs/postmortem-template.md`.
+
+---
+
 ### 🚨 Phân loại sự cố
 
 | Loại | Ví dụ | Phản ứng |
@@ -794,6 +878,56 @@ gcloud sql instances restore-backup dx-user-postgres \
 
 ---
 
+### 🧪 Ví dụ: Kịch bản DR – Mất kết nối Cloud SQL
+
+**Tình huống:** Cloud SQL instance (PostgreSQL) cho `user-service` bị mất kết nối do lỗi khu vực (region) hoặc lỗi cấu hình.
+
+#### 🛠️ Các bước khôi phục:
+
+1. **Xác định lỗi:**
+   - Kiểm tra Cloud Monitoring → Metric `database/connection_count`, `availability`.
+   - Kiểm tra `gcloud sql instances describe` để xác nhận tình trạng.
+
+2. **Kích hoạt DR Plan:**
+   - Truy cập Cloud SQL snapshot định kỳ (PITR hoặc bản sao).
+   - Tạo lại instance tại region khác (hoặc cùng region nếu do cấu hình).
+
+   ```bash
+   gcloud sql instances create user-db-dr \
+     --region=asia-southeast2 \
+     --database-version=POSTGRES_14 \
+     --source-instance=user-db \
+     --restore-backup=auto
+```
+
+3. **Cập nhật Cloud Run ENV:**
+
+   * Trỏ `DATABASE_URL` của `user-service` sang instance mới.
+   * Redeploy service:
+
+   ```bash
+   gcloud run services update user-service \
+     --set-env-vars=DATABASE_URL=postgresql://...
+   ```
+
+4. **Kiểm tra ứng dụng:**
+
+   * Kiểm tra trạng thái Cloud Run revision mới.
+   * Chạy smoke test hoặc các health endpoint.
+
+5. **Thông báo & ghi nhận:**
+
+   * Gửi thông báo hệ thống đã khôi phục.
+   * Log đầy đủ action & thời gian vào sự kiện DR.
+
+📌 **Lưu ý:**
+
+* Nên chuẩn bị sẵn script DR cho từng service hoặc dịch vụ CSDL.
+* Có thể sử dụng **Terraform** để định nghĩa sẵn cấu hình DR infra.
+* Mọi sự kiện DR phải được diễn tập định kỳ.
+
+---
+
 📎 Kịch bản sự cố toàn cụm: [Mục 11 – Ứng phó sự cố & khôi phục](#11-ứng-phó-sự-cố--khôi-phục)
 
 📎 Cấu trúc triển khai dịch vụ: [System Diagrams](../architecture/system-diagrams.md#9-deployment-overview-diagram--sơ-đồ-triển-khai-tổng-quan)
@@ -892,6 +1026,23 @@ Hệ thống dx-vas áp dụng cơ chế kiểm soát bảo mật chặt chẽ n
 | `pubsub-dashboard` | Backlog, fail, DLT monitor |
 | `db-performance-dashboard` | Slow query, connection pool usage |
 | `cost-dashboard` | Tổng chi phí, cảnh báo vượt budget |
+
+---
+
+### 🧰 Bảng lệnh CLI DevOps thường dùng (GCP – Cloud Run, Pub/Sub, Cloud SQL)
+
+| Mục đích | Lệnh |
+|----------|------|
+| Xem revision & traffic của một service | `gcloud run services describe user-service --format="value(status.traffic)"` |
+| Rollback revision cụ thể | `gcloud run services update-traffic user-service --to-revisions=rev-abc123=100` |
+| Kiểm tra log Cloud Run mới nhất | `gcloud logs read "resource.type=cloud_run_revision" --limit=50` |
+| Xem thông điệp bị đẩy vào DLT | `gcloud pubsub subscriptions pull user-dlt-sub --limit=5 --auto-ack` |
+| Scale min/max instance Cloud Run | `gcloud run services update user-service --min-instances=1 --max-instances=5` |
+| Tạo Cloud SQL từ backup | `gcloud sql instances create user-db-dr --restore-backup=1234567890` |
+| Truy cập shell PostgreSQL Cloud SQL | `gcloud sql connect user-db --user=postgres` |
+| Kiểm tra trạng thái Redis | `gcloud redis instances describe vas-rbac-cache` |
+
+📌 Tham khảo file tổng hợp [Dev Ops Cheatsheet](./ops-cli-cheatsheet.md) *dự kiến*.
 
 ---
 
