@@ -1,89 +1,106 @@
 # User Service – Data Model
 
-Tài liệu này mô tả chi tiết các bảng dữ liệu chính trong hệ thống `User Service`, được thiết kế để phục vụ cho:
+Tài liệu này mô tả chi tiết mô hình dữ liệu trong cơ sở dữ liệu của User Service. Bao gồm các bảng: `users`, `roles`, `permissions`, `user_role`, `role_permission`.
 
-- Quản lý thông tin người dùng (User)
-- Quản lý vai trò, quyền hạn (RBAC)
-- Quản lý lịch sử, trạng thái người dùng
-
----
-
-## Mục lục
-
-1. [users](#users)
-2. [roles](#roles)
-3. [permissions](#permissions)
-4. [user_roles](#user_roles)
-5. [role_permissions](#role_permissions)
-6. [processed_messages (idempotency)](#processed_messages-idempotency)
+```erDiagram
+  USERS ||--o{ USER_ROLE : has
+  ROLES ||--o{ USER_ROLE : grants
+  ROLES ||--o{ ROLE_PERMISSION : defines
+  PERMISSIONS ||--o{ ROLE_PERMISSION : belongs
+```
 
 ---
 
-## users
+## 1. `users` – Thông tin người dùng
 
-| Tên cột       | Kiểu dữ liệu | Ràng buộc         | Mô tả                         |
-|---------------|--------------|--------------------|-------------------------------|
-| id            | UUID         | PK                 | Mã định danh người dùng       |
-| email         | TEXT         | UNIQUE, NOT NULL   | Email duy nhất                |
-| full_name     | TEXT         |                    | Tên đầy đủ                    |
-| is_active     | BOOLEAN      | DEFAULT TRUE       | Trạng thái hoạt động          |
-| created_at    | TIMESTAMP    | DEFAULT now()      | Thời điểm tạo                 |
-| updated_at    | TIMESTAMP    | DEFAULT now()      | Thời điểm cập nhật gần nhất   |
+| Tên cột      | Kiểu dữ liệu     | Ràng buộc                 | Ghi chú                                    |
+|--------------|------------------|---------------------------|---------------------------------------------|
+| id           | UUID             | PK                        | Định danh duy nhất của người dùng           |
+| email        | VARCHAR(255)     | UNIQUE, NOT NULL          | Email đăng nhập                             |
+| name         | VARCHAR(255)     |                           | Họ tên người dùng                            |
+| status       | VARCHAR(20)      | NOT NULL, DEFAULT 'active'| Trạng thái: `active`, `inactive`            |
+| created_at   | TIMESTAMP        | DEFAULT now()             | Thời điểm tạo                               |
+| updated_at   | TIMESTAMP        | DEFAULT now()             | Thời điểm cập nhật gần nhất                 |
 
----
-
-## roles
-
-| Tên cột     | Kiểu dữ liệu | Ràng buộc       | Mô tả                      |
-|-------------|--------------|------------------|----------------------------|
-| id          | UUID         | PK               | Mã định danh vai trò       |
-| code        | TEXT         | UNIQUE, NOT NULL | Mã vai trò (vd: PARENT)    |
-| name        | TEXT         |                  | Tên hiển thị của vai trò   |
+📌 Một người dùng có thể có nhiều vai trò (quan hệ n-n với bảng `roles`).
 
 ---
 
-## permissions
+## 2. `roles` – Vai trò người dùng
 
-| Tên cột     | Kiểu dữ liệu | Ràng buộc       | Mô tả                            |
-|-------------|--------------|------------------|----------------------------------|
-| id          | UUID         | PK               | Mã định danh quyền               |
-| code        | TEXT         | UNIQUE, NOT NULL | Mã quyền (vd: VIEW_SCORE_OWN_CHILD) |
-| resource    | TEXT         | NOT NULL         | Tài nguyên (vd: student_score)   |
-| action      | TEXT         | NOT NULL         | Hành động (vd: view, edit)       |
-| condition   | JSONB        |                  | Điều kiện áp dụng (có thể null)  |
+| Tên cột      | Kiểu dữ liệu     | Ràng buộc                 | Ghi chú                                    |
+|--------------|------------------|---------------------------|---------------------------------------------|
+| id           | UUID             | PK                        | Định danh vai trò                           |
+| name         | VARCHAR(100)     | UNIQUE, NOT NULL          | Tên vai trò (ví dụ: `teacher`, `admin`)     |
+| description  | TEXT             |                           | Mô tả vai trò                                |
+| created_at   | TIMESTAMP        | DEFAULT now()             | Thời điểm tạo                               |
+| updated_at   | TIMESTAMP        | DEFAULT now()             | Thời điểm cập nhật gần nhất                 |
 
----
-
-## user_roles
-
-| Tên cột     | Kiểu dữ liệu | Ràng buộc                 | Mô tả                    |
-|-------------|--------------|----------------------------|--------------------------|
-| user_id     | UUID         | FK → users(id), PK         | Người dùng               |
-| role_id     | UUID         | FK → roles(id), PK         | Vai trò của người dùng   |
+📌 Một vai trò có thể có nhiều quyền (`permissions`).
 
 ---
 
-## role_permissions
+## 3. `permissions` – Các quyền hệ thống (tĩnh)
 
-| Tên cột     | Kiểu dữ liệu | Ràng buộc                     | Mô tả                         |
-|-------------|--------------|-------------------------------|-------------------------------|
-| role_id     | UUID         | FK → roles(id), PK            | Vai trò                       |
-| permission_id | UUID       | FK → permissions(id), PK      | Quyền thuộc vai trò đó        |
+| Tên cột      | Kiểu dữ liệu     | Ràng buộc                 | Ghi chú                                      |
+|--------------|------------------|---------------------------|-----------------------------------------------|
+| id           | UUID             | PK                        | Định danh quyền                               |
+| code         | VARCHAR(100)     | UNIQUE, NOT NULL          | Mã quyền: `VIEW_USER_ALL`, `CREATE_USER`...   |
+| description  | TEXT             |                           | Mô tả quyền                                   |
 
----
-
-## processed_messages (idempotency)
-
-| Tên cột        | Kiểu dữ liệu | Ràng buộc         | Mô tả                                    |
-|----------------|--------------|--------------------|------------------------------------------|
-| message_id     | TEXT         | PK                 | ID thông điệp đã xử lý                   |
-| processed_at   | TIMESTAMP    | DEFAULT now()      | Thời điểm xử lý                         |
-| status         | TEXT         |                    | Trạng thái xử lý (ví dụ: success, fail) |
+📌 Danh sách quyền được migrate tĩnh qua file YAML.
 
 ---
 
-📌 **Lưu ý:**
-- Tất cả các UUID nên sử dụng chuẩn `uuid_generate_v4()` (PostgreSQL).
-- Các timestamp sử dụng `DEFAULT now()` và được cập nhật tự động bằng trigger nếu có.
-- Tài liệu này có thể cập nhật song song với file migration Alembic.
+## 4. `user_role` – Mapping người dùng ↔ vai trò
+
+| Tên cột   | Kiểu dữ liệu | Ràng buộc                                | Ghi chú                      |
+|-----------|--------------|------------------------------------------|-------------------------------|
+| user_id   | UUID         | FK → users(id), PK (1/2)                 | ID người dùng                 |
+| role_id   | UUID         | FK → roles(id), PK (2/2)                 | ID vai trò được gán          |
+| assigned_at | TIMESTAMP  | DEFAULT now()                            | Thời điểm gán vai trò        |
+
+📌 Composite primary key `(user_id, role_id)`
+
+---
+
+## 5. `role_permission` – Mapping vai trò ↔ quyền
+
+| Tên cột       | Kiểu dữ liệu | Ràng buộc                                | Ghi chú                      |
+|---------------|--------------|------------------------------------------|-------------------------------|
+| role_id       | UUID         | FK → roles(id), PK (1/2)                 | ID vai trò                    |
+| permission_id | UUID         | FK → permissions(id), PK (2/2)          | ID quyền                      |
+| granted_at    | TIMESTAMP    | DEFAULT now()                            | Thời điểm cấp quyền           |
+
+📌 Composite primary key `(role_id, permission_id)`
+
+---
+
+## 📌 Index & Performance Notes
+
+- `users.email` → unique index.
+- Các bảng mapping (`user_role`, `role_permission`) có composite primary key → tự động tạo index.
+- Có thể bổ sung index riêng cho các truy vấn thường gặp như:
+  - `user_id` trong `user_role`
+  - `role_id` trong `role_permission`
+
+---
+
+## 🔐 Các ràng buộc dữ liệu & tính toàn vẹn
+
+- Cascade `ON DELETE` tùy logic nghiệp vụ:
+  - `user_role`: Xoá user → xoá bản ghi gán vai trò?
+  - `role_permission`: Xoá role → có nên xoá mapping quyền?
+
+  ➜ Quyết định này phụ thuộc vào logic của hệ thống, có thể đặt `ON DELETE CASCADE` hoặc xử lý logic ở tầng ứng dụng.
+
+---
+
+## 🔁 Liên kết tài liệu liên quan
+
+- [Thiết kế tổng thể User Service (design.md)](./design.md)
+- [Interface Contract (interface-contract.md)](./interface-contract.md)
+- [OpenAPI Spec (openapi.yaml)](./openapi.yaml)
+
+---
 
