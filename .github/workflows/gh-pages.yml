@@ -1,10 +1,30 @@
-- name: Set up Python
-  uses: actions/setup-python@v2
-  with:
-    python-version: '3.x' # Hoặc phiên bản Python bạn dùng
-- name: Install dependencies
-  run: |
-    python -m pip install --upgrade pip
-    pip install mkdocs mkdocs-material mkdocs-awesome-pages-plugin mkdocs-mermaid2-plugin mkdocs-minify-plugin # Đảm bảo có ở đây
-- name: Build and deploy
-  run: mkdocs gh-deploy --force
+name: Deploy MkDocs to GitHub Pages # Tên của workflow, bạn có thể đặt tùy ý
+
+on: # Điều kiện kích hoạt workflow
+  push:
+    branches:
+      - main # Ví dụ: Kích hoạt khi có push lên nhánh 'main'
+      # Hoặc bạn có thể dùng:
+      # - gh-pages # Nếu bạn muốn trigger từ nhánh gh-pages
+  # Hoặc kích hoạt thủ công:
+  # workflow_dispatch:
+
+jobs: # Danh sách các công việc sẽ chạy
+  deploy: # Tên của job, bạn có thể đặt tùy ý
+    runs-on: ubuntu-latest # Môi trường chạy job
+    steps: # Các bước thực hiện trong job
+      - name: Checkout code
+        uses: actions/checkout@v3 # Hoặc phiên bản mới hơn
+
+      - name: Set up Python
+        uses: actions/setup-python@v3 # Nên dùng v3 hoặc mới hơn actions/setup-python@v2
+        with:
+          python-version: '3.10' # Bạn nên chỉ định phiên bản Python cụ thể, ví dụ 3.10 hoặc 3.11 thay vì '3.x'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install mkdocs mkdocs-material mkdocs-awesome-pages-plugin mkdocs-mermaid2-plugin mkdocs-minify-plugin # Đoạn code này của bạn đã đúng
+
+      - name: Build and deploy
+        run: mkdocs gh-deploy --force --clean # Thêm --clean để dọn dẹp trước khi build
