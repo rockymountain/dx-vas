@@ -63,18 +63,18 @@ nav:
     - Sơ đồ Hệ thống: architecture/system-diagrams.md #
     - RBAC Chi tiết: architecture/rbac-deep-dive.md #
   - Hướng dẫn Phát triển: # Đổi tên
-    - Tổng quan Phát triển (Dev Guide): docs/dev/dev-guide.md #
-    - Backend Dev Guide: docs/dev/backend-dev-guide.md #
-    - Vận hành & DevOps (Ops Guide): docs/dev/ops-guide.md #
+    - Tổng quan Phát triển (Dev Guide): dev/dev-guide.md #
+    - Backend Dev Guide: dev/backend-dev-guide.md #
+    - Vận hành & DevOps (Ops Guide): dev/ops-guide.md #
   - Thiết kế Services: # Đổi tên
     - User Service:
-      - Tổng quan Thiết kế: docs/services/user-service/design.md #
-      - Hợp đồng Giao diện: docs/services/user-service/interface-contract.md #
-      - Mô hình Dữ liệu: docs/services/user-service/data-model.md #
-      - Đặc tả OpenAPI: docs/services/user-service/openapi.yaml #
+      - Tổng quan Thiết kế: services/user-service/design.md #
+      - Hợp đồng Giao diện: services/user-service/interface-contract.md #
+      - Mô hình Dữ liệu: services/user-service/data-model.md #
+      - Đặc tả OpenAPI: services/user-service/openapi.yaml #
     # (Thêm các service khác ở đây khi có)
   - Quyết định Kiến trúc (ADRs): # Đổi tên
-    - Chỉ mục ADRs: docs/ADR/index.md #
+    - Chỉ mục ADRs: ADR/index.md #
 
 # --- Plugins ---
 # Các plugin giúp tăng cường chức năng
