@@ -2,7 +2,8 @@
 
 Tài liệu này mô tả chi tiết mô hình dữ liệu trong cơ sở dữ liệu của User Service. Bao gồm các bảng: `users`, `roles`, `permissions`, `user_role`, `role_permission`.
 
-```erDiagram
+```mermaid
+erDiagram
   USERS ||--o{ USER_ROLE : has
   ROLES ||--o{ USER_ROLE : grants
   ROLES ||--o{ ROLE_PERMISSION : defines
