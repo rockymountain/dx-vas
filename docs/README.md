@@ -226,7 +226,8 @@ graph TD
 📌 **Ý nghĩa cấu trúc:**
 
 * **`README.md`** là trung tâm, giúp người mới có thể hiểu toàn bộ kiến trúc trong vài phút.
-* **`system-diagrams.md`** và **`rbac-deep-dive.md`** là 2 nhánh kiến trúc chuyên sâu (tổng thể & RBAC).
+* **`docs/architecture/`** là bộ kiến trúc chuyên sâu.
+  * **`system-diagrams.md`** và **`rbac-deep-dive.md`** là 2 nhánh kiến trúc chuyên sâu (tổng thể & RBAC).
 * **`docs/dev/`** là bộ hướng dẫn vận hành & phát triển cho toàn đội.
 * **`docs/services/`** chứa thiết kế chi tiết của từng service theo cấu trúc chuẩn (SDD, Data Model).
 * **`interface-contracts/`** chứa định nghĩa OpenAPI YAML cho từng service.
