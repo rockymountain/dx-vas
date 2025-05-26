@@ -81,7 +81,7 @@ nav:
 plugins:
   - search: # Plugin tìm kiếm tích hợp sẵn, hỗ trợ tốt tiếng Việt khi có mkdocs-material
       lang: vi # Ngôn ngữ cho bộ tách từ tìm kiếm
-  #- awesome-pages: # Tự động tạo menu từ cấu trúc thư mục (nếu không muốn định nghĩa nav thủ công)
+  - awesome-pages: # Tự động tạo menu từ cấu trúc thư mục (nếu không muốn định nghĩa nav thủ công)
       # Hoặc bạn có thể bỏ awesome-pages nếu cấu trúc nav thủ công đã đủ tốt và bạn muốn kiểm soát hoàn toàn
   - mermaid2: # Hỗ trợ vẽ sơ đồ Mermaid trực tiếp trong Markdown
       # Đảm bảo bạn đã cài đặt mkdocs-mermaid2-plugin
@@ -101,7 +101,11 @@ plugins:
 markdown_extensions:
   - admonition # Cho phép tạo các khối ghi chú, cảnh báo, mẹo (!!! note "Ghi chú")
   - pymdownx.details # Tương tự admonition, nhưng có thể thu gọn
-  - pymdownx.superfences # Cho phép lồng các khối code, đặc biệt hữu ích với Mermaid
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid # Khai báo rằng khối ```mermaid sẽ được xử lý bởi custom fence
+          class: mermaid # Class CSS sẽ được áp dụng
+          format: !!python/name:mermaid2.fence_mermaid_custom # Sử dụng formatter của mkdocs-mermaid2-plugin
   - pymdownx.tabbed: # Tạo nội dung theo tab (=== "Tab 1" ... === "Tab 2")
       alternate_style: true
   - attr_list # Thêm thuộc tính HTML vào các phần tử Markdown
@@ -120,17 +124,3 @@ markdown_extensions:
   - toc: # Tự động tạo mục lục cho từng trang
       permalink: "¶" # Ký tự hiển thị khi hover qua tiêu đề để lấy link trực tiếp
       toc_depth: 3 # Độ sâu của mục lục (ví dụ: chỉ hiển thị đến H3)
-
-# (Tùy chọn) Thêm các file CSS hoặc JavaScript tùy chỉnh
-# extra_css:
-#   - assets/stylesheets/extra.css
-# extra_javascript:
-#   - assets/javascripts/extra.js
-
-# (Tùy chọn) Copyright
-# copyright: Copyright © 2024 Trường Quốc tế Việt Anh
-
-# (Tùy chọn) Cấu hình cho Google Analytics
-# google_analytics:
-#   - UA-XXXXXXXXX-X # ID Google Analytics của bạn
-#   - auto
