@@ -36,7 +36,7 @@ Dự án dx-vas hướng tới việc xây dựng một nền tảng tích hợp
 
 Toàn bộ tài liệu thiết kế kiến trúc, sơ đồ hệ thống, hướng dẫn phát triển (Dev Guide), và các quyết định kiến trúc (ADRs) đều được tập trung tại thư mục `docs`.
 
-👉 **Để bắt đầu, vui lòng truy cập vào trang chỉ mục chính của tài liệu tại đây:** [**docs/index.md**](./docs/index.md)
+👉 **Để bắt đầu, vui lòng truy cập vào trang chính của tài liệu tại đây:** [**README**](./docs/README.md)
 
 Trang chỉ mục này sẽ cung cấp các liên kết đến:
 
