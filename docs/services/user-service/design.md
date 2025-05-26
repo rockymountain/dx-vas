@@ -314,7 +314,7 @@ User Service có một số cấu hình môi trường và phụ thuộc cần �
 
 ---
 
-### 8.1. Biến môi trường
+### 7.1. Biến môi trường
 
 | Biến | Bắt buộc | Mô tả |
 |------|----------|-------|
@@ -322,9 +322,11 @@ User Service có một số cấu hình môi trường và phụ thuộc cần �
 | `REDIS_URL`           | ✅ | Kết nối Redis (sử dụng cho cache tạm và Pub/Sub fallback nếu cần) |
 | `PUBSUB_PROJECT_ID`   | ✅ | Dự án GCP để publish sự kiện qua Pub/Sub |
 | `RBAC_TOPIC_NAME`     | ✅ | Tên topic Pub/Sub để phát sự kiện `rbac_updated` |
-| `JWT_ISSUER`          | ✅ | Issuer cần kiểm tra khi decode token (do Auth Service cấp) |
-| `JWT_PUBLIC_KEY_PATH` | ✅ | Đường dẫn file chứa public key để decode JWT nội bộ |
+| `JWT_ISSUER`          | ⛔ | (Không bắt buộc) Nếu User Service cần decode JWT trong các luồng đặc biệt |
+| `JWT_PUBLIC_KEY_PATH` | ⛔ | (Không bắt buộc) Đường dẫn file chứa public key để decode JWT nếu cần thiết |
 | `ENV`                 | ✅ | `production`, `staging`, hoặc `local` (ảnh hưởng đến logging, debug, DB pool…) |
+
+📌 Ghi chú: Trong cấu trúc chuẩn của dx_vas, tất cả request đều đi qua API Gateway – nơi chịu trách nhiệm xác thực JWT và truyền xuống các header định danh (`X-User-ID`, `X-Permissions`). Do đó, `User Service` thường **không cần decode JWT** trực tiếp, và các biến liên quan như `JWT_PUBLIC_KEY_PATH` chỉ cần khi có các luồng đặc biệt (ví dụ: cron job nội bộ).
 
 ---
 
@@ -374,7 +376,7 @@ User Service là service cốt lõi, nên cần có coverage test tốt ở cả
 - Kiểm tra việc publish sự kiện `rbac_updated`, `user_status_changed` sau các hành động tương ứng.
 - Idempotency đảm bảo qua test double-publish và reprocessing.
 
-📌 Tham khảo chi tiết [`backend-dev-guide.md` – Mục 10 (Test)](../../dev/backend-dev-guide.md#10-test-đơn-vị--tích-hợp)
+📌 Tham khảo chi tiết [Backend Dev Guide – Mục 10 (Test)](../../dev/backend-dev-guide.md#10-test-đơn-vị--tích-hợp)
 
 ---
 
