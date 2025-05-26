@@ -59,7 +59,10 @@ Các API của User Service được định nghĩa chi tiết trong file OpenAP
 - Một số endpoint yêu cầu `X-Permissions` tương ứng (`user:read`, `user:update`, `rbac:view`, v.v.)
 - RBAC được kiểm tra bởi Gateway dựa trên dữ liệu từ Redis hoặc fallback qua `GET /users/{id}/permissions`
 
-📌 Chi tiết schema input/output vui lòng xem tại [`openapi.yaml`](../../../openapi/user-service/openapi.yaml)
+📌 Để xem mô tả tổng quan về các endpoints, mục tiêu và các quy ước giao tiếp của User Service, vui lòng tham khảo tài liệu Interface Contract:
+👉 **[Interface Contract](./interface-contract.md)**
+
+📌 Chi tiết schema input/output vui lòng xem tại: **[`openapi.yaml`](./openapi.yaml)**
 
 ---
 
@@ -260,17 +263,26 @@ User Service là trung tâm phân quyền của toàn hệ thống, đảm nhi�
 
 ### 6.1. Các permission yêu cầu khi gọi API từ Gateway
 
-* Đây là các quyền mà người dùng gọi thông qua API Gateway cần có. Gateway sẽ kiểm tra X-Permissions theo RBAC và chỉ forward nếu hợp lệ.
-Với các endpoint nhạy cảm (ví dụ tạo role, gán quyền), User Service vẫn cần kiểm tra thêm X-Permissions (ở tầng nội bộ) để bảo vệ khỏi việc Gateway bị lỗi cấu hình.
+Mọi lời gọi đến User Service đều phải thông qua API Gateway, nơi thực hiện xác thực JWT và kiểm tra RBAC động dựa trên các `X-Permissions` trong token. User Service sẽ **tin tưởng hoàn toàn** các header như `X-User-ID`, `X-Permissions` do Gateway truyền xuống, và kiểm tra bổ sung khi cần thực hiện các hành động nhạy cảm (ví dụ: tạo role, phân quyền).
 
-* API Gateway sẽ forward request đến User Service sau khi đã xác thực và đánh giá RBAC. Tuy nhiên, một số endpoint có thể cần cấp quyền truy cập rõ ràng, ví dụ:
+| API | Permission code yêu cầu tại Gateway |
+|-----|--------------------------------------|
+| GET /users | `VIEW_USER_ALL` |
+| POST /users | `CREATE_USER` |
+| PATCH /users/{id} | `UPDATE_USER` |
+| PATCH /users/{id}/status | `UPDATE_USER_STATUS` |
+| GET /roles | `VIEW_ROLE_ALL` |
+| POST /roles | `CREATE_ROLE` |
+| PATCH /roles/{id} | `UPDATE_ROLE` |
+| POST /users/{id}/roles | `ASSIGN_ROLE_TO_USER` |
+| DELETE /users/{user_id}/roles/{role_id} | `REVOKE_ROLE_FROM_USER` |
+| GET /permissions | `VIEW_PERMISSION_ALL` |
+| POST /roles/{id}/permissions | `ASSIGN_PERMISSION_TO_ROLE` |
+| DELETE /roles/{role_id}/permissions/{permission_id} | `REVOKE_PERMISSION_FROM_ROLE` |
 
-| Endpoint                            | Mã permission                 | Mô tả quyền                              |
-|-------------------------------------|-------------------------------|-------------------------------------------|
-| `GET /users/{id}`                   | `user:read`                   | Xem thông tin người dùng                  |
-| `PATCH /users/{id}`                | `user:update`                 | Cập nhật trạng thái người dùng            |
-| `GET /users/{id}/permissions`      | `user:rbac:view`              | Xem vai trò và quyền của user             |
-| `PATCH /users/{id}/permissions`    | `user:rbac:update`            | Cập nhật role/permission                  |
+📌 Ghi chú:
+- Các permission được định nghĩa tĩnh và load vào DB thông qua migration. Không có API cho phép thao tác trực tiếp trên bảng `permissions`.
+- Việc kiểm tra permission diễn ra tại API Gateway theo cơ chế RBAC động đã được mô tả chi tiết trong `rbac-deep-dive.md`.
 
 ---
 
@@ -314,19 +326,23 @@ User Service có một số cấu hình môi trường và phụ thuộc cần �
 
 ---
 
-### 7.1. Biến môi trường
+### 7.1. Biến môi trường (`.env`)
 
-| Biến | Bắt buộc | Mô tả |
-|------|----------|-------|
-| `DATABASE_URL`        | ✅ | Kết nối PostgreSQL (định dạng: `postgresql+asyncpg://...`) |
-| `REDIS_URL`           | ✅ | Kết nối Redis (sử dụng cho cache tạm và Pub/Sub fallback nếu cần) |
-| `PUBSUB_PROJECT_ID`   | ✅ | Dự án GCP để publish sự kiện qua Pub/Sub |
-| `RBAC_TOPIC_NAME`     | ✅ | Tên topic Pub/Sub để phát sự kiện `rbac_updated` |
-| `JWT_ISSUER`          | ⛔ | (Không bắt buộc) Nếu User Service cần decode JWT trong các luồng đặc biệt |
-| `JWT_PUBLIC_KEY_PATH` | ⛔ | (Không bắt buộc) Đường dẫn file chứa public key để decode JWT nếu cần thiết |
-| `ENV`                 | ✅ | `production`, `staging`, hoặc `local` (ảnh hưởng đến logging, debug, DB pool…) |
+| Biến | Ý nghĩa | Ví dụ |
+|------|---------|-------|
+| `ENV` | Môi trường triển khai | `production`, `staging`, `local` |
+| `SERVICE_NAME` | Tên service dùng cho logging và header | `user-service` |
+| `DATABASE_URL` | Kết nối đến PostgreSQL | `postgresql+asyncpg://user:pass@host:5432/db` |
+| `REDIS_URL` | Kết nối đến Redis cache (để load RBAC, status) | `redis://host:6379/0` |
+| `PUBSUB_TOPIC_RBAC_UPDATED` | Topic phát sự kiện cập nhật RBAC | `rbac-updated` |
+| `PUBSUB_TOPIC_USER_STATUS_CHANGED` | Topic phát sự kiện đổi trạng thái user | `user-status-changed` |
+| `JWT_PUBLIC_KEY_PATH` | ✅ Dự phòng – Nếu service cần validate một số token nội bộ (không phải JWT người dùng chính), có thể dùng key này. **Thông thường, User Service không cần tự xác thực JWT** vì API Gateway đã làm việc đó. | `/app/secrets/jwks-public.pem` |
+| `RBAC_CACHE_TTL` | Thời gian TTL cho RBAC cache Redis | `900` (15 phút) |
+| `LOG_LEVEL` | Mức độ log | `INFO`, `DEBUG` |
+| `SENTRY_DSN` | Endpoint gửi log lỗi (nếu có) | `https://xxx.ingest.sentry.io/abc` |
 
-📌 Ghi chú: Trong cấu trúc chuẩn của dx_vas, tất cả request đều đi qua API Gateway – nơi chịu trách nhiệm xác thực JWT và truyền xuống các header định danh (`X-User-ID`, `X-Permissions`). Do đó, `User Service` thường **không cần decode JWT** trực tiếp, và các biến liên quan như `JWT_PUBLIC_KEY_PATH` chỉ cần khi có các luồng đặc biệt (ví dụ: cron job nội bộ).
+📌 Ghi chú:
+- Các biến như `JWT_PUBLIC_KEY_PATH` có thể không cần nếu hệ thống sử dụng hoàn toàn xác thực trung tâm tại API Gateway. Tuy nhiên, vẫn có thể giữ lại để hỗ trợ các cơ chế nội bộ như xác thực mTLS hoặc chữ ký nội bộ giữa service.
 
 ---
 
