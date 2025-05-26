@@ -183,6 +183,53 @@ Tài liệu này bao gồm:
 - Sơ đồ triển khai hạ tầng trên Google Cloud
 - Chú giải và hướng dẫn đọc sơ đồ
 
+Dưới đây là sơ đồ cấu trúc tổng thể để quản lý toàn bộ tài liệu kiến trúc hệ thống **dx-vas**, được tổ chức theo các tầng logic: Tổng quan hệ thống → Tài liệu kiến trúc → Hướng dẫn phát triển/vận hành → Thiết kế chi tiết theo service → Interface Contracts → ADRs.
+
+```mermaid
+graph TD
+  A[README.md<br/>Kiến trúc tổng thể] --> B1[📊 system-diagrams.md<br/>Sơ đồ tổng quan & luồng nghiệp vụ]
+  A --> B2[🔐 rbac-deep-dive.md<br/>Phân quyền động RBAC chi tiết]
+  A --> B3[📁 interface-contracts/<br/>OpenAPI cho từng service]
+  A --> B4[📚 docs/dev/<br/>Cẩm nang phát triển & vận hành]
+  A --> B5[🧱 docs/services/<br/>Thiết kế chi tiết từng service]
+  A --> B6[📜 adr-index.md<br/>Quyết định kiến trúc - ADRs]
+
+  B4 --> C1[🧑‍💻 dev-guide.md<br/>Quy trình & tiêu chuẩn dev]
+  B4 --> C2[🧪 backend-dev-guide.md<br/>Hướng dẫn backend chi tiết]
+  B4 --> C3[⚙️ ops-guide.md<br/>Hướng dẫn DevOps/SRE]
+
+  B5 --> D1[📌 user-service/<br/>Thiết kế chi tiết]
+  B5 --> D2[📌 auth-service/]
+  B5 --> D3[📌 notification-service/]
+  D1 --> D1a[📄 design.md<br/>SDD User Service]
+  D1 --> D1b[🗃️ data-model.md<br/>CSDL User Service]
+
+  B3 --> E1[📑 openapi.yaml<br/>User Service]
+  B3 --> E2[Các file khác...]
+
+  B6 --> F1[adr-001-ci-cd.md]
+  B6 --> F2[adr-003-secrets.md]
+  B6 --> F3[adr-006-auth-strategy.md]
+  B6 --> F4[...24 ADR tổng cộng]
+
+  style A fill:#f9f,stroke:#333,stroke-width:2px
+  style B1,B2,B3,B4,B5,B6 fill:#ffe,stroke:#666
+  style C1,C2,C3 fill:#fdfdfd,stroke:#999
+  style D1,D2,D3 fill:#fff9f0,stroke:#ccc
+  style D1a,D1b fill:#fff,stroke:#ccc
+  style E1,E2 fill:#eef,stroke:#ccc
+  style F1,F2,F3,F4 fill:#eef6ff,stroke:#aaa
+```
+
+📌 **Ý nghĩa cấu trúc:**
+
+* **`README.md`** là trung tâm, giúp người mới có thể hiểu toàn bộ kiến trúc trong vài phút.
+* **`system-diagrams.md`** và **`rbac-deep-dive.md`** là 2 nhánh kiến trúc chuyên sâu (tổng thể & RBAC).
+* **`docs/dev/`** là bộ hướng dẫn vận hành & phát triển cho toàn đội.
+* **`docs/services/`** chứa thiết kế chi tiết của từng service theo cấu trúc chuẩn (SDD, Data Model).
+* **`interface-contracts/`** chứa định nghĩa OpenAPI YAML cho từng service.
+* **`adr-index.md`** và các ADRs lưu lại toàn bộ quyết định kiến trúc quan trọng theo thời gian.
+
 ---
 
 ## Phụ lục D – Interface Contracts (ICs)
