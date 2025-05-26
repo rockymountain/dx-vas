@@ -1,0 +1,25 @@
+site_name: DX VAS - Docs
+site_url: https://dx.truongvietanh.edu.vn
+repo_url: https://github.com/rockymountain/dx-vas.git
+
+theme:
+  name: material
+
+nav:
+  - Home: README.md
+  - Architecture:
+      - General Architecture: docs/README.md
+      - System Diagrams: docs/architecture/system-diagrams.md
+      - RBAC Deep Dive: docs/architecture/rbac-deep-dive.md
+  - Development:
+      - Dev Guide: docs/dev/dev-guide.md
+      - Backend Dev Guide: docs/dev/backend-dev-guide.md
+      - Ops Guide: docs/dev/ops-guide.md
+  - Services:
+      - User Service:
+          - Design: docs/services/user-service/design.md
+          - Interface Contract: docs/services/user-service/interface-contract.md
+          - Data Model: docs/services/user-service/data-model.md
+          - OpenAPI: docs/services/user-service/openapi.yaml
+  - ADRs:
+      - Index: docs/ADR/index.md
