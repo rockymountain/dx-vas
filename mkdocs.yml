@@ -19,7 +19,7 @@ theme:
   name: material #
   language: vi # Hỗ trợ tiếng Việt cho các label của theme (ví dụ: "Tìm kiếm", "Mục lục")
   logo: assets/images/logo.png # (Tùy chọn) Đặt logo của bạn vào docs/assets/images/logo.png
-  favicon: assets/images/favicon.ico # (Tùy chọn) Đặt favicon vào docs/assets/images/favicon.ico
+  # favicon: assets/images/favicon.ico # (Tùy chọn) Đặt favicon vào docs/assets/images/favicon.ico
   palette:
     # Bảng màu - bạn có thể chọn primary và accent color
     # Ví dụ: palette: { primary: 'indigo', accent: 'pink' }
