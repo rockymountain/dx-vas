@@ -187,38 +187,40 @@ Dưới đây là sơ đồ cấu trúc tổng thể để quản lý toàn bộ
 
 ```mermaid
 graph TD
-  A[README.md<br/>Kiến trúc tổng thể] --> B1[📊 system-diagrams.md<br/>Sơ đồ tổng quan & luồng nghiệp vụ]
-  A --> B2[🔐 rbac-deep-dive.md<br/>Phân quyền động RBAC chi tiết]
-  A --> B3[📁 interface-contracts/<br/>OpenAPI cho từng service]
-  A --> B4[📚 docs/dev/<br/>Cẩm nang phát triển & vận hành]
-  A --> B5[🧱 docs/services/<br/>Thiết kế chi tiết từng service]
-  A --> B6[📜 adr-index.md<br/>Quyết định kiến trúc - ADRs]
+  A[README.md<br/>Tổng quan kiến trúc dự án] --> B[🏛️ docs/architecture/<br/>Tài liệu kiến trúc hệ thống]
+  A --> C[📁 docs/interfaces/<br/>Interface Contracts - OpenAPI]
+  A --> D[📚 docs/dev/<br/>Cẩm nang phát triển & vận hành]
+  A --> E[🧱 docs/services/<br/>Thiết kế chi tiết từng service]
+  A --> F[📜 docs/ADR/index.md<br/>Chỉ mục ADRs]
 
-  B4 --> C1[🧑‍💻 dev-guide.md<br/>Quy trình & tiêu chuẩn dev]
-  B4 --> C2[🧪 backend-dev-guide.md<br/>Hướng dẫn backend chi tiết]
-  B4 --> C3[⚙️ ops-guide.md<br/>Hướng dẫn DevOps/SRE]
+  B --> B1[📊 system-diagrams.md<br/>Sơ đồ tổng quan & luồng]
+  B --> B2[🔐 rbac-deep-dive.md<br/>RBAC động chi tiết]
+  B --> B3[... kiến trúc khác nếu có]
 
-  B5 --> D1[📌 user-service/<br/>Thiết kế chi tiết]
-  B5 --> D2[📌 auth-service/]
-  B5 --> D3[📌 notification-service/]
-  D1 --> D1a[📄 design.md<br/>SDD User Service]
-  D1 --> D1b[🗃️ data-model.md<br/>CSDL User Service]
+  C --> C1[📑 ic-09-user-service.md<br/>IC cho User Service]
+  C --> C2[Các IC cho các service khác...]
+  C --> C3[🧭 adr-index.md<br/>Mapping IC ↔ ADR]
 
-  B3 --> E1[📑 openapi.yaml<br/>User Service]
-  B3 --> E2[Các file khác...]
+  D --> D1[🧑‍💻 dev-guide.md]
+  D --> D2[🧪 backend-dev-guide.md]
+  D --> D3[⚙️ ops-guide.md]
+  D --> D4[🧑‍💻 frontend-dev-guide.md]
 
-  B6 --> F1[adr-001-ci-cd.md]
-  B6 --> F2[adr-003-secrets.md]
-  B6 --> F3[adr-006-auth-strategy.md]
-  B6 --> F4[...24 ADR tổng cộng]
+  E --> E1[📌 user-service/]
+  E --> E2[📌 auth-service/]
+  E --> E3[📌 notification-service/]
+  E1 --> E1a[📄 design.md]
+  E1 --> E1b[🗃️ data-model.md]
+
+  F --> F1[adr-001-ci-cd.md]
+  F --> F2[adr-003-secrets.md]
+  F --> F3[adr-006-auth-strategy.md]
+  F --> F4[... đến adr-024]
 
   style A fill:#f9f,stroke:#333,stroke-width:2px
-  style B1,B2,B3,B4,B5,B6 fill:#ffe,stroke:#666
-  style C1,C2,C3 fill:#fdfdfd,stroke:#999
-  style D1,D2,D3 fill:#fff9f0,stroke:#ccc
-  style D1a,D1b fill:#fff,stroke:#ccc
-  style E1,E2 fill:#eef,stroke:#ccc
-  style F1,F2,F3,F4 fill:#eef6ff,stroke:#aaa
+  style B,C,D,E,F fill:#ffe,stroke:#666
+  style B1,B2,B3,C1,C2,C3,D1,D2,D3,D4,E1,E2,E3,E1a,E1b,F1,F2,F3,F4 fill:#fff,stroke:#ccc
+
 ```
 
 📌 **Ý nghĩa cấu trúc:**
