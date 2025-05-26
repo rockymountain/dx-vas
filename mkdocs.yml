@@ -1,25 +1,136 @@
-site_name: DX VAS - Docs
-site_url: https://dx.truongvietanh.edu.vn
-repo_url: https://github.com/rockymountain/dx-vas.git
+# Tên website sẽ hiển thị trên thanh tiêu đề của trình duyệt
+site_name: DX VAS - Docs #
 
+# URL chính thức của website tài liệu sau khi deploy
+site_url: https://dx.truongvietanh.edu.vn #
+
+# (Tùy chọn) Mô tả ngắn về website, hữu ích cho SEO
+site_description: Tài liệu kiến trúc và phát triển cho dự án Chuyển đổi số Trường Việt Anh (dx_vas).
+
+# (Tùy chọn) Tên tác giả
+site_author: DX VAS Team
+
+# Đường dẫn đến repository của dự án (để hiển thị link trên trang docs)
+repo_url: https://github.com/rockymountain/dx-vas.git #
+repo_name: rockymountain/dx-vas # Tên hiển thị cho repo link
+
+# --- Theme Configuration ---
 theme:
-  name: material
+  name: material #
+  language: vi # Hỗ trợ tiếng Việt cho các label của theme (ví dụ: "Tìm kiếm", "Mục lục")
+  logo: assets/images/logo.png # (Tùy chọn) Đặt logo của bạn vào docs/assets/images/logo.png
+  favicon: assets/images/favicon.ico # (Tùy chọn) Đặt favicon vào docs/assets/images/favicon.ico
+  palette:
+    # Bảng màu - bạn có thể chọn primary và accent color
+    # Ví dụ: palette: { primary: 'indigo', accent: 'pink' }
+    # Hoặc tùy chỉnh scheme theo sở thích sáng/tối của người dùng
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: indigo # Màu chính cho scheme sáng
+      accent: pink    # Màu nhấn cho scheme sáng
+      toggle:
+        icon: material/weather-sunny
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: blue   # Màu chính cho scheme tối
+      accent: lime    # Màu nhấn cho scheme tối
+      toggle:
+        icon: material/weather-night
+        name: Switch to light mode
+  font:
+    text: Roboto # Font chữ chính
+    code: Roboto Mono # Font chữ cho code block
+  features:
+    - navigation.tabs # Sử dụng tabs cho các mục menu cấp cao nhất
+    - navigation.tabs.sticky # Giữ tabs cố định khi cuộn
+    - navigation.sections # Tự động mở rộng các mục con trong menu bên trái khi mục cha được chọn
+    - navigation.expand # Tự động mở rộng toàn bộ menu bên trái (tùy chọn)
+    - navigation.top # Nút "Lên đầu trang"
+    - navigation.indexes # Cho phép file index.md trong thư mục con cũng hiển thị như một trang
+    - search.suggest # Gợi ý khi tìm kiếm
+    - search.highlight # Tô sáng từ khóa tìm kiếm
+    - content.code.annotate # Cho phép thêm chú thích vào code block
+    - content.tabs.link # Liên kết đến các tab nội dung cụ thể
+    # - toc.integrate # (Tùy chọn) Tích hợp mục lục trang vào menu bên trái thay vì hiển thị riêng bên phải
 
+# --- Navigation Structure ---
+# Cấu trúc menu điều hướng, giữ nguyên như bạn đã cung cấp
 nav:
-  - Home: README.md
-  - Architecture:
-      - General Architecture: docs/README.md
-      - System Diagrams: docs/architecture/system-diagrams.md
-      - RBAC Deep Dive: docs/architecture/rbac-deep-dive.md
-  - Development:
-      - Dev Guide: docs/dev/dev-guide.md
-      - Backend Dev Guide: docs/dev/backend-dev-guide.md
-      - Ops Guide: docs/dev/ops-guide.md
-  - Services:
-      - User Service:
-          - Design: docs/services/user-service/design.md
-          - Interface Contract: docs/services/user-service/interface-contract.md
-          - Data Model: docs/services/user-service/data-model.md
-          - OpenAPI: docs/services/user-service/openapi.yaml
-  - ADRs:
-      - Index: docs/ADR/index.md
+  - Home: README.md #
+  - Kiến trúc Hệ thống: # Đổi tên cho thân thiện hơn với tiếng Việt
+    - Tổng quan Kiến trúc: docs/README.md #
+    - Sơ đồ Hệ thống: docs/architecture/system-diagrams.md #
+    - RBAC Chi tiết: docs/architecture/rbac-deep-dive.md #
+  - Hướng dẫn Phát triển: # Đổi tên
+    - Tổng quan Phát triển (Dev Guide): docs/dev/dev-guide.md #
+    - Backend Dev Guide: docs/dev/backend-dev-guide.md #
+    - Vận hành & DevOps (Ops Guide): docs/dev/ops-guide.md #
+  - Thiết kế Services: # Đổi tên
+    - User Service:
+      - Tổng quan Thiết kế: docs/services/user-service/design.md #
+      - Hợp đồng Giao diện: docs/services/user-service/interface-contract.md #
+      - Mô hình Dữ liệu: docs/services/user-service/data-model.md #
+      - Đặc tả OpenAPI: docs/services/user-service/openapi.yaml #
+    # (Thêm các service khác ở đây khi có)
+  - Quyết định Kiến trúc (ADRs): # Đổi tên
+    - Chỉ mục ADRs: docs/ADR/index.md #
+
+# --- Plugins ---
+# Các plugin giúp tăng cường chức năng
+plugins:
+  - search: # Plugin tìm kiếm tích hợp sẵn, hỗ trợ tốt tiếng Việt khi có mkdocs-material
+      lang: vi # Ngôn ngữ cho bộ tách từ tìm kiếm
+  - awesome-pages: # Tự động tạo menu từ cấu trúc thư mục (nếu không muốn định nghĩa nav thủ công)
+      # Hoặc bạn có thể bỏ awesome-pages nếu cấu trúc nav thủ công đã đủ tốt và bạn muốn kiểm soát hoàn toàn
+  - mermaid2: # Hỗ trợ vẽ sơ đồ Mermaid trực tiếp trong Markdown
+      # Đảm bảo bạn đã cài đặt mkdocs-mermaid2-plugin
+  # - minify: # (Tùy chọn) Tối ưu hóa HTML, JS, CSS để tăng tốc độ tải trang
+  #     minify_html: true
+  #     minify_js: true
+  #     minify_css: true
+  #     htmlmin_opts:
+  #       remove_comments: true
+  # - social: # (Tùy chọn) Thêm các thẻ social media
+  #     cards_layout_options:
+  #       background_color: "#000000" # Màu nền cho social cards
+  #       color: "#FFFFFF" # Màu chữ cho social cards
+
+# --- Markdown Extensions ---
+# Các extension cho phép sử dụng cú pháp Markdown mở rộng, giúp tài liệu phong phú hơn
+markdown_extensions:
+  - admonition # Cho phép tạo các khối ghi chú, cảnh báo, mẹo (!!! note "Ghi chú")
+  - pymdownx.details # Tương tự admonition, nhưng có thể thu gọn
+  - pymdownx.superfences # Cho phép lồng các khối code, đặc biệt hữu ích với Mermaid
+  - pymdownx.tabbed: # Tạo nội dung theo tab (=== "Tab 1" ... === "Tab 2")
+      alternate_style: true
+  - attr_list # Thêm thuộc tính HTML vào các phần tử Markdown
+  - md_in_html # Cho phép viết Markdown bên trong HTML
+  - pymdownx.emoji: # Hỗ trợ emoji :material-home:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+  - pymdownx.highlight: # Tô sáng cú pháp cho code block
+      anchor_linenums: true # Cho phép liên kết đến dòng cụ thể trong code
+      line_spans: __span # Bao bọc mỗi dòng code bằng thẻ span
+      pygments_lang_class: true # Thêm class ngôn ngữ cho pygments
+  - pymdownx.inlinehilite # Tô sáng cú pháp cho inline code
+  - pymdownx.snippets # Nhúng nội dung từ file khác
+  - pymdownx.tasklist: # Tạo checklist [x] Done [ ] Todo
+      custom_checkbox: true
+  - toc: # Tự động tạo mục lục cho từng trang
+      permalink: "¶" # Ký tự hiển thị khi hover qua tiêu đề để lấy link trực tiếp
+      toc_depth: 3 # Độ sâu của mục lục (ví dụ: chỉ hiển thị đến H3)
+
+# (Tùy chọn) Thêm các file CSS hoặc JavaScript tùy chỉnh
+# extra_css:
+#   - assets/stylesheets/extra.css
+# extra_javascript:
+#   - assets/javascripts/extra.js
+
+# (Tùy chọn) Copyright
+# copyright: Copyright © 2024 Trường Quốc tế Việt Anh
+
+# (Tùy chọn) Cấu hình cho Google Analytics
+# google_analytics:
+#   - UA-XXXXXXXXX-X # ID Google Analytics của bạn
+#   - auto
