@@ -1,2 +1,6 @@
 mkdocs
 mkdocs-material
+# mkdocs-awesome-pages-plugin
+mkdocs-mermaid2-plugin # Thêm dòng này
+mkdocs-minify-plugin # Nếu bạn dùng minify
+# Các package khác...
