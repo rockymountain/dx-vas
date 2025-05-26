@@ -81,7 +81,7 @@ nav:
 plugins:
   - search: # Plugin tìm kiếm tích hợp sẵn, hỗ trợ tốt tiếng Việt khi có mkdocs-material
       lang: vi # Ngôn ngữ cho bộ tách từ tìm kiếm
-  - awesome-pages: # Tự động tạo menu từ cấu trúc thư mục (nếu không muốn định nghĩa nav thủ công)
+  #- awesome-pages: # Tự động tạo menu từ cấu trúc thư mục (nếu không muốn định nghĩa nav thủ công)
       # Hoặc bạn có thể bỏ awesome-pages nếu cấu trúc nav thủ công đã đủ tốt và bạn muốn kiểm soát hoàn toàn
   - mermaid2: # Hỗ trợ vẽ sơ đồ Mermaid trực tiếp trong Markdown
       # Đảm bảo bạn đã cài đặt mkdocs-mermaid2-plugin
