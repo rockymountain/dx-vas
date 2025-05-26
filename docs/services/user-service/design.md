@@ -8,7 +8,7 @@ User Service là service cốt lõi của hệ thống dx-vas, chịu trách nhi
 ### Trách nhiệm chính:
 
 - Quản lý dữ liệu định danh người dùng:
-  - `user_id`, `name`, `email`, `type`, `status`, `created_at`, `updated_at`
+  - `user_id`, `name`, `email`, `status`, `created_at`, `updated_at`
 - Quản lý trạng thái tài khoản: `pending`, `active`, `inactive`, `deleted`
 - Phân quyền động (RBAC):
   - Quản lý `roles`, `permissions`

@@ -14,16 +14,18 @@ erDiagram
 
 ## 1. `users` – Thông tin người dùng
 
-| Tên cột      | Kiểu dữ liệu     | Ràng buộc                 | Ghi chú                                    |
-|--------------|------------------|---------------------------|---------------------------------------------|
-| id           | UUID             | PK                        | Định danh duy nhất của người dùng           |
-| email        | VARCHAR(255)     | UNIQUE, NOT NULL          | Email đăng nhập                             |
-| name         | VARCHAR(255)     |                           | Họ tên người dùng                            |
-| status       | VARCHAR(20)      | NOT NULL, DEFAULT 'active'| Trạng thái: `active`, `inactive`            |
-| created_at   | TIMESTAMP        | DEFAULT now()             | Thời điểm tạo                               |
-| updated_at   | TIMESTAMP        | DEFAULT now()             | Thời điểm cập nhật gần nhất                 |
+| Tên cột      | Kiểu dữ liệu     | Ràng buộc                      | Ghi chú                                                             |
+|--------------|------------------|--------------------------------|----------------------------------------------------------------------|
+| id           | UUID             | PK                             | Định danh duy nhất của người dùng                                   |
+| email        | VARCHAR(255)     | UNIQUE, NOT NULL               | Email đăng nhập                                                     |
+| name         | VARCHAR(255)     |                                | Họ tên người dùng                                                    |
+| status       | VARCHAR(20)      | NOT NULL, DEFAULT 'active'     | Trạng thái: `pending`, `active`, `inactive`, `deleted`              |
+| created_at   | TIMESTAMP        | DEFAULT now()                  | Thời điểm tạo                                                       |
+| updated_at   | TIMESTAMP        | DEFAULT now()                  | Thời điểm cập nhật gần nhất                                         |
 
 📌 Một người dùng có thể có nhiều vai trò (quan hệ n-n với bảng `roles`).
+
+📌 Trường `status` phản ánh vòng đời tài khoản (xem chi tiết tại mục ["User Account Lifecycle Flow"](./design.md#7-user-account-lifecycle-flow) trong `design.md`).
 
 ---
 
@@ -43,13 +45,14 @@ erDiagram
 
 ## 3. `permissions` – Các quyền hệ thống (tĩnh)
 
-| Tên cột      | Kiểu dữ liệu     | Ràng buộc                 | Ghi chú                                      |
-|--------------|------------------|---------------------------|-----------------------------------------------|
-| id           | UUID             | PK                        | Định danh quyền                               |
-| code         | VARCHAR(100)     | UNIQUE, NOT NULL          | Mã quyền: `VIEW_USER_ALL`, `CREATE_USER`...   |
-| description  | TEXT             |                           | Mô tả quyền                                   |
+| Tên cột      | Kiểu dữ liệu     | Ràng buộc                 | Ghi chú                                                              |
+|--------------|------------------|---------------------------|-----------------------------------------------------------------------|
+| id           | UUID             | PK                        | Định danh quyền                                                      |
+| code         | VARCHAR(100)     | UNIQUE, NOT NULL          | Mã quyền: `VIEW_USER_ALL`, `CREATE_USER`, `ASSIGN_PERMISSION_TO_ROLE`, v.v. |
+| description  | TEXT             |                           | Mô tả quyền                                                          |
+| condition    | JSONB            |                           | Điều kiện RBAC động, ví dụ: `{"student_ids": ["abc"]}`               |
 
-📌 Danh sách quyền được migrate tĩnh qua file YAML.
+📌 Danh sách quyền được migrate tĩnh qua file YAML. Trường `condition` hỗ trợ đánh giá RBAC theo ngữ cảnh tại Gateway.
 
 ---
 
