@@ -88,11 +88,9 @@ Các API của User Service được định nghĩa chi tiết trong file OpenAP
 
 ---
 
-## 4. Business Logic Flows
+## 4. Business Logic Flows – Luồng nghiệp vụ chính
 
 User Service không chỉ lưu trữ thông tin người dùng mà còn là trung tâm điều phối phân quyền động (RBAC) trong toàn bộ hệ thống. Dưới đây là các luồng xử lý nghiệp vụ chính:
-
----
 
 ### 4.1. Đăng nhập thành công → Cập nhật người dùng (auto-create nếu chưa tồn tại)
 
@@ -113,37 +111,7 @@ sequenceDiagram
     UserService-->>Gateway: OK
 ```
 
----
-
-### 4.2. Cập nhật phân quyền động
-
-* API: `PATCH /users/{id}/rbac`
-* Logic:
-
-  * Cập nhật danh sách `role_id` của user
-  * Ghi nhận các permission tương ứng thông qua bảng `role_permission`
-  * Phát sự kiện `rbac_updated` để API Gateway cập nhật cache RBAC nội bộ
-
----
-
-### 4.3. Ngừng kích hoạt tài khoản người dùng
-
-* API: `PATCH /users/{id}/status`
-* Logic:
-
-  * Cập nhật `is_active = false`
-  * Phát sự kiện `user_status_changed` để các service liên quan thu hồi token/cache
-  * Gateway sẽ từ chối request nếu người dùng bị disable
-
----
-
-📌 Xem chi tiết các permission và schema RBAC trong [`rbac-deep-dive.md`](../../architecture/rbac-deep-dive.md)
-
----
-
-## 5. Business Logic Flows – Luồng nghiệp vụ chính
-
-### 5.1. Cập nhật trạng thái người dùng (Active / Inactive)
+### 4.2. Cập nhật trạng thái người dùng (Active / Inactive)
 
 ```mermaid
 sequenceDiagram
@@ -160,7 +128,7 @@ sequenceDiagram
     Note over UserService: Emit event `user_status_changed`
 ```
 
-### 5.2. Cập nhật RBAC cho người dùng
+### 4.3. Cập nhật RBAC cho người dùng
 
 ```mermaid
 sequenceDiagram
@@ -177,7 +145,7 @@ sequenceDiagram
     Note over UserService: Emit event `rbac_updated`
 ```
 
-### 5.3. Tạo người dùng mới từ hệ thống khác (ví dụ: CRM, SIS)
+### 4.4. Tạo người dùng mới từ hệ thống khác (ví dụ: CRM, SIS)
 
 ```mermaid
 sequenceDiagram
@@ -194,15 +162,37 @@ sequenceDiagram
     Note over UserService: Emit event `user_created`
 ```
 
-> 🔁 Các luồng xử lý này được thiết kế để tuân thủ mô hình event-driven: sau khi cập nhật trạng thái người dùng hoặc phân quyền, User Service sẽ phát sự kiện để các thành phần khác như API Gateway có thể cập nhật cache tương ứng.
+### 4.5. Cập nhật phân quyền động
+
+* API: `PATCH /users/{id}/rbac`
+* Logic:
+
+  * Cập nhật danh sách `role_id` của user
+  * Ghi nhận các permission tương ứng thông qua bảng `role_permission`
+  * Phát sự kiện `rbac_updated` để API Gateway cập nhật cache RBAC nội bộ
+
+### 4.6. Ngừng kích hoạt tài khoản người dùng
+
+* API: `PATCH /users/{id}/status`
+* Logic:
+
+  * Cập nhật `is_active = false`
+  * Phát sự kiện `user_status_changed` để các service liên quan thu hồi token/cache
+  * Gateway sẽ từ chối request nếu người dùng bị disable
 
 ---
 
-## 6. Events – Các sự kiện User Service phát ra
+> 🔁 Các luồng xử lý này được thiết kế để tuân thủ mô hình event-driven: sau khi cập nhật trạng thái người dùng hoặc phân quyền, User Service sẽ phát sự kiện để các thành phần khác như API Gateway có thể cập nhật cache tương ứng.
+
+📌 Xem chi tiết các permission và schema RBAC trong [`rbac-deep-dive.md`](../../architecture/rbac-deep-dive.md)
+
+---
+
+## 5. Events – Các sự kiện User Service phát ra
 
 User Service là một trong các Core Service phát sinh sự kiện quan trọng liên quan đến trạng thái người dùng và phân quyền. Tất cả các sự kiện được phát qua Pub/Sub, và dùng để đồng bộ với API Gateway, Notification Service hoặc các service khác.
 
-### 6.1. `user_created`
+### 5.1. `user_created`
 
 - **Trigger:** Khi một người dùng được khởi tạo thành công qua API hoặc hệ thống tích hợp (CRM/SIS).
 - **Topic:** `user.events.user_created`
@@ -221,7 +211,7 @@ User Service là một trong các Core Service phát sinh sự kiện quan trọ
 
 ---
 
-### 6.2. `user_status_changed`
+### 5.2. `user_status_changed`
 
 * **Trigger:** Khi trạng thái `is_active` của người dùng bị thay đổi.
 * **Topic:** `user.events.user_status_changed`
@@ -240,7 +230,7 @@ User Service là một trong các Core Service phát sinh sự kiện quan trọ
 
 ---
 
-### 6.3. `rbac_updated`
+### 5.3. `rbac_updated`
 
 * **Trigger:** Khi role hoặc permission của người dùng thay đổi.
 * **Topic:** `user.events.rbac_updated`
@@ -262,15 +252,18 @@ User Service là một trong các Core Service phát sinh sự kiện quan trọ
 
 ---
 
-## 7. Authorization & Security
+## 6. Authorization & Security
 
 User Service là trung tâm phân quyền của toàn hệ thống, đảm nhiệm việc quản lý vai trò (role), quyền (permission), và điều kiện truy cập động (condition-based RBAC).
 
 ---
 
-### 7.1. Các permission được cấp cho API Gateway
+### 6.1. Các permission yêu cầu khi gọi API từ Gateway
 
-API Gateway sẽ forward request đến User Service sau khi đã xác thực và đánh giá RBAC. Tuy nhiên, một số endpoint có thể cần cấp quyền truy cập rõ ràng, ví dụ:
+* Đây là các quyền mà người dùng gọi thông qua API Gateway cần có. Gateway sẽ kiểm tra X-Permissions theo RBAC và chỉ forward nếu hợp lệ.
+Với các endpoint nhạy cảm (ví dụ tạo role, gán quyền), User Service vẫn cần kiểm tra thêm X-Permissions (ở tầng nội bộ) để bảo vệ khỏi việc Gateway bị lỗi cấu hình.
+
+* API Gateway sẽ forward request đến User Service sau khi đã xác thực và đánh giá RBAC. Tuy nhiên, một số endpoint có thể cần cấp quyền truy cập rõ ràng, ví dụ:
 
 | Endpoint                            | Mã permission                 | Mô tả quyền                              |
 |-------------------------------------|-------------------------------|-------------------------------------------|
@@ -281,21 +274,21 @@ API Gateway sẽ forward request đến User Service sau khi đã xác thực v�
 
 ---
 
-### 7.2. Cách User Service đánh giá phân quyền
+### 6.2. Cách User Service đánh giá phân quyền
 
 - User Service không đánh giá RBAC trực tiếp cho mỗi request (đã do Gateway làm).
 - Tuy nhiên, các endpoint quản trị (`/permissions`, `/roles`) sẽ có decorator nội bộ kiểm tra `X-Permissions` header để giới hạn quyền truy cập nhạy cảm.
 
 ---
 
-### 7.3. Kiểm soát thay đổi RBAC
+### 6.3. Kiểm soát thay đổi RBAC
 
 - Mọi thay đổi role/permission phải được kiểm tra RBAC ở Gateway và log lại tại User Service (audit).
 - Một số hành động cần "RBAC cấp cao", ví dụ: chỉ `rbac:admin` mới được cập nhật vai trò giáo viên.
 
 ---
 
-### 7.4. Bảo mật dữ liệu
+### 6.4. Bảo mật dữ liệu
 
 - Email, password hash, OTP secret đều được lưu trữ mã hóa/băm (tuân thủ ADR-004).
 - Token không được lưu tại User Service – do Auth Service quản lý.
@@ -303,7 +296,7 @@ API Gateway sẽ forward request đến User Service sau khi đã xác thực v�
 
 ---
 
-### 7.5. Audit Logging
+### 6.5. Audit Logging
 
 - Mọi hành động ghi thay đổi trạng thái người dùng hoặc RBAC đều ghi vào hệ thống Audit Log.
 - Ghi nhận:
@@ -315,7 +308,7 @@ API Gateway sẽ forward request đến User Service sau khi đã xác thực v�
 
 ---
 
-## 8. Configuration & Dependencies
+## 7. Configuration & Dependencies
 
 User Service có một số cấu hình môi trường và phụ thuộc cần được khai báo rõ để triển khai đúng và bảo mật.
 
@@ -335,7 +328,7 @@ User Service có một số cấu hình môi trường và phụ thuộc cần �
 
 ---
 
-### 8.2. Secrets (được inject từ Secret Manager hoặc mounted file)
+### 7.2. Secrets (được inject từ Secret Manager hoặc mounted file)
 
 | Secret               | Mục đích                            |
 |----------------------|--------------------------------------|
@@ -344,7 +337,7 @@ User Service có một số cấu hình môi trường và phụ thuộc cần �
 
 ---
 
-### 8.3. Phụ thuộc dịch vụ nội bộ
+### 7.3. Phụ thuộc dịch vụ nội bộ
 
 | Service | Mục đích |
 |---------|----------|
@@ -354,10 +347,34 @@ User Service có một số cấu hình môi trường và phụ thuộc cần �
 
 ---
 
-### 8.4. Quy ước cấu hình nội bộ
+### 7.4. Quy ước cấu hình nội bộ
 
 - Toàn bộ config được load qua `config.py`, phân theo schema chuẩn.
 - Hỗ trợ cấu hình động (qua JSON config file mount từ GCS hoặc thông qua Firestore, nếu mở rộng sau này).
+
+---
+
+## 8. Testing Strategy
+
+User Service là service cốt lõi, nên cần có coverage test tốt ở cả unit test và integration test:
+
+### 8.1. Unit Test
+- Service methods như `get_user_by_id`, `update_user_status`, `update_user_rbac` nên được test độc lập.
+- Mọi logic liên quan đến RBAC, sự kiện, và transform schema cần test rõ ràng.
+- Sử dụng mock cho DB session, repo và Pub/Sub client.
+
+### 8.2. Integration Test
+- Test các API endpoint chính: `GET /users`, `PATCH /users/{id}/status`, `GET /users/{id}/permissions`, v.v.
+- Dùng DB test riêng biệt và rollback giữa các test.
+- Kiểm tra logic RBAC ở cả 2 chiều:
+  - Có quyền → được trả về kết quả đúng.
+  - Không có quyền → trả về 403 hoặc error envelope phù hợp.
+
+### 8.3. Pub/Sub Testing
+- Kiểm tra việc publish sự kiện `rbac_updated`, `user_status_changed` sau các hành động tương ứng.
+- Idempotency đảm bảo qua test double-publish và reprocessing.
+
+📌 Tham khảo chi tiết [`backend-dev-guide.md` – Mục 10 (Test)](../../dev/backend-dev-guide.md#10-test-đơn-vị--tích-hợp)
 
 ---
 
