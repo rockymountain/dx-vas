@@ -95,7 +95,7 @@ sequenceDiagram
     APIGateway->>Backend: Forward request + headers
 
     Backend->>APIGateway: Xử lý business logic
-````
+```
 
 > Lưu ý: Để đơn giản hóa vận hành và tăng hiệu năng, Backend không cần decode JWT hay kiểm tra RBAC lại.
 
