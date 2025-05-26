@@ -1,22 +1,22 @@
 ---
 id: adr-016-auto-scaling
-title: ADR-016: Chiến lược Auto Scaling cho hệ thống dx_vas
+title: ADR-016: Chiến lược Auto Scaling cho hệ thống dx-vas
 status: accepted
 author: DX VAS Platform Team
 date: 2025-06-22
-tags: [scaling, cloud-run, performance, cost, dx_vas]
+tags: [scaling, cloud-run, performance, cost, dx-vas]
 ---
 
 ## 📌 Bối cảnh
 
-Các dịch vụ trong hệ thống **dx_vas** (API Gateway, LMS Adapter, CRM Proxy, SSR frontend...) đều triển khai trên **Google Cloud Run**, nơi mỗi service có thể scale độc lập. Việc không tối ưu hóa auto scaling sẽ dẫn đến:
+Các dịch vụ trong hệ thống **dx-vas** (API Gateway, LMS Adapter, CRM Proxy, SSR frontend...) đều triển khai trên **Google Cloud Run**, nơi mỗi service có thể scale độc lập. Việc không tối ưu hóa auto scaling sẽ dẫn đến:
 - Chậm phản hồi hoặc timeout khi traffic tăng cao đột ngột
 - Tốn chi phí khi duy trì quá nhiều instance không cần thiết
 - Dễ vượt quota hoặc bị rate-limit nếu concurrency không được cấu hình đúng
 
 ## 🧠 Quyết định
 
-**Áp dụng chiến lược auto scaling tối ưu cho từng loại service trong hệ thống dx_vas, sử dụng Cloud Run concurrency, min/max instance và metric-based scaling để cân bằng chi phí – hiệu năng – độ tin cậy.**
+**Áp dụng chiến lược auto scaling tối ưu cho từng loại service trong hệ thống dx-vas, sử dụng Cloud Run concurrency, min/max instance và metric-based scaling để cân bằng chi phí – hiệu năng – độ tin cậy.**
 
 ---
 

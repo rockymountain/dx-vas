@@ -1,15 +1,15 @@
 ---
 id: adr-009-api-governance
-title: ADR-009: Chính sách Quản trị API (API Governance) cho hệ thống dx_vas
+title: ADR-009: Chính sách Quản trị API (API Governance) cho hệ thống dx-vas
 status: accepted
 author: DX VAS Architecture Team
 date: 2025-06-22
-tags: [api, governance, versioning, standards, dx_vas]
+tags: [api, governance, versioning, standards, dx-vas]
 ---
 
 ## 📌 Bối cảnh
 
-Hệ thống **dx_vas** bao gồm nhiều dịch vụ cung cấp và tiêu thụ API:
+Hệ thống **dx-vas** bao gồm nhiều dịch vụ cung cấp và tiêu thụ API:
 - API Gateway (điểm vào trung tâm)
 - Các backend: CRM Adapter, LMS Proxy, Notification Service, SIS Adapter...
 - Frontend webapp (Portal, Admin)
@@ -19,7 +19,7 @@ Hệ thống **dx_vas** bao gồm nhiều dịch vụ cung cấp và tiêu thụ
 
 ## 🧠 Quyết định
 
-**Áp dụng chính sách API Governance chuẩn, bao gồm versioning, linting, schema hóa OpenAPI, quy trình review, và tài liệu hoá tự động. Áp dụng cho tất cả các API nội bộ và external-facing trong dx_vas.**
+**Áp dụng chính sách API Governance chuẩn, bao gồm versioning, linting, schema hóa OpenAPI, quy trình review, và tài liệu hoá tự động. Áp dụng cho tất cả các API nội bộ và external-facing trong dx-vas.**
 
 ## 📐 Nguyên tắc chung
 

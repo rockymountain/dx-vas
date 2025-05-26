@@ -1,15 +1,15 @@
 ---
 id: adr-005-env-config
-title: ADR-005: Chiến lược Cấu hình đa môi trường (Environment Configuration) cho hệ thống dx_vas
+title: ADR-005: Chiến lược Cấu hình đa môi trường (Environment Configuration) cho hệ thống dx-vas
 status: accepted
 author: DX VAS DevOps Team
 date: 2025-06-22
-tags: [configuration, environment, dotenv, ci-cd, secrets, dx_vas]
+tags: [configuration, environment, dotenv, ci-cd, secrets, dx-vas]
 ---
 
 ## 📌 Bối cảnh
 
-Hệ thống **dx\_vas** vận hành trên nhiều môi trường:
+Hệ thống **dx-vas** vận hành trên nhiều môi trường:
 
 * `dev`: phát triển tính năng, kiểm thử local
 * `staging`: kiểm thử tích hợp, demo nội bộ
@@ -42,7 +42,7 @@ config/
 .env.example          # Template ở gốc
 ```
 
-* `base.env`: chứa các biến cấu hình chung cho **service đó**, không phải toàn hệ thống dx\_vas
+* `base.env`: chứa các biến cấu hình chung cho **service đó**, không phải toàn hệ thống dx-vas
 * Các file `.env.{ENVIRONMENT}` hoặc `{environment}.env`: chứa các giá trị override cụ thể cho từng môi trường
 * Dùng với `python-dotenv`, `pydantic-settings`, hoặc `dotenv` của NodeJS
 * Không commit `.env` chứa secrets – sử dụng placeholder hoặc `.example.env`

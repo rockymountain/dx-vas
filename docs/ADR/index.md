@@ -1,6 +1,6 @@
-# 📘 ADR Index – dx_vas
+# 📘 ADR Index – dx-vas
 
-> Danh sách và phạm vi áp dụng của các **Architecture Decision Records (ADR)** cho hệ thống dx_vas. Bảng dưới đây liệt kê từng ADR, các service bị ảnh hưởng và vai trò/điểm nhấn triển khai đặc biệt nếu có.
+> Danh sách và phạm vi áp dụng của các **Architecture Decision Records (ADR)** cho hệ thống dx-vas. Bảng dưới đây liệt kê từng ADR, các service bị ảnh hưởng và vai trò/điểm nhấn triển khai đặc biệt nếu có.
 
 | ADR | Áp dụng cho Service | Vai trò/Điểm nhấn triển khai |
 |-----|----------------------|-------------------------------|

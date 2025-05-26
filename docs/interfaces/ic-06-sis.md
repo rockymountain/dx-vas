@@ -1,4 +1,4 @@
-# 📘 Interface Contract – SIS Adapter (dx\_vas)
+# 📘 Interface Contract – SIS Adapter (dx-vas)
 
 ## 🧭 Mục tiêu
 

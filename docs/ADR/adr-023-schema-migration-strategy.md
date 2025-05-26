@@ -1,15 +1,15 @@
 ---
 id: adr-023-schema-migration-strategy
-title: ADR-023: Chiến lược thay đổi schema dữ liệu an toàn và có thể rollback cho hệ thống dx_vas
+title: ADR-023: Chiến lược thay đổi schema dữ liệu an toàn và có thể rollback cho hệ thống dx-vas
 status: accepted
 author: DX VAS Platform Team
 date: 2025-06-22
-tags: [schema, database, migration, compatibility, dx_vas]
+tags: [schema, database, migration, compatibility, dx-vas]
 ---
 
 ## 📌 Bối cảnh
 
-Nhiều thành phần trong hệ thống **dx_vas** sử dụng cơ sở dữ liệu quan hệ hoặc NoSQL (PostgreSQL, Firestore, Redis). Khi triển khai tính năng mới hoặc refactor, thay đổi schema là điều không thể tránh khỏi. Tuy nhiên, nếu làm không cẩn thận, migration có thể gây:
+Nhiều thành phần trong hệ thống **dx-vas** sử dụng cơ sở dữ liệu quan hệ hoặc NoSQL (PostgreSQL, Firestore, Redis). Khi triển khai tính năng mới hoặc refactor, thay đổi schema là điều không thể tránh khỏi. Tuy nhiên, nếu làm không cẩn thận, migration có thể gây:
 - Mất dữ liệu hoặc mất tương thích ngược (breaking change)
 - Downtime nếu migration quá nặng hoặc xảy ra khi hệ thống đang online
 - Không rollback được nếu không có chiến lược tách biệt và kiểm soát tốt
@@ -18,7 +18,7 @@ Nhiều thành phần trong hệ thống **dx_vas** sử dụng cơ sở dữ li
 
 ## 🧠 Quyết định
 
-**Áp dụng chiến lược migration an toàn theo hướng forward-compatible, rollbackable và không gây downtime cho hệ thống dx_vas. Migration phải được quản lý độc lập với code deploy.**
+**Áp dụng chiến lược migration an toàn theo hướng forward-compatible, rollbackable và không gây downtime cho hệ thống dx-vas. Migration phải được quản lý độc lập với code deploy.**
 
 ---
 

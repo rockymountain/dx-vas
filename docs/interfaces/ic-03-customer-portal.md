@@ -1,4 +1,4 @@
-# 📘 Interface Contract – Customer Portal (dx\_vas)
+# 📘 Interface Contract – Customer Portal (dx-vas)
 
 ## 🧭 Mục tiêu
 

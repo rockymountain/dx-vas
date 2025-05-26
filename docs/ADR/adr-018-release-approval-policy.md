@@ -1,15 +1,15 @@
 ---
 id: adr-018-release-approval-policy
-title: ADR-018: Chính sách phê duyệt và rollback release cho môi trường production của dx_vas
+title: ADR-018: Chính sách phê duyệt và rollback release cho môi trường production của dx-vas
 status: accepted
 author: DX VAS Platform Team
 date: 2025-06-22
-tags: [release, approval, rollback, dx_vas, production]
+tags: [release, approval, rollback, dx-vas, production]
 ---
 
 ## 📌 Bối cảnh
 
-Việc release dịch vụ mới vào môi trường production của **dx_vas** là hành động có rủi ro cao, đặc biệt với các hệ thống như API Gateway, LMS Adapter, CRM Proxy và frontend SSR. Trong một số trường hợp trước đây, việc thiếu kiểm tra chéo hoặc rollback kịp thời đã gây:
+Việc release dịch vụ mới vào môi trường production của **dx-vas** là hành động có rủi ro cao, đặc biệt với các hệ thống như API Gateway, LMS Adapter, CRM Proxy và frontend SSR. Trong một số trường hợp trước đây, việc thiếu kiểm tra chéo hoặc rollback kịp thời đã gây:
 - Downtime cho người dùng thực
 - Mất session do JWT/token thay đổi không backward-compatible
 - Conflict dữ liệu do schema không đồng bộ
@@ -20,7 +20,7 @@ Việc release dịch vụ mới vào môi trường production của **dx_vas**
 
 ## 🧠 Quyết định
 
-**Áp dụng chính sách phê duyệt bắt buộc và kế hoạch rollback chuẩn hoá cho mọi bản release lên production trong hệ thống dx_vas.**
+**Áp dụng chính sách phê duyệt bắt buộc và kế hoạch rollback chuẩn hoá cho mọi bản release lên production trong hệ thống dx-vas.**
 
 ---
 

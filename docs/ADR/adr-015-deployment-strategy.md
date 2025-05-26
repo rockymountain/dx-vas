@@ -1,15 +1,15 @@
 ---
 id: adr-015-deployment-strategy
-title: ADR-015: Chiến lược Triển khai cho hệ thống dx_vas
+title: ADR-015: Chiến lược Triển khai cho hệ thống dx-vas
 status: accepted
 author: DX VAS Platform Team
 date: 2025-06-22
-tags: [deployment, strategy, cloud-run, ci-cd, dx_vas]
+tags: [deployment, strategy, cloud-run, ci-cd, dx-vas]
 ---
 
 ## 📌 Bối cảnh
 
-Hệ sinh thái **dx_vas** bao gồm nhiều loại dịch vụ:
+Hệ sinh thái **dx-vas** bao gồm nhiều loại dịch vụ:
 - Dịch vụ frontend (SSR App Portal, Admin)
 - Dịch vụ backend (API Gateway, LMS/CRM Adapter, Notification)
 - Dịch vụ batch/ngầm hoặc tích hợp bên ngoài
@@ -28,7 +28,7 @@ Việc chuẩn hoá **các chiến lược triển khai phù hợp cho từng lo
 
 ## 🧠 Quyết định
 
-**Áp dụng tập hợp các chiến lược triển khai chuẩn (manual, auto, canary, blue/green, progressive, rolling) cho hệ thống dx_vas. CI/CD sẽ hỗ trợ lựa chọn động tùy vào service và môi trường.**
+**Áp dụng tập hợp các chiến lược triển khai chuẩn (manual, auto, canary, blue/green, progressive, rolling) cho hệ thống dx-vas. CI/CD sẽ hỗ trợ lựa chọn động tùy vào service và môi trường.**
 
 ---
 

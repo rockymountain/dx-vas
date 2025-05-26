@@ -1,15 +1,15 @@
 ---
 id: adr-008-audit-logging
-title: ADR-008: Chiến lược Audit Logging cho hệ thống dx_vas
+title: ADR-008: Chiến lược Audit Logging cho hệ thống dx-vas
 status: accepted
 author: DX VAS Security & Platform Team
 date: 2025-06-22
-tags: [audit, logging, observability, dx_vas, security]
+tags: [audit, logging, observability, dx-vas, security]
 ---
 
 ## 📌 Bối cảnh
 
-Hệ thống **dx_vas** xử lý dữ liệu nhạy cảm và hành vi người dùng:
+Hệ thống **dx-vas** xử lý dữ liệu nhạy cảm và hành vi người dùng:
 - Quản lý thông tin học sinh, giáo viên, điểm số (SIS, LMS)
 - Tác vụ phân quyền, đăng nhập, cập nhật hồ sơ (CRM, Gateway)
 - Gửi thông báo, gọi API tích hợp (Notification, External Services)

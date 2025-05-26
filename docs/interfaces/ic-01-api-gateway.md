@@ -1,8 +1,8 @@
-# 📘 Interface Contract – API Gateway (dx\_vas)
+# 📘 Interface Contract – API Gateway (dx-vas)
 
 ## 🧭 Mục tiêu
 
-Tài liệu này mô tả hợp đồng giao tiếp (interface contract) cho **API Gateway** của hệ thống dx\_vas, nhằm chuẩn hóa:
+Tài liệu này mô tả hợp đồng giao tiếp (interface contract) cho **API Gateway** của hệ thống dx-vas, nhằm chuẩn hóa:
 
 * Định dạng request/response
 * Header bắt buộc

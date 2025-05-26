@@ -1,4 +1,4 @@
-# 📘 Interface Contract – Auth Service (dx\_vas)
+# 📘 Interface Contract – Auth Service (dx-vas)
 
 ## 🧭 Mục tiêu
 
@@ -120,7 +120,7 @@ Tài liệu này định nghĩa Interface Contract cho **Auth Service**, chịu 
 }
 ```
 
-> Một số hệ thống có thể trả HTTP 204 No Content cho logout. Tại dx\_vas, dùng JSON rõ ràng để tiện logging và frontend xử lý.
+> Một số hệ thống có thể trả HTTP 204 No Content cho logout. Tại dx-vas, dùng JSON rõ ràng để tiện logging và frontend xử lý.
 
 ---
 

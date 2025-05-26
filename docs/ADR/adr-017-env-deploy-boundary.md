@@ -1,15 +1,15 @@
 ---
 id: adr-017-env-deploy-boundary
-title: ADR-017: Quy tắc triển khai theo môi trường cho hệ thống dx_vas
+title: ADR-017: Quy tắc triển khai theo môi trường cho hệ thống dx-vas
 status: accepted
 author: DX VAS Platform Team
 date: 2025-06-22
-tags: [environment, deployment, boundary, dx_vas, config]
+tags: [environment, deployment, boundary, dx-vas, config]
 ---
 
 ## 📌 Bối cảnh
 
-Hệ thống **dx_vas** vận hành qua nhiều môi trường:
+Hệ thống **dx-vas** vận hành qua nhiều môi trường:
 - `dev`: phát triển, test cá nhân, staging nội bộ
 - `staging`: kiểm thử tích hợp, pre-prod, trình diễn
 - `production`: môi trường chính thức phục vụ người dùng thực
@@ -24,7 +24,7 @@ Các lỗi triển khai thường đến từ:
 
 ## 🧠 Quyết định
 
-**Xác định rõ ràng boundary và điều kiện triển khai cho từng môi trường trong hệ thống dx_vas, bao gồm quyền hạn, luồng CI/CD, cấu hình, và các yêu cầu kiểm thử / phê duyệt.**
+**Xác định rõ ràng boundary và điều kiện triển khai cho từng môi trường trong hệ thống dx-vas, bao gồm quyền hạn, luồng CI/CD, cấu hình, và các yêu cầu kiểm thử / phê duyệt.**
 
 ---
 

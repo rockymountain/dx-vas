@@ -1,16 +1,16 @@
 ---
 
 id: adr-019-project-layout
-title: ADR-019: Chiến lược tổ chức GCP Project, Network & Quyền hạn cho hệ thống dx_vas
+title: ADR-019: Chiến lược tổ chức GCP Project, Network & Quyền hạn cho hệ thống dx-vas
 status: accepted
 author: DX VAS Platform Team
 date: 2025-06-22
-tags: [iac, gcp, terraform, networking, multi-project, dx_vas]
+tags: [iac, gcp, terraform, networking, multi-project, dx-vas]
 ---
 
 ## 📌 Bối cảnh
 
-Hệ thống **dx\_vas** đang phát triển với nhiều dịch vụ microservice, triển khai qua nhiều môi trường (`dev`, `staging`, `production`) và cần tách biệt rõ ràng để đảm bảo:
+Hệ thống **dx-vas** đang phát triển với nhiều dịch vụ microservice, triển khai qua nhiều môi trường (`dev`, `staging`, `production`) và cần tách biệt rõ ràng để đảm bảo:
 
 * An toàn khi thử nghiệm tính năng mới
 * Kiểm soát chi phí và quyền truy cập theo môi trường
@@ -101,7 +101,7 @@ infrastructure/
 
 * Gắn label cho mọi tài nguyên:
 
-  * `dx_vas_service`, `env`, `owner`, `critical`
+  * `dx-vas_service`, `env`, `owner`, `critical`
 * Dùng label cho Cloud Billing + BigQuery export (ADR-020)
 * Dashboard chi phí chia theo project, env, module
 

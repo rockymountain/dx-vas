@@ -1,15 +1,15 @@
 ---
 id: adr-007-rbac
 status: accepted
-title: ADR-007: Chiến lược phân quyền RBAC động cho toàn hệ thống dx_vas
+title: ADR-007: Chiến lược phân quyền RBAC động cho toàn hệ thống dx-vas
 author: DX VAS Platform Team
 date: 2025-06-22
-tags: [rbac, security, auth, dx_vas]
+tags: [rbac, security, auth, dx-vas]
 ---
 
 ## 📌 Bối cảnh
 
-Hệ thống `dx_vas` phục vụ nhiều loại người dùng (học sinh, giáo viên, phụ huynh, quản trị viên), mỗi nhóm có quyền khác nhau trên các tài nguyên. Các dịch vụ API hoạt động theo mô hình microservice nên cần cơ chế phân quyền đồng bộ và linh hoạt giữa các service.
+Hệ thống `dx-vas` phục vụ nhiều loại người dùng (học sinh, giáo viên, phụ huynh, quản trị viên), mỗi nhóm có quyền khác nhau trên các tài nguyên. Các dịch vụ API hoạt động theo mô hình microservice nên cần cơ chế phân quyền đồng bộ và linh hoạt giữa các service.
 
 ---
 

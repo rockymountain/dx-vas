@@ -1,15 +1,15 @@
 ---
 id: adr-004-security
-title: ADR-004: Chiến lược Bảo mật tổng thể cho hệ thống dx_vas
+title: ADR-004: Chiến lược Bảo mật tổng thể cho hệ thống dx-vas
 status: accepted
 author: DX VAS Security Team
 date: 2025-06-22
-tags: [security, hardening, dx_vas, cloud-run, jwt, rate-limiting]
+tags: [security, hardening, dx-vas, cloud-run, jwt, rate-limiting]
 ---
 
 ## 📌 Bối cảnh
 
-Hệ thống **dx_vas** gồm nhiều thành phần xử lý dữ liệu nhạy cảm như:
+Hệ thống **dx-vas** gồm nhiều thành phần xử lý dữ liệu nhạy cảm như:
 - Học sinh, giáo viên, điểm số, học phí (qua SIS, CRM, LMS)
 - Dữ liệu cá nhân và hành vi người dùng (qua frontend và API Gateway)
 - Giao tiếp với bên thứ ba (Zalo, OAuth, đối tác CRM)

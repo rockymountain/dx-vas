@@ -1,15 +1,15 @@
 ---
 id: adr-020-cost-observability
-title: ADR-020: Theo dõi và tối ưu chi phí vận hành cho hệ thống dx_vas
+title: ADR-020: Theo dõi và tối ưu chi phí vận hành cho hệ thống dx-vas
 status: accepted
 author: DX VAS Platform Team
 date: 2025-06-22
-tags: [observability, cost, monitoring, cloud-run, dx_vas]
+tags: [observability, cost, monitoring, cloud-run, dx-vas]
 ---
 
 ## 📌 Bối cảnh
 
-Chi phí vận hành hệ thống **dx_vas** bao gồm:
+Chi phí vận hành hệ thống **dx-vas** bao gồm:
 - Dịch vụ Cloud Run (API Gateway, adapters, frontend SSR...)
 - Cloud Storage, Firestore, Redis (MemoryStore), BigQuery
 - Logging & Monitoring (Cloud Logging, Cloud Monitoring)
@@ -26,7 +26,7 @@ Cần một chiến lược chủ động để **giám sát, dự đoán và t�
 
 ## 🧠 Quyết định
 
-**Áp dụng hệ thống quan sát và cảnh báo chi phí theo từng dịch vụ và tài nguyên chính của hệ thống dx_vas. Tích hợp với dashboard theo dõi real-time, báo cáo định kỳ, và cảnh báo vượt ngưỡng.**
+**Áp dụng hệ thống quan sát và cảnh báo chi phí theo từng dịch vụ và tài nguyên chính của hệ thống dx-vas. Tích hợp với dashboard theo dõi real-time, báo cáo định kỳ, và cảnh báo vượt ngưỡng.**
 
 ---
 
@@ -48,7 +48,7 @@ Cần một chiến lược chủ động để **giám sát, dự đoán và t�
 Tạo dashboard chi phí trong **Cloud Billing > Budgets & reports**:
 - Nhóm theo `service.label`, `resource.name`, `project`
 - Gán tag: `env=prod|staging|dev`, `owner=platform|lms|crm`, `critical=true`
-- Gắn cost attribution qua label: `dx_vas_service`, `env`, `module`
+- Gắn cost attribution qua label: `dx-vas_service`, `env`, `module`
 
 Mỗi service Cloud Run nên có ít nhất:
 - `cloud.googleapis.com/run/container/start_count`

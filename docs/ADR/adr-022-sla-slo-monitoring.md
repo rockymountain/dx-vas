@@ -1,15 +1,15 @@
 ---
 id: adr-022-sla-slo-monitoring
-title: ADR-022: Chiến lược SLA, SLO và Monitoring cho hệ thống dx_vas
+title: ADR-022: Chiến lược SLA, SLO và Monitoring cho hệ thống dx-vas
 status: accepted
 author: DX VAS Platform Team
 date: 2025-06-22
-tags: [sla, slo, monitoring, observability, reliability, dx_vas]
+tags: [sla, slo, monitoring, observability, reliability, dx-vas]
 ---
 
 ## 📌 Bối cảnh
 
-Hệ thống **dx_vas** phục vụ nhiều nhóm người dùng: học sinh, phụ huynh, giáo viên, nhân viên nhà trường. Một số dịch vụ là **business-critical** như API Gateway, LMS Adapter, Frontend SSR. Để đảm bảo chất lượng dịch vụ, cần:
+Hệ thống **dx-vas** phục vụ nhiều nhóm người dùng: học sinh, phụ huynh, giáo viên, nhân viên nhà trường. Một số dịch vụ là **business-critical** như API Gateway, LMS Adapter, Frontend SSR. Để đảm bảo chất lượng dịch vụ, cần:
 - Định nghĩa rõ ràng SLA/SLO cho từng nhóm dịch vụ
 - Giám sát liên tục dựa trên SLI thực tế
 - Có alert nếu vượt error budget hoặc vi phạm ngưỡng SLO
@@ -18,7 +18,7 @@ Hệ thống **dx_vas** phục vụ nhiều nhóm người dùng: học sinh, ph
 
 ## 🧠 Quyết định
 
-**Thiết lập khung SLA, SLO, SLI và cơ chế giám sát tuân thủ cho toàn bộ hệ thống dx_vas, với việc phân nhóm dịch vụ, định nghĩa mục tiêu đo lường và tích hợp cảnh báo theo SLO.**
+**Thiết lập khung SLA, SLO, SLI và cơ chế giám sát tuân thủ cho toàn bộ hệ thống dx-vas, với việc phân nhóm dịch vụ, định nghĩa mục tiêu đo lường và tích hợp cảnh báo theo SLO.**
 
 ---
 

@@ -1,4 +1,4 @@
-# 📘 Interface Contract – CRM Adapter (dx\_vas)
+# 📘 Interface Contract – CRM Adapter (dx-vas)
 
 ## 🧭 Mục tiêu
 

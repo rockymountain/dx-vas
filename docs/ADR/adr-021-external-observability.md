@@ -1,15 +1,15 @@
 ---
 id: adr-021-external-observability
-title: ADR-021: Chính sách tích hợp Observability với hệ thống bên ngoài cho dx_vas
+title: ADR-021: Chính sách tích hợp Observability với hệ thống bên ngoài cho dx-vas
 status: accepted
 author: DX VAS Platform Team
 date: 2025-06-22
-tags: [observability, logging, metrics, tracing, dx_vas, external, otlp]
+tags: [observability, logging, metrics, tracing, dx-vas, external, otlp]
 ---
 
 ## 📌 Bối cảnh
 
-Trong hệ thống **dx_vas**, phần lớn dữ liệu log, metric và trace đang được thu thập và giám sát qua Google Cloud Platform (Cloud Logging, Cloud Monitoring, Cloud Trace). Tuy nhiên, tổ chức có thể có nhu cầu:
+Trong hệ thống **dx-vas**, phần lớn dữ liệu log, metric và trace đang được thu thập và giám sát qua Google Cloud Platform (Cloud Logging, Cloud Monitoring, Cloud Trace). Tuy nhiên, tổ chức có thể có nhu cầu:
 - Tập trung hóa dữ liệu vào một hệ thống giám sát hiện có như **Datadog**, **Grafana Cloud**, **ELK**, **Sentry**, hoặc **New Relic**
 - Tích hợp dữ liệu cảnh báo với hệ thống **incident management** hoặc **Security Operations Center (SOC)** hiện tại
 - Phân tích log/metric theo cách Google Cloud không hỗ trợ tốt
@@ -23,7 +23,7 @@ Việc tích hợp external observability này cần được chuẩn hóa và b
 
 ## 🧠 Quyết định
 
-**Hệ thống dx_vas cho phép và hỗ trợ tích hợp với các hệ thống observability bên ngoài khi có nhu cầu chính đáng, theo các tiêu chuẩn kỹ thuật, bảo mật và chi phí được định nghĩa trong tài liệu này.**
+**Hệ thống dx-vas cho phép và hỗ trợ tích hợp với các hệ thống observability bên ngoài khi có nhu cầu chính đáng, theo các tiêu chuẩn kỹ thuật, bảo mật và chi phí được định nghĩa trong tài liệu này.**
 
 ---
 
@@ -41,7 +41,7 @@ Việc tích hợp external observability này cần được chuẩn hóa và b
 | Loại | Ví dụ | Điều kiện |
 |------|-------|-----------|
 | Logs | error logs, audit logs | Mask nhạy cảm, giữ trace_id |
-| Metrics | latency, request count, memory | Có label `dx_vas_service` và `env` |
+| Metrics | latency, request count, memory | Có label `dx-vas_service` và `env` |
 | Traces | Cloud Trace → OTLP span | Mapping span name, attributes chuẩn |
 | Alerts/Events | Deployment alert, billing alert | Webhook hoặc Pub/Sub stream |
 

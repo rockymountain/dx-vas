@@ -1,6 +1,6 @@
 # 📚 DX VAS Architectural Decision Records (ADR)
 
-Tài liệu này tổng hợp toàn bộ các quyết định thiết kế kỹ thuật (ADR) chính thức trong hệ thống **dx_vas**. Mỗi ADR phản ánh một quyết định quan trọng được thống nhất giữa các team liên quan nhằm đảm bảo kiến trúc hệ thống bền vững, bảo mật và dễ mở rộng.
+Tài liệu này tổng hợp toàn bộ các quyết định thiết kế kỹ thuật (ADR) chính thức trong hệ thống **dx-vas**. Mỗi ADR phản ánh một quyết định quan trọng được thống nhất giữa các team liên quan nhằm đảm bảo kiến trúc hệ thống bền vững, bảo mật và dễ mở rộng.
 
 ---
 
@@ -54,7 +54,7 @@ Tài liệu này tổng hợp toàn bộ các quyết định thiết kế kỹ 
 ---
 # CỰC KỲ QUAN TRỌNG
 
-Việc **VAS không cấp Google Education Account cho phụ huynh** là một thông tin quan trọng vì nó ảnh hưởng trực tiếp đến **chiến lược xác thực người dùng phụ huynh** đã được định nghĩa trong **`dx_vas/adr-006-auth-strategy.md`**. Dưới đây là phân tích và đề xuất điều chỉnh:
+Việc **VAS không cấp Google Education Account cho phụ huynh** là một thông tin quan trọng vì nó ảnh hưởng trực tiếp đến **chiến lược xác thực người dùng phụ huynh** đã được định nghĩa trong **`dx-vas/adr-006-auth-strategy.md`**. Dưới đây là phân tích và đề xuất điều chỉnh:
 
 ---
 

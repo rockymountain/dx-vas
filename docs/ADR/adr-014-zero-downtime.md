@@ -1,15 +1,15 @@
 ---
 id: adr-014-zero-downtime
-title: ADR-014: Chiến lược Triển khai Không Gián Đoạn (Zero-Downtime Deployment) cho hệ thống dx_vas
+title: ADR-014: Chiến lược Triển khai Không Gián Đoạn (Zero-Downtime Deployment) cho hệ thống dx-vas
 status: accepted
 author: DX VAS Platform Team
 date: 2025-06-22
-tags: [deployment, cloud-run, traffic-split, dx_vas]
+tags: [deployment, cloud-run, traffic-split, dx-vas]
 ---
 
 ## 📌 Bối cảnh
 
-Hệ thống **dx_vas** bao gồm nhiều loại dịch vụ:
+Hệ thống **dx-vas** bao gồm nhiều loại dịch vụ:
 - API Gateway (critical)
 - Các backend adapters (LMS, CRM, Notification)
 - Frontend WebApp (Admin, Portal)
@@ -21,7 +21,7 @@ Các dịch vụ này được triển khai trên nền tảng **Google Cloud Ru
 
 ## 🧠 Quyết định
 
-**Áp dụng chiến lược triển khai không gián đoạn (zero-downtime) cho toàn hệ thống dx_vas, bằng cách sử dụng Cloud Run revision, kiểm soát traffic shifting, đảm bảo backward compatibility và kiểm thử kỹ trước khi full rollout.**
+**Áp dụng chiến lược triển khai không gián đoạn (zero-downtime) cho toàn hệ thống dx-vas, bằng cách sử dụng Cloud Run revision, kiểm soát traffic shifting, đảm bảo backward compatibility và kiểm thử kỹ trước khi full rollout.**
 
 ---
 

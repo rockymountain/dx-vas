@@ -1,6 +1,6 @@
-# 🧭 ADR Index – Tổng hợp & Phân loại Kiến trúc Quyết định cho dx\_vas
+# 🧭 ADR Index – Tổng hợp & Phân loại Kiến trúc Quyết định cho dx-vas
 
-Tài liệu này giúp bạn định hướng nhanh toàn bộ các quyết định kiến trúc (Architecture Decision Records – ADR) đã ban hành trong hệ thống **dx\_vas**, phục vụ cho việc tra cứu, onboarding, và thiết kế service interface.
+Tài liệu này giúp bạn định hướng nhanh toàn bộ các quyết định kiến trúc (Architecture Decision Records – ADR) đã ban hành trong hệ thống **dx-vas**, phục vụ cho việc tra cứu, onboarding, và thiết kế service interface.
 
 ### 🔰 Chú giải biểu tượng
 

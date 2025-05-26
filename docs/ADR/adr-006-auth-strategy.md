@@ -1,15 +1,15 @@
 ---
 id: adr-006-auth-strategy
-title: ADR-006: Chiến lược xác thực người dùng (Authentication) cho hệ thống dx_vas
+title: ADR-006: Chiến lược xác thực người dùng (Authentication) cho hệ thống dx-vas
 status: accepted
 author: DX VAS Platform Team
 date: 2025-06-22
-tags: [auth, security, dx_vas, oauth2, otp]
+tags: [auth, security, dx-vas, oauth2, otp]
 ---
 
 ## 📌 Bối cảnh
 
-Hệ thống dx_vas phục vụ nhiều nhóm người dùng:
+Hệ thống dx-vas phục vụ nhiều nhóm người dùng:
 - Giáo viên, nhân viên trường học (nội bộ VAS)
 - Học sinh (sử dụng dịch vụ học tập)
 - Phụ huynh (theo dõi kết quả học tập, nhận thông báo)
@@ -20,7 +20,7 @@ Google Workspace for Education hiện được cấp cho học sinh, giáo viên
 
 ## 🧠 Quyết định
 
-**Hệ thống dx_vas áp dụng cơ chế xác thực phân biệt theo nhóm người dùng:**
+**Hệ thống dx-vas áp dụng cơ chế xác thực phân biệt theo nhóm người dùng:**
 - OAuth2 (Google) cho học sinh, giáo viên, nhân viên nội bộ
 - Email hoặc SĐT + OTP (Firebase hoặc custom OTP backend) cho phụ huynh
 

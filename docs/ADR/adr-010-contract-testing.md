@@ -1,15 +1,15 @@
 ---
 id: adr-010-contract-testing
-title: ADR-010: Chiến lược Contract Testing cho hệ thống dx_vas
+title: ADR-010: Chiến lược Contract Testing cho hệ thống dx-vas
 status: accepted
 author: DX VAS Architecture Team
 date: 2025-06-22
-tags: [contract-testing, pact, integration, api, dx_vas]
+tags: [contract-testing, pact, integration, api, dx-vas]
 ---
 
 ## 📌 Bối cảnh
 
-Trong hệ thống **dx_vas**, nhiều dịch vụ độc lập giao tiếp với nhau qua API:
+Trong hệ thống **dx-vas**, nhiều dịch vụ độc lập giao tiếp với nhau qua API:
 - Frontend (Portal/Admin) ↔ API Gateway
 - API Gateway ↔ LMS Adapter, CRM Adapter, Notification Service
 - API Gateway ↔ External systems (SSO, tuyển sinh...)
@@ -18,7 +18,7 @@ Các dịch vụ được phát triển bởi các đội khác nhau, thay đổ
 
 ## 🧠 Quyết định
 
-**Áp dụng Consumer-Driven Contract Testing bằng công cụ Pact, với hỗ trợ Pact Broker để quản lý contracts giữa các dịch vụ trong dx_vas. Tích hợp contract testing vào CI/CD cả phía consumer và producer.**
+**Áp dụng Consumer-Driven Contract Testing bằng công cụ Pact, với hỗ trợ Pact Broker để quản lý contracts giữa các dịch vụ trong dx-vas. Tích hợp contract testing vào CI/CD cả phía consumer và producer.**
 
 ## 📖 Khái niệm chính
 
@@ -66,7 +66,7 @@ Các dịch vụ được phát triển bởi các đội khác nhau, thay đổ
 - Được định nghĩa bởi consumer trong contract
 - Producer mapping các state → data setup tương ứng trong test
 
-## 📌 Áp dụng trong dx_vas
+## 📌 Áp dụng trong dx-vas
 
 - Bắt buộc contract test với tất cả API public hoặc shared
 - Là một bước trong checklist review OpenAPI (xem [`adr-009-api-governance.md`](./adr-009-api-governance.md))

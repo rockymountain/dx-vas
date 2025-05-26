@@ -1,4 +1,4 @@
-# 📘 Interface Contract – Admin Webapp (dx\_vas)
+# 📘 Interface Contract – Admin Webapp (dx-vas)
 
 ## 🧭 Mục tiêu
 

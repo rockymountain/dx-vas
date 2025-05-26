@@ -1,16 +1,16 @@
 ---
 
 id: adr-002-iac
-title: ADR-002: Chiến lược Hạ tầng dưới dạng Mã nguồn (Infrastructure as Code) cho hệ thống dx_vas
+title: ADR-002: Chiến lược Hạ tầng dưới dạng Mã nguồn (Infrastructure as Code) cho hệ thống dx-vas
 status: accepted
 author: DX VAS DevOps Team
 date: 2025-06-22
-tags: [iac, terraform, infrastructure, dx_vas]
+tags: [iac, terraform, infrastructure, dx-vas]
 ---
 
 ## 📌 Bối cảnh
 
-Hệ thống **dx\_vas** bao gồm nhiều thành phần triển khai trên Google Cloud Platform (GCP):
+Hệ thống **dx-vas** bao gồm nhiều thành phần triển khai trên Google Cloud Platform (GCP):
 
 * API Gateway
 * Backend service (LMS Adapter, CRM Adapter, Notification Service)
@@ -26,12 +26,12 @@ Việc triển khai và cấu hình các tài nguyên hạ tầng cần được
 
 ## 🧠 Quyết định
 
-**Áp dụng Terraform làm công cụ chính quản lý hạ tầng dx\_vas, với mô hình tách module + môi trường, sử dụng thư mục `envs/` để chứa cấu hình theo môi trường, và CI pipeline kiểm soát apply, state và secrets an toàn.**
+**Áp dụng Terraform làm công cụ chính quản lý hạ tầng dx-vas, với mô hình tách module + môi trường, sử dụng thư mục `envs/` để chứa cấu hình theo môi trường, và CI pipeline kiểm soát apply, state và secrets an toàn.**
 
 ## 🧱 Cấu trúc đề xuất
 
 ```bash
-dx_vas/infrastructure/
+dx-vas/infrastructure/
 ├── modules/
 │   ├── cloud_run_service/
 │   ├── cloud_sql_instance/

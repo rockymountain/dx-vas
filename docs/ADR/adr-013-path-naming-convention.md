@@ -1,15 +1,15 @@
 ---
 id: adr-013-path-naming-convention
-title: ADR-013: Quy ước đặt tên endpoint, method và tham số cho API hệ thống dx_vas
+title: ADR-013: Quy ước đặt tên endpoint, method và tham số cho API hệ thống dx-vas
 status: accepted
 author: DX VAS Architecture Team
 date: 2025-06-22
-tags: [api, naming, path, rest, dx_vas]
+tags: [api, naming, path, rest, dx-vas]
 ---
 
 ## 📌 Bối cảnh
 
-Trong hệ thống **dx_vas**, nhiều API được phát triển bởi các đội khác nhau. Một số inconsistency phổ biến đã xảy ra:
+Trong hệ thống **dx-vas**, nhiều API được phát triển bởi các đội khác nhau. Một số inconsistency phổ biến đã xảy ra:
 - Endpoint dạng `/getAllStudents`, `/updateCourse`, không tuân theo chuẩn REST
 - Tham số có lúc là `snake_case`, lúc lại `camelCase`
 - Đôi khi action được encode vào tên path thay vì dùng HTTP method đúng cách

@@ -1,4 +1,4 @@
-# 📘 Interface Contract – Notification Service (dx\_vas)
+# 📘 Interface Contract – Notification Service (dx-vas)
 
 ## 🧭 Mục tiêu
 

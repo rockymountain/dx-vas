@@ -1,4 +1,4 @@
-# 📘 Interface Contract – User Service (dx\_vas)
+# 📘 Interface Contract – User Service (dx-vas)
 
 ## 🗭 Mục tiêu
 

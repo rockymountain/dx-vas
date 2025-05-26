@@ -1,15 +1,15 @@
 ---
 id: adr-003-secrets
-title: ADR-003: Chiến lược Quản lý và Xoay vòng Secrets cho hệ thống dx_vas
+title: ADR-003: Chiến lược Quản lý và Xoay vòng Secrets cho hệ thống dx-vas
 status: accepted
 author: DX VAS Security & DevOps Team
 date: 2025-06-22
-tags: [secrets, security, secret-rotation, dx_vas]
+tags: [secrets, security, secret-rotation, dx-vas]
 ---
 
 ## 📌 Bối cảnh
 
-Hệ thống **dx_vas** bao gồm nhiều dịch vụ triển khai trên GCP như:
+Hệ thống **dx-vas** bao gồm nhiều dịch vụ triển khai trên GCP như:
 - API Gateway
 - Backend Service (CRM Adapter, LMS Proxy, Notification Service, v.v.)
 - Frontend Webapp (Admin, Customer Portal)

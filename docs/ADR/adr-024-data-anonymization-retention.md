@@ -1,15 +1,15 @@
 ---
 id: adr-024-data-anonymization-retention
-title: ADR-024: Chính sách ẩn danh hóa và lưu trữ dữ liệu cho hệ thống dx_vas
+title: ADR-024: Chính sách ẩn danh hóa và lưu trữ dữ liệu cho hệ thống dx-vas
 status: accepted
 author: DX VAS Platform Team
 date: 2025-06-22
-tags: [privacy, anonymization, retention, data-governance, dx_vas]
+tags: [privacy, anonymization, retention, data-governance, dx-vas]
 ---
 
 ## 📌 Bối cảnh
 
-Hệ thống **dx_vas** lưu trữ và xử lý nhiều loại dữ liệu có khả năng nhận dạng cá nhân (PII):
+Hệ thống **dx-vas** lưu trữ và xử lý nhiều loại dữ liệu có khả năng nhận dạng cá nhân (PII):
 - Thông tin học sinh, phụ huynh, giáo viên (họ tên, số điện thoại, email)
 - Nhật ký hành vi người dùng (logs, trace)
 - Thông tin cấu hình tài khoản, lịch sử thao tác hệ thống
@@ -23,7 +23,7 @@ Ngoài ra, hệ thống còn cần sao lưu, tạo môi trường thử nghiệm
 
 ## 🧠 Quyết định
 
-**Thiết lập chính sách phân loại, ẩn danh hóa và lưu trữ dữ liệu chuẩn hoá trên toàn hệ thống dx_vas để đảm bảo an toàn, tuân thủ, và dễ dàng áp dụng sandbox hoặc audit.**
+**Thiết lập chính sách phân loại, ẩn danh hóa và lưu trữ dữ liệu chuẩn hoá trên toàn hệ thống dx-vas để đảm bảo an toàn, tuân thủ, và dễ dàng áp dụng sandbox hoặc audit.**
 
 ---
 

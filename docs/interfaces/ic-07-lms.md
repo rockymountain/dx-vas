@@ -1,4 +1,4 @@
-# 📘 Interface Contract – LMS Adapter (dx\_vas)
+# 📘 Interface Contract – LMS Adapter (dx-vas)
 
 ## 🧭 Mục tiêu
 
