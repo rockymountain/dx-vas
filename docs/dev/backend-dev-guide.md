@@ -137,7 +137,7 @@ dx-vas áp dụng mô hình **3-layer architecture** cho backend, nhằm tách b
 @router.get(\"/users/{id}\", response_model=UserOut)
 def get_user(id: UUID, user_svc: UserService = Depends(get_user_service)):
     return user_svc.get_user(id)
-````
+```
 
 #### 📎 Ghi chú về Dependency
 
@@ -343,7 +343,7 @@ Giả sử route PATCH `/students/{id}` nhận thông tin cập nhật và gọi
 class StudentUpdate(BaseModel):
     name: Optional[str]
     birthday: Optional[date]
-````
+```
 
 #### 2. API Handler (`api/v1/student.py`)
 
@@ -443,7 +443,7 @@ class StudentOut(BaseModel):
     name: str
     birthday: date
     class_name: Optional[str]
-````
+```
 
 ---
 
@@ -527,7 +527,7 @@ dx-vas chuẩn hoá cơ chế xử lý lỗi để API consistent, dễ debug v�
     "timestamp": "2025-06-01T12:00:00Z"
   }
 }
-````
+```
 
 ---
 
@@ -643,7 +643,7 @@ class StudentRepo:
 
     def list_by_class(self, class_id: UUID) -> List[Student]:
         return self.session.query(Student).filter(Student.class_id == class_id).all()
-````
+```
 
 ---
 
@@ -712,7 +712,7 @@ events/
 ├── publisher/
 │   └── notify\_event.py
 
-````
+```
 
 ---
 
@@ -752,7 +752,7 @@ def handle_user_created(message: PubSubMessage):
     finally:
         db_session_event.close()
 
-````
+```
 
 > ✅ Sử dụng SessionLocal() riêng cho background worker, đảm bảo quản lý transaction tách biệt với request.
 
@@ -808,7 +808,7 @@ tests/
 │   └── test\_pubsub\_event.py
 ├── conftest.py
 
-````
+```
 
 ---
 
@@ -823,7 +823,7 @@ def test_get_user_success():
     result = svc.get_user(1)
 
     assert result.name == \"John\"
-````
+```
 
 * Dùng `MagicMock` để mô phỏng repository
 * Không cần DB hoặc HTTP client

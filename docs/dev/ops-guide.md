@@ -112,7 +112,7 @@ Hệ thống dx-vas gồm nhiều service độc lập, mỗi service là một 
     region: asia-southeast1
     env_vars: ENV=${{ github.ref == 'refs/heads/main' && 'production' || 'staging' }}
 
-````
+```
 
 📌 Trong workflow thực tế, biến ENV không gán cứng mà được xác định tự động dựa trên nhánh (hoặc GitHub environment). Có thể sử dụng biến github.ref hoặc GitHub Environments (production, staging) để thiết lập đúng biến môi trường cho Cloud Run.
 
@@ -246,7 +246,7 @@ Mọi service trong dx-vas đều ghi log theo định dạng JSON chuẩn hóa,
   "message": "User updated successfully",
   "user_id": "u789"
 }
-````
+```
 
 #### 📌 Lưu ý:
 
@@ -345,7 +345,7 @@ Ngoài credentials, hệ thống có thể cần cấu hình các giá trị đ�
 ```bash
 gcloud secrets create dx-auth-jwt-secret \
   --replication-policy automatic
-````
+```
 
 2. Upload version:
 
@@ -476,7 +476,7 @@ Nếu sau deploy xảy ra lỗi:
 ```bash
 gcloud run services update-traffic user-service \
   --to-revisions=rev-1234=100
-````
+```
 
 ---
 
@@ -562,7 +562,7 @@ Mỗi subscription đều có cấu hình DLT đi kèm, ví dụ:
 gcloud pubsub subscriptions update my-subscription \
   --dead-letter-topic=projects/$PROJECT_ID/topics/my-sub-dlt \
   --max-delivery-attempts=5
-````
+```
 
 Khi message retry quá 5 lần → chuyển sang DLT → log lại sự kiện lỗi.
 
@@ -651,7 +651,7 @@ Hệ thống dx-vas sử dụng nhiều dịch vụ managed (Cloud Run, SQL, Pub
 
 ```bash
 gcloud billing budgets create --display-name="VAS Monthly Budget" ...
-````
+```
 
 * Gửi cảnh báo qua email hoặc Google Chat
 
@@ -874,7 +874,7 @@ gcloud sql backups list --instance=dx-user-postgres
 # Restore từ backup
 gcloud sql instances restore-backup dx-user-postgres \
   --backup-id=1234567890
-````
+```
 
 ---
 

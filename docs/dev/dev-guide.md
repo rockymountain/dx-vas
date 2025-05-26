@@ -66,7 +66,7 @@ Mỗi service là **một repo Git riêng biệt**:
 📦 dx-customer-portal
 📦 dx-vas
 
-````
+```
 
 Tài liệu `dev-guide.md` này nằm trong repo `dx-vas`.
 
@@ -80,7 +80,7 @@ git clone git@github.com:vas/dx-auth-service.git
 git clone git@github.com:vas/dx-user-service.git
 git clone git@github.com:vas/dx-notification-service.git
 ...
-````
+```
 
 ---
 
@@ -213,7 +213,7 @@ Quy ước này áp dụng cho toàn bộ backend services và frontend apps tro
 
 ```bash
 pip install black isort flake8
-````
+```
 
 #### 🔁 Format code
 
@@ -345,7 +345,7 @@ Tuân theo format:
 
 <RESOURCE>*<ACTION>\[*<SCOPE>]
 
-````
+```
 
 Ví dụ:
 
@@ -364,7 +364,7 @@ Ví dụ:
 
 ```bash
 make rbac-migrate
-````
+```
 
 3. Gán permission này vào role trong bảng `role_permission`
 4. Gán role cho user → tự động invalidate cache qua sự kiện `rbac_updated`
@@ -420,7 +420,7 @@ Toàn bộ hệ thống dx-vas tuân theo nguyên tắc API chuẩn RESTful, đ�
   },
   "error": null
 }
-````
+```
 
 Khi lỗi:
 
@@ -517,7 +517,7 @@ Gửi thông báo theo template:
     "due_date": "2024-01-10"
   }
 }
-````
+```
 
 #### `POST /notifications/register-channel`
 
@@ -596,7 +596,7 @@ Hệ thống dx-vas áp dụng quy trình kiểm thử và triển khai liên t�
 # Trong từng repo service
 pytest tests/
 pytest --cov=app tests/
-````
+```
 
 ---
 
@@ -691,7 +691,7 @@ dx-user-service/
 │   └── env.py
 ├── alembic.ini
 
-````
+```
 
 ---
 
@@ -699,7 +699,7 @@ dx-user-service/
 
 ```bash
 alembic revision -m "add table permission"
-````
+```
 
 Sau đó sửa file trong `versions/` để định nghĩa lệnh SQL.
 
@@ -769,7 +769,7 @@ Mỗi thay đổi trong hệ thống dx-vas phải được thực hiện thông
 git checkout dev
 git pull
 git checkout -b feat/<service>-<short-desc>
-````
+```
 
 2. **Viết code & test**
 3. **Chạy test + format code**
