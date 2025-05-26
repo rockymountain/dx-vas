@@ -196,11 +196,11 @@ Hệ thống dx-vas sử dụng Google Cloud Monitoring để theo dõi trạng 
 
 ```mermaid
 flowchart TD
-    A[Service Metrics\n Cloud Run, Redis, DB...]
+    A[Service Metrics \n Cloud Run, Redis, DB...]
     B[Cloud Monitoring]
-    C[Alert Policy\n Threshold Rules]
-    D[Notification Channel\n Google Chat, Email]
-    E[Incident Response\n Ops team]
+    C[Alert Policy \n Threshold Rules]
+    D[Notification Channel \n Google Chat, Email]
+    E[Incident Response \n Ops team]
 
     A --> B
     B --> C
