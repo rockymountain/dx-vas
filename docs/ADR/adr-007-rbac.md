@@ -7,141 +7,126 @@ date: 2025-06-22
 tags: [rbac, security, auth, dx-vas]
 ---
 
-## 📌 Bối cảnh
+# ADR-007: Chiến lược RBAC phân tầng
 
-Hệ thống `dx-vas` phục vụ nhiều loại người dùng (học sinh, giáo viên, phụ huynh, quản trị viên), mỗi nhóm có quyền khác nhau trên các tài nguyên. Các dịch vụ API hoạt động theo mô hình microservice nên cần cơ chế phân quyền đồng bộ và linh hoạt giữa các service.
+## Bối cảnh
+
+Hệ thống dx-vas phục vụ nhiều trường thành viên (multi-tenant), mỗi trường có người dùng, vai trò và quyền riêng biệt. Một người dùng có thể hoạt động ở nhiều tenant khác nhau với vai trò khác nhau.
+
+Hệ thống cần một chiến lược RBAC động, linh hoạt, mở rộng được và:
+- Phân quyền đúng trong từng tenant
+- Cho phép kế thừa hoặc tuỳ biến quyền theo từng trường
+- Hỗ trợ caching để tăng hiệu năng
+- Dễ audit, rollback, và quản trị
+
+## Quyết định
+
+### 1. Phân tầng RBAC: Master vs Sub
+
+| Thành phần | Vai trò |
+|------------|---------|
+| **User Service Master** | Quản lý định danh toàn cục (`users_global`), danh sách tenant, và template role/permission dùng chung |
+| **Sub User Service (per tenant)** | Quản lý người dùng trong tenant, role/permission nội bộ, mapping user ↔ role ↔ permission |
+
+Mỗi tenant có stack riêng. RBAC được đánh giá tại API Gateway trong ngữ cảnh `tenant_id`.
+
+### 2. JWT và Phân quyền
+
+- JWT luôn chứa:
+  - `user_id` (global)
+  - `tenant_id`
+  - `roles`: danh sách mã vai trò (`role_code`)
+- JWT **không chứa `permissions`**
+  - Việc đánh giá quyền chi tiết (bao gồm cả `condition`) sẽ được thực hiện tại API Gateway
+  - Gateway tra cứu từ Redis cache theo key:
+  
+    ```text
+    rbac:{user_id}:{tenant_id}
+    ```
+
+- Nếu cache miss → Gateway gọi Sub User Service thông qua API Gateway để lấy `permissions` theo role
 
 ---
 
-## 🧠 Quyết định
+### 3. Cấu trúc dữ liệu RBAC
 
-Áp dụng mô hình **RBAC động**:
+**Tại Master:**
 
-* Mỗi user có thể được gán một hoặc nhiều **role**
-* Mỗi **role** ánh xạ tới một danh sách **permission** (theo định dạng `resource:action` + `condition`)
-* Permission được lưu trong DB và cache tại Redis
-* Quyền truy cập được kiểm tra dựa trên cặp `(user_id, path:method)` tại API Gateway hoặc Backend
-
-> JWT **KHÔNG** chứa danh sách `permissions`. Gateway sẽ lấy `role` từ JWT, tra `permissions` từ Redis hoặc DB, evaluate điều kiện dựa trên context, và chỉ forward **các permission hợp lệ (đã evaluate)** qua header `X-Permissions` dưới dạng danh sách các **permission code**.
-
----
-
-## 🔐 Cách hoạt động
-
-1. User đăng nhập → nhận JWT chứa `sub`, `role`, `auth_method`
-2. Khi request đến API Gateway:
-
-   * JWT được xác thực (ADR-006)
-   * `role` và `user_id` được extract từ JWT
-   * Gateway tra `permissions` từ Redis hoặc DB (gồm cả `condition`)
-   * Gateway kiểm tra `resource`, `action` và evaluate `condition` theo context request hiện tại
-   * Nếu pass, Gateway forward header:
-
-```http
-X-User-ID: u123
-X-Role: parent
-X-Auth-Method: otp
-X-Permissions: VIEW_STUDENT_SCORE_OWN_CHILD, CREATE_COURSE_GLOBAL
+```sql
+CREATE TABLE global_permissions_templates (
+  template_id UUID PRIMARY KEY,
+  permission_code TEXT UNIQUE NOT NULL,
+  action TEXT NOT NULL,
+  resource TEXT NOT NULL,
+  default_condition JSONB,
+  description TEXT
+);
 ```
 
-> `X-Permissions` là danh sách **permission code** đã được Gateway evaluate và xác định là hợp lệ cho request hiện tại. Đây là định danh duy nhất, ngắn gọn và dễ xử lý tại backend.
+* `permission_code` giúp mapping và clone xuống Sub User Service dễ dàng
+* Cấu trúc tương tự `permissions_in_tenant`, giúp tenant kế thừa hoặc override khi cần
 
+**Tại Sub User Service (per tenant):**
 
----
+```sql
+CREATE TABLE permissions_in_tenant (
+  permission_id UUID PRIMARY KEY,
+  permission_code TEXT UNIQUE NOT NULL,
+  action TEXT NOT NULL,
+  resource TEXT NOT NULL,
+  condition JSONB
+);
+```
 
-## 🧩 Mô hình dữ liệu RBAC
+* Trường `action`, `resource` đều có `NOT NULL` để đảm bảo permission luôn đủ thông tin để đánh giá
 
-* `users`: đại diện cho tài khoản hệ thống, được liên kết với actor (giáo viên, phụ huynh...)
-* `roles`: nhóm quyền, có thể được gán cho user
-* `permissions`: quyền cụ thể, định danh duy nhất bởi `code`, có thể kèm điều kiện JSONB
-* `user_roles`: ánh xạ giữa user và role
-* `role_permissions`: ánh xạ giữa role và permission
+### 4. Điều kiện phân quyền (`condition` JSONB)
 
-### 🧱 Cấu trúc permission
+Permissions có thể chứa điều kiện động:
 
 ```json
 {
-  "code": "VIEW_STUDENT_SCORE_OWN_CHILD",
-  "resource": "student",
-  "action": "view",
-  "condition": {
-    "accessible_student_ids": ["student_id_con"]
-  },
-  "description": "Cho phép xem điểm số của con mình"
+  "class_id": "$user.class_id"
 }
 ```
 
----
+Gateway sẽ đánh giá điều kiện này dựa trên context user và request. Điều kiện được lưu và tra cứu từ Redis hoặc gọi API nếu cần.
 
-## 🧩 Gateway Evaluate Flow
+### 5. Cache tại Gateway
 
-1. Xác thực JWT (hoặc OTP) → lấy `user_id`
-2. Kiểm tra `is_active` từ bảng `users` → nếu `false` → từ chối truy cập (`IS_INACTIVE_USER`)
-3. Lấy role, gán permission từ Redis cache (`RBAC:{user_id}`) → nếu miss cache thì fallback DB
-4. Evaluate condition trong permission (nếu có)
-5. Forward header:
+* Key: `rbac:{user_id}:{tenant_id}`
+* TTL mặc định: 5–15 phút
+* Invalidation:
 
-   * `X-User-ID`
-   * `X-Role`
-   * `X-Permissions`: danh sách các permission `code` đã evaluate pass
-   * `Trace-ID`
+  * Khi user bị gán quyền mới
+  * Khi user bị vô hiệu hóa
+  * Qua sự kiện Pub/Sub: `rbac_updated`, `user_status_changed`
 
-> Gateway không cần biết actor là ai – chỉ dùng `user_id`, và permission code đã được xử lý từ User Service.
+### 6. Đồng bộ template
 
----
+* Các tenant có thể:
 
-## 🔧 Cơ chế propagate RBAC
+  * Kế thừa template vai trò từ Master (tự động đồng bộ)
+  * Clone để tuỳ chỉnh (độc lập về sau)
+* Sự kiện `rbac_template_updated` được phát từ Master → Sub nhận và xử lý
 
-* Các sự kiện sau sẽ kích hoạt propagate:
+## Hệ quả
 
-  * User bị khoá (`is_active = false`)
-  * Gán/thu hồi role
-  * Gán/thu hồi permission
-* Gateway sử dụng Redis Pub/Sub hoặc message queue để nhận event cập nhật cache RBAC
-* TTL của Redis cache: 5–15 phút hoặc làm mới theo push event
-* Trong trường hợp đặc biệt, backend có thể force-refresh RBAC bằng header debug
+✅ Ưu điểm:
 
----
+* Phân tách rõ ràng giữa định danh toàn cục và phân quyền nội bộ
+* Dễ mở rộng khi có tenant mới hoặc role mới
+* Tối ưu hiệu năng qua Redis cache và Pub/Sub
+* Quản trị tập trung, nhưng cho phép mỗi tenant tùy biến độc lập
+* Hỗ trợ condition động, RBAC đa ngữ cảnh
 
-## 🧩 Quản trị RBAC thông qua User Service
+⚠️ Lưu ý:
 
-* Tất cả thực thể `users`, `roles`, `permissions` được quản lý bởi **User Service**
-* Các API quản trị bao gồm:
+* Cần xây dựng giao diện quản lý role/permission rõ ràng cho từng tenant
+* Cần cơ chế trace + audit phân quyền theo `tenant_id`
 
-  * `/users`, `/users/{id}/roles`, `/users/{id}/status`
-  * `/roles`, `/roles/{id}/permissions`
-  * `/permissions` (read-only)
-* Permissions **được định nghĩa tĩnh**, load vào DB qua migration – không cho phép tạo/sửa/xoá permission qua API (chỉ `GET /permissions` được expose)
+## Liên kết liên quan
 
----
-
-## 🧭 Service-to-Service RBAC
-
-* Các service như CRM Adapter có thể dùng JWT riêng hoặc credential đặc biệt
-* Được gán `X-Role: system` và permission như user thường
-* Gateway evaluate như user bình thường nhưng với role là `system`
-* Permission cần được cấp cụ thể cho service đó trong bảng RBAC (user\_id đại diện cho service identity)
-
----
-
-## ⚠️ Rủi ro & Giải pháp
-
-| Rủi ro                                                | Giải pháp                                                                          |
-| ----------------------------------------------------- | ---------------------------------------------------------------------------------- |
-| Dữ liệu RBAC thay đổi nhưng Gateway vẫn dùng cache cũ | Sử dụng TTL + push event qua Redis Pub/Sub                                         |
-| Permission evaluate sai do condition phức tạp         | Chuẩn hoá schema điều kiện và test bằng unit test + integration test               |
-| Người dùng bị khoá nhưng token vẫn hợp lệ             | Check `is_active` tại bước evaluate, invalidate RBAC nếu cần                       |
-| Service-to-service không được kiểm soát phân quyền    | Phân biệt rõ role system, và permission của service cũng cần được cấu hình rõ ràng |
-
----
-
-## 📎 Tài liệu liên quan
-
-* [User Service – Interface Contract](../interfaces/user-service-interface-contract.md)
-* Auth Strategy: [ADR-006](./adr-006-auth-strategy.md)
-* Audit Logging: [ADR-008](./adr-008-audit-logging.md)
-* Security Strategy: [ADR-004](./adr-004-security.md)
-
----
-
-> “RBAC động không chỉ là quyền – mà là bức tranh toàn cảnh về vai trò, điều kiện, và hành vi hệ thống.”
+* [`adr-006-auth-strategy.md`](./adr-006-auth-strategy.md)
+* [`rbac-deep-dive.md`](../architecture/rbac-deep-dive.md)
+* [`README.md#2-đăng-nhập--phân-quyền-động-rbac`](../README.md#2-đăng-nhập--phân-quyền-động-rbac)
