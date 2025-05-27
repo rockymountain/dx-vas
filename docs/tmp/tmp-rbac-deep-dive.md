@@ -71,8 +71,7 @@ CREATE TABLE users_global (
   phone TEXT,
   auth_provider TEXT CHECK (auth_provider IN ('google', 'local')),
   local_auth_tenant_id UUID NULL,
-  is_active BOOLEAN DEFAULT TRUE,
-  UNIQUE (email, auth_provider) -- đảm bảo không trùng email giữa các loại đăng nhập
+  is_active BOOLEAN DEFAULT TRUE
 );
 
 -- Danh sách tenant
@@ -92,29 +91,17 @@ CREATE TABLE user_tenant_assignments (
 );
 
 -- Template vai trò và quyền toàn hệ thống
-CREATE TABLE global_roles_templates (
-  template_id UUID PRIMARY KEY,
-  template_code TEXT UNIQUE,
-  description TEXT
-);
-
-CREATE TABLE global_permissions_templates (
-  template_id UUID PRIMARY KEY,
-  permission_code TEXT UNIQUE,
-  action TEXT,
-  resource TEXT,
-  default_condition JSONB
-);
+CREATE TABLE global_roles_templates (...);
+CREATE TABLE global_permissions_templates (...);
 ```
-
----
 
 ### 📦 Tại Sub User Service (mỗi tenant)
 
 ```sql
--- Người dùng nội bộ tenant (dùng user_id toàn cục làm PK)
+-- Người dùng nội bộ tenant (tham chiếu user toàn cục)
 CREATE TABLE users_in_tenant (
-  user_id UUID PRIMARY KEY REFERENCES users_global(user_id),
+  user_id UUID PRIMARY KEY,
+  user_id_global UUID REFERENCES users_global(user_id),
   is_active_in_tenant BOOLEAN DEFAULT TRUE
 );
 
@@ -130,7 +117,7 @@ CREATE TABLE permissions_in_tenant (
   permission_code TEXT UNIQUE,
   action TEXT,
   resource TEXT,
-  condition JSONB -- ví dụ: { "class_id": "$user.class_id" }
+  condition JSONB -- chứa ràng buộc như { "class_id": "$user.class_id" }
 );
 
 -- Mapping vai trò ↔ người dùng
@@ -148,7 +135,7 @@ CREATE TABLE role_permission_in_tenant (
 );
 ```
 
-📘 Toàn bộ mô hình dữ liệu chi tiết được định nghĩa chính thức trong:
+📘 Toàn bộ mô hình dữ liệu đầy đủ được định nghĩa trong:
 
 * [`user-service/master/data-model.md`](../services/user-service/master/data-model.md)
 * [`user-service/tenant/data-model.md`](../services/user-service/tenant/data-model.md)
