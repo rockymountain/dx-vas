@@ -301,7 +301,7 @@ graph TD
     end
 
     subgraph data["Project: dx-vas-data"]
-      DB[🗄️ Cloud SQL (PostgreSQL, MySQL)]
+      DB["🗄️ Cloud SQL (PostgreSQL, MySQL)"]
       BQ[📦 BigQuery]
       GCS[📁 GCS Buckets]
     end
@@ -442,7 +442,7 @@ flowchart TD
     A1[Manage Users in Tenant]
     A2[Assign Roles]
     A3[Create/Update Roles]
-    A4[Access Audit Logs (Tenant)]
+    A4["Access Audit Logs (Tenant)"]
     A5[Send Local Notification]
   end
 
