@@ -11,8 +11,8 @@ site_description: Tài liệu kiến trúc và phát triển cho dự án Chuy�
 site_author: DX VAS Team
 
 # Đường dẫn đến repository của dự án (để hiển thị link trên trang docs)
-repo_url: https://github.com/rockymountain/dx-vas.git #
-repo_name: rockymountain/dx-vas # Tên hiển thị cho repo link
+repo_url: https://github.com/ezdesign-vn/dx-vas.git #
+repo_name: ezdesign-vn/dx-vas # Tên hiển thị cho repo link
 
 # --- Theme Configuration ---
 theme:
