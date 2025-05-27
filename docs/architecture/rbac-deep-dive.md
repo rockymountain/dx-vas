@@ -430,13 +430,13 @@ sequenceDiagram
     participant SubUser as 🧩 Sub User Service (per tenant)
 
     Client->>Auth: Đăng nhập (OAuth2 / OTP)
-    Auth->>JWT: Phát hành JWT chứa\nuser_id, tenant_id, roles, permissions
+    Auth->>JWT: Phát hành JWT chứa<br>user_id, tenant_id, roles, permissions
     Client->>Gateway: Gửi request kèm JWT
 
     Gateway->>JWT: Giải mã JWT
     Gateway->>JWT: Lấy user_id, tenant_id, permissions
     alt Cache Hit
-        Gateway->>Redis: Lấy RBAC từ cache\nrbac:{user_id}:{tenant_id}
+        Gateway->>Redis: Lấy RBAC từ cache<br>rbac:{user_id}:{tenant_id}
     else Cache Miss
         Gateway->>SubUser: Gọi API để lấy roles & permissions
         SubUser-->>Gateway: Trả về roles, permissions
@@ -465,47 +465,44 @@ sequenceDiagram
 ```mermaid
 sequenceDiagram
     autonumber
-    participant User as 👤 Người dùng
-    participant Frontend as 🌐 Frontend App
-    participant AuthM as 🔐 Auth Service Master
-    participant AuthT as 🔐 Sub Auth Service (per tenant)
-    participant UserMaster as 🧠 User Service Master
-    participant UserSub as 🧩 Sub User Service (per tenant)
-    participant JWT as 📦 JWT Token
+    participant User as "👤 Người dùng"
+    participant Frontend as "🌐 Frontend App"
+    participant AuthM as "🔐 Auth Service Master"
+    participant AuthT as "🔐 Sub Auth Service (per tenant)"
+    participant UserMaster as "🧠 User Service Master"
+    participant UserSub as "🧩 Sub User Service (per tenant)"
+    participant JWT as "📦 JWT Token"
+    participant Google as "🌐 Google OAuth"  rect rgba(220,220,220,0.1)
+        Note over User, AuthM: Đăng nhập Google OAuth2
+        User->>Frontend: Mở ứng dụng
+        Frontend->>AuthM: Login via Google
+        AuthM->>Google: OAuth2 Authorization
+        Google-->>AuthM: Access Token
+        AuthM->>UserMaster: Xác minh user + lấy user_id_global
+        UserMaster-->>AuthM: user_id_global + danh sách tenant
 
-    rect rgba(220,220,220,0.1)
-    Note over User, AuthM: Đăng nhập Google OAuth2
-    User->>Frontend: Mở ứng dụng
-    Frontend->>AuthM: Login via Google
-    AuthM->>Google: OAuth2 Authorization
-    Google-->>AuthM: Access Token
-    AuthM->>UserMaster: Xác minh user + lấy user_id_global
-    UserMaster-->>AuthM: user_id_global + danh sách tenant
+        alt User thuộc nhiều tenant
+            AuthM->>Frontend: Yêu cầu chọn tenant
+            Frontend->>AuthM: tenant_id đã chọn
+        else Chỉ một tenant
+            Note over AuthM: Bỏ qua bước chọn, sử dụng tenant duy nhất end
 
-    alt User thuộc nhiều tenant
-        AuthM->>Frontend: Yêu cầu chọn tenant
-        Frontend->>AuthM: tenant_id đã chọn
-    else Chỉ một tenant
-        AuthM: Bỏ qua bước chọn
-    end
+        AuthM->>UserSub: Lấy roles & permissions trong tenant đã chọn
+        UserSub-->>AuthM: Trả danh sách role/permission
+        AuthM->>JWT: Ký & phát JWT chứa:<br>user_id, tenant_id, roles, permissions
+        AuthM-->>Frontend: Trả JWT
+    end rect rgba(220,220,220,0.1)
+        Note over User, AuthT: Đăng nhập Local/OTP
+        User->>Frontend: Mở ứng dụng (trường không dùng Google)
+        Frontend->>AuthT: Login OTP
+        AuthT->>UserMaster: Kiểm tra user / đăng ký mới
+        UserMaster-->>AuthT: user_id_global
+        AuthT->>UserSub: Lấy roles & permissions trong tenant
+        UserSub-->>AuthT: Trả roles, permissions
+        AuthT->>JWT: Phát JWT đầy đủ
+        AuthT-->>Frontend: Trả JWT
+    end ```
 
-    AuthM->>UserSub: Lấy roles & permissions trong tenant đã chọn
-    UserSub-->>AuthM: Trả danh sách role/permission
-    AuthM->>JWT: Ký & phát JWT chứa:\nuser_id, tenant_id, roles, permissions
-    AuthM-->>Frontend: Trả JWT
-    end
-
-    rect rgba(220,220,220,0.1)
-    Note over User, AuthT: Đăng nhập Local/OTP
-    User->>Frontend: Mở ứng dụng (trường không dùng Google)
-    Frontend->>AuthT: Login OTP
-    AuthT->>UserMaster: Kiểm tra user / đăng ký mới
-    UserMaster-->>AuthT: user_id_global
-    AuthT->>UserSub: Lấy roles & permissions trong tenant
-    UserSub-->>AuthT: Trả roles, permissions
-    AuthT->>JWT: Phát JWT đầy đủ
-    AuthT-->>Frontend: Trả JWT
-    end
 ```
 
 📌 **Điểm chính:**
