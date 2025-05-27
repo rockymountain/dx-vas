@@ -66,10 +66,10 @@ Mô hình RBAC này hoạt động trong bối cảnh **multi-tenant**, nơi m�
 -- Danh sách người dùng toàn hệ thống
 CREATE TABLE users_global (
   user_id UUID PRIMARY KEY,
-  full_name TEXT,
-  email TEXT,
+  full_name TEXT NOT NULL,
+  email TEXT NOT NULL,
   phone TEXT,
-  auth_provider TEXT CHECK (auth_provider IN ('google', 'local')),
+  auth_provider TEXT NOT NULL CHECK (auth_provider IN ('google', 'local')),
   local_auth_tenant_id UUID NULL,
   is_active BOOLEAN DEFAULT TRUE,
   UNIQUE (email, auth_provider) -- đảm bảo không trùng email giữa các loại đăng nhập
@@ -78,8 +78,8 @@ CREATE TABLE users_global (
 -- Danh sách tenant
 CREATE TABLE tenants (
   tenant_id UUID PRIMARY KEY,
-  tenant_name TEXT,
-  status TEXT CHECK (status IN ('active', 'inactive'))
+  tenant_name TEXT NOT NULL,
+  status TEXT NOT NULL CHECK (status IN ('active', 'inactive'))
 );
 
 -- Gán user vào tenant
@@ -91,18 +91,19 @@ CREATE TABLE user_tenant_assignments (
   PRIMARY KEY (user_id, tenant_id)
 );
 
--- Template vai trò và quyền toàn hệ thống
+-- Template vai trò toàn hệ thống
 CREATE TABLE global_roles_templates (
   template_id UUID PRIMARY KEY,
-  template_code TEXT UNIQUE,
+  template_code TEXT UNIQUE NOT NULL,
   description TEXT
 );
 
+-- Template quyền toàn hệ thống
 CREATE TABLE global_permissions_templates (
   template_id UUID PRIMARY KEY,
-  permission_code TEXT UNIQUE,
-  action TEXT,
-  resource TEXT,
+  permission_code TEXT UNIQUE NOT NULL,
+  action TEXT NOT NULL,
+  resource TEXT NOT NULL,
   default_condition JSONB
 );
 ```
@@ -118,18 +119,19 @@ CREATE TABLE users_in_tenant (
   is_active_in_tenant BOOLEAN DEFAULT TRUE
 );
 
--- Vai trò và quyền của tenant
+-- Vai trò trong tenant
 CREATE TABLE roles_in_tenant (
   role_id UUID PRIMARY KEY,
-  role_code TEXT UNIQUE,
-  role_name TEXT
+  role_code TEXT UNIQUE NOT NULL,
+  role_name TEXT NOT NULL
 );
 
+-- Quyền trong tenant
 CREATE TABLE permissions_in_tenant (
   permission_id UUID PRIMARY KEY,
-  permission_code TEXT UNIQUE,
-  action TEXT,
-  resource TEXT,
+  permission_code TEXT UNIQUE NOT NULL,
+  action TEXT NOT NULL,
+  resource TEXT NOT NULL,
   condition JSONB -- ví dụ: { "class_id": "$user.class_id" }
 );
 
@@ -148,7 +150,7 @@ CREATE TABLE role_permission_in_tenant (
 );
 ```
 
-📘 Toàn bộ mô hình dữ liệu chi tiết được định nghĩa chính thức trong:
+📘 Mô hình dữ liệu này giúp tách biệt rõ ràng giữa định danh toàn cục và RBAC cục bộ theo từng tenant. Tài liệu chi tiết hơn được trình bày tại:
 
 * [`user-service/master/data-model.md`](../services/user-service/master/data-model.md)
 * [`user-service/tenant/data-model.md`](../services/user-service/tenant/data-model.md)
