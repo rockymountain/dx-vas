@@ -1,5 +1,22 @@
 # Phân tích Chuyên sâu: Kiến trúc Phân quyền Động (RBAC) trong Hệ thống dx-vas
 
+## 📚 Mục lục Chi tiết – Phân tích Kiến trúc Phân quyền Động (RBAC)
+
+| STT | Tên mục | Mô tả | Liên kết |
+|-----|---------|-------|----------|
+| 1️⃣ | **Tổng quan & Định nghĩa RBAC** | Khái niệm role, permission, condition, áp dụng trong kiến trúc đa tenant | [Xem mục](#1-tổng-quan--định-nghĩa-rbac) |
+| 2️⃣ | **Phân tầng Quản lý Định danh & Phân quyền** | Vai trò của User Service Master và Sub User Service | [Xem mục](#2-phân-tầng-quản-lý-định-danh--phân-quyền) |
+| 3️⃣ | **Luồng Xác thực & Phân quyền (Multi-Tenant)** | Cách JWT được phát hành và RBAC được đánh giá tại Gateway | [Xem mục](#3-luồng-xác-thực--phân-quyền-multi-tenant) |
+| 4️⃣ | **Mô hình Dữ liệu RBAC (Master vs Sub)** | Chi tiết các bảng schema tại Master và Sub Service | [Xem mục](#4-mô-hình-dữ-liệu-rbac-master-vs-sub) |
+| 5️⃣ | **Permission có điều kiện (Condition JSONB)** | Mô hình `condition` động dựa trên context người dùng & request | [Xem mục](#5-permission-có-điều-kiện-condition-jsonb) |
+| 6️⃣ | **Chiến lược Cache RBAC tại API Gateway** | Cách Redis cache giúp tăng hiệu năng và logic invalidation | [Xem mục](#6-chiến-lược-cache-rbac-tại-api-gateway) |
+| 7️⃣ | **Chiến lược Đồng bộ RBAC** | Từ template Master đến Sub User Service (kế thừa hoặc clone) | [Xem mục](#7-chiến-lược-đồng-bộ-rbac) |
+| 8️⃣ | **Hiệu năng & Khả năng mở rộng** | Kỹ thuật tối ưu cache, pub/sub, autoscale theo tenant | [Xem mục](#8-hiệu-năng--khả-năng-mở-rộng) |
+| 9️⃣ | **Bảo mật chuyên sâu trong RBAC** | Isolation theo tenant, JWT trust, định danh vai trò | [Xem mục](#9-bảo-mật-chuyên-sâu-trong-rbac) |
+| 🔟 | **Giám sát & Gỡ lỗi** | Audit logs, debug header, metric hệ thống RBAC | [Xem mục](#10-giám-sát--gỡ-lỗi) |
+| 1️⃣1️⃣ | **Best Practices cho Quản trị RBAC** | Các khuyến nghị tên role, số lượng role/user, phân quyền tối ưu | [Xem mục](#11-best-practices-cho-quản-trị-rbac) |
+| 1️⃣2️⃣ | **Công cụ & Tài liệu liên quan** | Liên kết tới ADR, data-model, sơ đồ, spec JSONB, OpenAPI | [Xem mục](#12-công-cụ--tài-liệu-liên-quan) |
+
 ## 1. Tổng quan & Định nghĩa RBAC
 
 RBAC (Role-Based Access Control) trong hệ thống dx-vas cho phép kiểm soát quyền truy cập một cách linh hoạt và có thể mở rộng, dựa trên:

@@ -1,5 +1,35 @@
 # TÀI LIỆU KIẾN TRÚC CHI TIẾT – HỆ THỐNG CHUYỂN ĐỔI SỐ VAS
 
+# 📚 Mục lục Tài liệu Kiến trúc Chi tiết – Hệ thống dx-vas
+
+| STT | Mục chính | Mô tả | Liên kết |
+|-----|-----------|-------|----------|
+| 1️⃣ | **Yêu cầu dự án** | Mô hình tổ chức, số lượng người dùng, và khả năng mở rộng hệ thống | [Xem mục](#1-yêu-cầu-dự-án) |
+| 2️⃣ | **Đăng nhập & Phân quyền động (RBAC)** | Kiến trúc định danh phân tầng và phân quyền động theo tenant | [Xem mục](#2-đăng-nhập--phân-quyền-động-rbac) |
+| 3️⃣ | **Auth Service** | Kiến trúc xác thực Google OAuth2 & Local/OTP theo tầng Master/Sub | [Xem mục](#3-auth-service) |
+| 4️⃣ | **User Service** | Phân tầng quản lý người dùng toàn cục và RBAC per tenant | [Xem mục](#4-user-service) |
+| 5️⃣ | **API Gateway** | Định tuyến, xác thực, phân quyền và forward request theo tenant | [Xem mục](#5-api-gateway) |
+| 6️⃣ | **Notification Service** | Gửi thông báo đa kênh theo tenant và toàn hệ thống (Pub/Sub) | [Xem mục](#6-notification-service-multi-tenant--option-b) |
+| 7️⃣ | **Superadmin Webapp (SPA)** | Giao diện quản trị tập trung để điều hành toàn bộ hệ thống | [Xem mục](#7-superadmin-webapp-spa) |
+| 8️⃣ | **Hạ tầng triển khai** | Mô hình triển khai GCP: core vs tenant stack, logging, data | [Xem mục](#8-hạ-tầng-triển-khai) |
+| 9️⃣ | **Admin Webapp (per tenant)** | Giao diện quản trị nội bộ tại mỗi trường thành viên | [Xem mục](#9-admin-webapp---spa-cấp-độ-tenant) |
+| 🔟 | **Customer Portal (PWA)** | Giao diện phụ huynh/học sinh, hỗ trợ offline và OTP login | [Xem mục](#10-customer-portal---pwa-cấp-độ-tenant) |
+| 1️⃣1️⃣ | **CRM – SuiteCRM** | Tuyển sinh, chuyển đổi pipeline, giao tiếp qua API Gateway | [Xem mục](#11-crm--suitecrm-cấp-độ-tenant) |
+| 1️⃣2️⃣ | **SIS – Gibbon** | Quản lý lớp, điểm danh, học phí, học bạ | [Xem mục](#12-sis--gibbon-cấp-độ-tenant) |
+| 1️⃣3️⃣ | **LMS – Moodle** | Học tập online, bài tập, điểm danh, đồng bộ SIS | [Xem mục](#13-lms--moodle-cấp-độ-tenant) |
+| 1️⃣4️⃣ | **Notification Service (kênh cụ thể)** | Cấu hình gửi qua Zalo, Gmail API, WebPush, Chat | [Xem mục](#14-notification-service) |
+| 1️⃣5️⃣ | **Zalo OA & Google Chat** | Kênh gửi thông báo phụ huynh và nội bộ giáo viên | [Xem mục](#15-zalo-oa--google-chat) |
+| 1️⃣6️⃣ | **CI/CD & DevOps** | GitHub Actions, Cloud Build, rollback, secrets, test | [Xem mục](#16-cicd--devops) |
+| 1️⃣7️⃣ | **Bảo mật & Giám sát** | Chống OWASP Top 10, MFA, log & alert truy cập | [Xem mục](#17-bảo-mật--giám-sát) |
+| 1️⃣8️⃣ | **Data Migration Plan** | Kế hoạch di trú dữ liệu từ hệ thống cũ | [Xem mục](#18-data-migration-plan) |
+| 1️⃣9️⃣ | **Đào tạo & Chuyển giao** | Video, PDF, demo theo nhóm người dùng | [Xem mục](#19-đào-tạo--chuyển-giao) |
+| 2️⃣0️⃣ | **Tổng kết** | Tầm nhìn tổng thể và chuẩn bị cho giai đoạn vận hành mở rộng | [Xem mục](#20-tổng-kết) |
+| 🅰️ | **Phụ lục A – ADRs** | Danh sách các quyết định kiến trúc chính thức (ADR) | [Xem mục](#phụ-lục-a--danh-sách-quyết-định-kiến-trúc-adrs) |
+| 🅱️ | **Phụ lục B – Nguyên tắc Kiến trúc Cốt lõi** | Tư tưởng thiết kế: Modular, Security-by-Design, Multi-Tenant | [Xem mục](#phụ-lục-b--nguyên-tắc-kiến-trúc-cốt-lõi) |
+| 🆑 | **Phụ lục C – Sơ đồ Kiến trúc** | Mermaid diagram mô tả tầng Gateway, Auth, Notification, Stack | [Xem mục](#phụ-lục-c--sơ-đồ-kiến-trúc) |
+| 🆘 | **Phụ lục D – Interface Contracts (ICs)** | Tài liệu API/behavior cho các dịch vụ chính | [Xem mục](#phụ-lục-d--interface-contracts-ics) |
+| 🛠️ | **Phụ lục E – Hướng dẫn đóng góp & phát triển** | Quy tắc code, CI/CD, test coverage, quy trình PR | [Xem mục](#phụ-lục-e--hướng-dẫn-đóng-góp--phát-triển) |
+
 ## 1. Yêu cầu dự án
 
 * **Mục tiêu chính:** Triển khai một hệ thống chuyển đổi số toàn diện cho một công ty giáo dục quản lý nhiều trường thành viên, tích hợp quản lý học sinh, giáo viên, phụ huynh, lớp học, học phí, thông báo, học tập online và quy trình tuyển sinh.
