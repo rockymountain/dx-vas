@@ -471,8 +471,9 @@ sequenceDiagram
     participant AuthT as "🔐 Sub Auth Service (per tenant)"
     participant UserMaster as "🧠 User Service Master"
     participant UserSub as "🧩 Sub User Service (per tenant)"
-    participant JWT as "📦 JWT Token"
-    participant Google as "🌐 Google OAuth"  rect rgba(220,220,220,0.1)
+    participant Google as "🌐 Google OAuth"
+
+    rect rgba(220,220,220,0.1)
         Note over User, AuthM: Đăng nhập Google OAuth2
         User->>Frontend: Mở ứng dụng
         Frontend->>AuthM: Login via Google
@@ -485,13 +486,17 @@ sequenceDiagram
             AuthM->>Frontend: Yêu cầu chọn tenant
             Frontend->>AuthM: tenant_id đã chọn
         else Chỉ một tenant
-            Note over AuthM: Bỏ qua bước chọn, sử dụng tenant duy nhất end
+            Note over AuthM: Bỏ qua bước chọn, sử dụng tenant duy nhất
+        end
 
         AuthM->>UserSub: Lấy roles & permissions trong tenant đã chọn
         UserSub-->>AuthM: Trả danh sách role/permission
-        AuthM->>JWT: Ký & phát JWT chứa:<br>user_id, tenant_id, roles, permissions
+        
+        Note over AuthM: Ký & phát JWT chứa:<br>user_id, tenant_id, roles, permissions
         AuthM-->>Frontend: Trả JWT
-    end rect rgba(220,220,220,0.1)
+    end
+
+    rect rgba(220,220,220,0.1)
         Note over User, AuthT: Đăng nhập Local/OTP
         User->>Frontend: Mở ứng dụng (trường không dùng Google)
         Frontend->>AuthT: Login OTP
@@ -499,10 +504,10 @@ sequenceDiagram
         UserMaster-->>AuthT: user_id_global
         AuthT->>UserSub: Lấy roles & permissions trong tenant
         UserSub-->>AuthT: Trả roles, permissions
-        AuthT->>JWT: Phát JWT đầy đủ
-        AuthT-->>Frontend: Trả JWT
-    end ```
 
+        Note over AuthT: Phát JWT đầy đủ (chứa user_id, tenant_id, roles, permissions)
+        AuthT-->>Frontend: Trả JWT
+    end
 ```
 
 📌 **Điểm chính:**
