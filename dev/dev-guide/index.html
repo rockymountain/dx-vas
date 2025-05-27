@@ -1,0 +1,3788 @@
+
+<!doctype html>
+<html lang="vi" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Tài liệu kiến trúc và phát triển cho dự án Chuyển đổi số Trường Việt Anh (dx_vas).">
+      
+      
+        <meta name="author" content="DX VAS Team">
+      
+      
+        <link rel="canonical" href="https://dx.truongvietanh.edu.vn/dev/dev-guide/">
+      
+      
+        <link rel="prev" href="../../architecture/rbac-deep-dive/">
+      
+      
+        <link rel="next" href="../backend-dev-guide/">
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.ico">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.14">
+    
+    
+      
+        <title>Tổng quan Phát triển (Dev Guide) - DX VAS - Docs</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.342714a4.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="pink">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#dev-guide-dx-vas" class="md-skip">
+          Bỏ qua
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow md-header--lifted" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Đầu trang">
+    <a href="../.." title="DX VAS - Docs" class="md-header__button md-logo" aria-label="DX VAS - Docs" data-md-component="logo">
+      
+  <img src="../../assets/images/logo.png" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            DX VAS - Docs
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Tổng quan Phát triển (Dev Guide)
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="pink"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0-7 2.39 3.42C13.65 5.15 12.84 5 12 5s-1.65.15-2.39.42zM3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29zm.02 10 1.76-3.77a7.131 7.131 0 0 0 2.38 4.14zM20.65 7l-1.77 3.79a7.02 7.02 0 0 0-2.38-4.15zm-.01 10-4.14.36c.59-.51 1.12-1.14 1.54-1.86.42-.73.69-1.5.83-2.29zM12 22l-2.41-3.44c.74.27 1.55.44 2.41.44.82 0 1.63-.17 2.37-.44z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="blue" data-md-color-accent="lime"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m17.75 4.09-2.53 1.94.91 3.06-2.63-1.81-2.63 1.81.91-3.06-2.53-1.94L12.44 4l1.06-3 1.06 3zm3.5 6.91-1.64 1.25.59 1.98-1.7-1.17-1.7 1.17.59-1.98L15.75 11l2.06-.05L18.5 9l.69 1.95zm-2.28 4.95c.83-.08 1.72 1.1 1.19 1.85-.32.45-.66.87-1.08 1.27C15.17 23 8.84 23 4.94 19.07c-3.91-3.9-3.91-10.24 0-14.14.4-.4.82-.76 1.27-1.08.75-.53 1.93.36 1.85 1.19-.27 2.86.69 5.83 2.89 8.02a9.96 9.96 0 0 0 8.02 2.89m-1.64 2.02a12.08 12.08 0 0 1-7.8-3.47c-2.17-2.19-3.33-5-3.49-7.82-2.81 3.14-2.7 7.96.31 10.98 3.02 3.01 7.84 3.12 10.98.31"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Tìm kiếm" placeholder="Tìm kiếm" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Tìm kiếm">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Xoá" aria-label="Xoá" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/rockymountain/dx-vas.git" title="Xem mã nguồn" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81"/></svg>
+  </div>
+  <div class="md-source__repository">
+    rockymountain/dx-vas
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+    
+      
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../.." class="md-tabs__link">
+          
+  
+  
+    
+  
+  Kiến trúc Hệ thống
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="./" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Hướng dẫn Phát triển
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../services/user-service/design/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Thiết kế Services
+
+        </a>
+      </li>
+    
+  
+
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../ADR/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Quyết định Kiến trúc (ADRs)
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+    
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Thanh điều hướng" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="DX VAS - Docs" class="md-nav__button md-logo" aria-label="DX VAS - Docs" data-md-component="logo">
+      
+  <img src="../../assets/images/logo.png" alt="logo">
+
+    </a>
+    DX VAS - Docs
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/rockymountain/dx-vas.git" title="Xem mã nguồn" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81"/></svg>
+  </div>
+  <div class="md-source__repository">
+    rockymountain/dx-vas
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Home
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../.." class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    Kiến trúc Hệ thống
+    
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_2" id="__nav_2_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            Kiến trúc Hệ thống
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/system-diagrams/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Sơ đồ Hệ thống
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/rbac-deep-dive/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    RBAC Chi tiết
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    Hướng dẫn Phát triển
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            Hướng dẫn Phát triển
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    Tổng quan Phát triển (Dev Guide)
+    
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    Tổng quan Phát triển (Dev Guide)
+    
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Mục lục">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Mục lục
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#muc-luc" class="md-nav__link">
+    <span class="md-ellipsis">
+      Mục lục
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1-gioi-thieu-tong-quan" class="md-nav__link">
+    <span class="md-ellipsis">
+      1. Giới thiệu tổng quan
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-cai-at-moi-truong-phat-trien" class="md-nav__link">
+    <span class="md-ellipsis">
+      2. Cài đặt môi trường phát triển
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. Cài đặt môi trường phát triển">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#yeu-cau-he-thong" class="md-nav__link">
+    <span class="md-ellipsis">
+      🧰 Yêu cầu hệ thống
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cau-truc-he-thong-multi-repo" class="md-nav__link">
+    <span class="md-ellipsis">
+      📁 Cấu trúc hệ thống (multi-repo)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cloning-cac-repo-lien-quan" class="md-nav__link">
+    <span class="md-ellipsis">
+      🔗 Cloning các repo liên quan
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cach-chay-mot-service-vd-dx-auth-service" class="md-nav__link">
+    <span class="md-ellipsis">
+      🔄 Cách chạy một service (VD: dx-auth-service)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cach-chay-bang-docker-tuy-service" class="md-nav__link">
+    <span class="md-ellipsis">
+      🔁 Cách chạy bằng Docker (tuỳ service)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#port-mac-inh-tung-service-dev" class="md-nav__link">
+    <span class="md-ellipsis">
+      🧪 Port mặc định từng service (dev)
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-cau-truc-thu-muc-dich-vu" class="md-nav__link">
+    <span class="md-ellipsis">
+      3. Cấu trúc thư mục &amp; dịch vụ
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. Cấu trúc thư mục &amp; dịch vụ">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#phan-loai-cac-repo" class="md-nav__link">
+    <span class="md-ellipsis">
+      🧱 Phân loại các repo
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#goi-y-cau-truc-thu-muc-noi-bo-moi-service-backend" class="md-nav__link">
+    <span class="md-ellipsis">
+      📦 Gợi ý cấu trúc thư mục nội bộ (mỗi service backend)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#giao-tiep-giua-cac-service" class="md-nav__link">
+    <span class="md-ellipsis">
+      🧩 Giao tiếp giữa các service
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#goi-y-chuan-hoa-template" class="md-nav__link">
+    <span class="md-ellipsis">
+      📄 Gợi ý chuẩn hóa template
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-quy-uoc-viet-ma-coding-style" class="md-nav__link">
+    <span class="md-ellipsis">
+      4. Quy ước viết mã &amp; Coding Style
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4. Quy ước viết mã &amp; Coding Style">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#python-backend-services" class="md-nav__link">
+    <span class="md-ellipsis">
+      🐍 Python – Backend Services
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#javascripttypescript-frontend-spa-pwa" class="md-nav__link">
+    <span class="md-ellipsis">
+      🌐 JavaScript/TypeScript – Frontend (SPA &amp; PWA)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ten-bien-ten-ham-ten-file" class="md-nav__link">
+    <span class="md-ellipsis">
+      🔍 Tên biến, tên hàm, tên file
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rbac-permission-naming" class="md-nav__link">
+    <span class="md-ellipsis">
+      🧩 RBAC &amp; Permission Naming
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#commit-message-convention" class="md-nav__link">
+    <span class="md-ellipsis">
+      ✅ Commit Message Convention
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-rbac-phan-quyen-ong" class="md-nav__link">
+    <span class="md-ellipsis">
+      5. RBAC – Phân quyền động
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="5. RBAC – Phân quyền động">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#cau-truc-rbac" class="md-nav__link">
+    <span class="md-ellipsis">
+      ⚙️ Cấu trúc RBAC
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#quy-tac-anh-gia-phan-quyen" class="md-nav__link">
+    <span class="md-ellipsis">
+      🔐 Quy tắc đánh giá phân quyền
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#at-ten-permission" class="md-nav__link">
+    <span class="md-ellipsis">
+      📋 Đặt tên permission
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cach-inh-nghia-permission-moi" class="md-nav__link">
+    <span class="md-ellipsis">
+      📦 Cách định nghĩa permission mới
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#goi-y-khi-thiet-ke-condition" class="md-nav__link">
+    <span class="md-ellipsis">
+      🔍 Gợi ý khi thiết kế condition
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#test-rbac" class="md-nav__link">
+    <span class="md-ellipsis">
+      🧪 Test RBAC
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-thiet-ke-api-openapi" class="md-nav__link">
+    <span class="md-ellipsis">
+      6. Thiết kế API &amp; OpenAPI
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="6. Thiết kế API &amp; OpenAPI">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#nguyen-tac-thiet-ke-api" class="md-nav__link">
+    <span class="md-ellipsis">
+      📐 Nguyên tắc thiết kế API
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cau-truc-response-chuan" class="md-nav__link">
+    <span class="md-ellipsis">
+      📦 Cấu trúc response chuẩn
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#inh-nghia-api-bang-openapi" class="md-nav__link">
+    <span class="md-ellipsis">
+      📘 Định nghĩa API bằng OpenAPI
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#vi-du-repo-dx-user-service" class="md-nav__link">
+    <span class="md-ellipsis">
+      📁 Ví dụ repo dx-user-service
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#api-gateway-routing" class="md-nav__link">
+    <span class="md-ellipsis">
+      ✅ API Gateway routing
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#kiem-thu-api" class="md-nav__link">
+    <span class="md-ellipsis">
+      🧪 Kiểm thử API
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-gui-thong-bao-notification" class="md-nav__link">
+    <span class="md-ellipsis">
+      7. Gửi thông báo (Notification)
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="7. Gửi thông báo (Notification)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#cac-kenh-ho-tro" class="md-nav__link">
+    <span class="md-ellipsis">
+      📬 Các kênh hỗ trợ
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cac-api-chinh" class="md-nav__link">
+    <span class="md-ellipsis">
+      📦 Các API chính
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gui-thong-bao-qua-su-kien-event-driven" class="md-nav__link">
+    <span class="md-ellipsis">
+      📡 Gửi thông báo qua sự kiện (event-driven)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#uu-tien-fallback-kenh" class="md-nav__link">
+    <span class="md-ellipsis">
+      🔄 Ưu tiên &amp; fallback kênh
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#test-notification-service" class="md-nav__link">
+    <span class="md-ellipsis">
+      🧪 Test Notification Service
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8-quy-trinh-test-cicd" class="md-nav__link">
+    <span class="md-ellipsis">
+      8. Quy trình test &amp; CI/CD
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="8. Quy trình test &amp; CI/CD">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#cac-tang-kiem-thu" class="md-nav__link">
+    <span class="md-ellipsis">
+      ✅ Các tầng kiểm thử
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cong-cu" class="md-nav__link">
+    <span class="md-ellipsis">
+      📦 Công cụ
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#chay-test-local" class="md-nav__link">
+    <span class="md-ellipsis">
+      🧪 Chạy test local
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#yeu-cau-coverage" class="md-nav__link">
+    <span class="md-ellipsis">
+      📊 Yêu cầu coverage
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ci-workflow-github-actions" class="md-nav__link">
+    <span class="md-ellipsis">
+      🧱 CI Workflow (GitHub Actions)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#trien-khai-cd" class="md-nav__link">
+    <span class="md-ellipsis">
+      🚀 Triển khai (CD)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#makefile-chuan" class="md-nav__link">
+    <span class="md-ellipsis">
+      🛠 Makefile chuẩn
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#9-migration-quan-ly-co-so-du-lieu" class="md-nav__link">
+    <span class="md-ellipsis">
+      9. Migration &amp; Quản lý cơ sở dữ liệu
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="9. Migration &amp; Quản lý cơ sở dữ liệu">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#cong-cu_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      🗄️ Công cụ
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cau-truc-thu-muc" class="md-nav__link">
+    <span class="md-ellipsis">
+      📦 Cấu trúc thư mục
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tao-migration-moi" class="md-nav__link">
+    <span class="md-ellipsis">
+      🧪 Tạo migration mới
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#chay-migration" class="md-nav__link">
+    <span class="md-ellipsis">
+      🚀 Chạy migration
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rollback-migration" class="md-nav__link">
+    <span class="md-ellipsis">
+      🔁 Rollback migration
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#at-ten-migration-chuan" class="md-nav__link">
+    <span class="md-ellipsis">
+      ✅ Đặt tên migration chuẩn
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#quan-ly-schema-chung" class="md-nav__link">
+    <span class="md-ellipsis">
+      🧩 Quản lý schema chung
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#test-db-local" class="md-nav__link">
+    <span class="md-ellipsis">
+      🧪 Test DB local
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#10-quy-trinh-pull-request-review" class="md-nav__link">
+    <span class="md-ellipsis">
+      10. Quy trình pull request &amp; review
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="10. Quy trình pull request &amp; review">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#quy-trinh-phat-trien-co-ban" class="md-nav__link">
+    <span class="md-ellipsis">
+      🚀 Quy trình phát triển cơ bản
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#quy-inh-at-ten-nhanh" class="md-nav__link">
+    <span class="md-ellipsis">
+      ✅ Quy định đặt tên nhánh
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#checklist-khi-mo-pr" class="md-nav__link">
+    <span class="md-ellipsis">
+      🧩 Checklist khi mở PR
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#reviewer-can-kiem-tra" class="md-nav__link">
+    <span class="md-ellipsis">
+      👀 Reviewer cần kiểm tra
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#luong-pr-ien-hinh" class="md-nav__link">
+    <span class="md-ellipsis">
+      🛡️ Luồng PR điển hình
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#luat-merge" class="md-nav__link">
+    <span class="md-ellipsis">
+      🔒 Luật merge
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#11-theo-doi-van-hanh" class="md-nav__link">
+    <span class="md-ellipsis">
+      11. Theo dõi &amp; vận hành
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="11. Theo dõi &amp; vận hành">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#thanh-phan-quan-sat-chinh" class="md-nav__link">
+    <span class="md-ellipsis">
+      📦 Thành phần quan sát chính
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#moi-service-can-implement" class="md-nav__link">
+    <span class="md-ellipsis">
+      🛠 Mỗi service cần implement
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bao-mat-tong-the-security-overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      🔐 Bảo mật tổng thể (Security Overview)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#log-bao-mat" class="md-nav__link">
+    <span class="md-ellipsis">
+      🔐 Log bảo mật
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#alerting-goi-y" class="md-nav__link">
+    <span class="md-ellipsis">
+      ⚠️ Alerting gợi ý
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#health-check-trace" class="md-nav__link">
+    <span class="md-ellipsis">
+      🧪 Health check &amp; trace
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#12-troubleshooting-loi-thuong-gap" class="md-nav__link">
+    <span class="md-ellipsis">
+      12. Troubleshooting – Lỗi thường gặp
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="12. Troubleshooting – Lỗi thường gặp">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#authentication-token" class="md-nav__link">
+    <span class="md-ellipsis">
+      🔑 Authentication &amp; Token
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rbac-redis" class="md-nav__link">
+    <span class="md-ellipsis">
+      🔐 RBAC &amp; Redis
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#database-migration" class="md-nav__link">
+    <span class="md-ellipsis">
+      🛠 Database &amp; Migration
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#docker-service-dev" class="md-nav__link">
+    <span class="md-ellipsis">
+      📦 Docker &amp; Service Dev
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cicd-test" class="md-nav__link">
+    <span class="md-ellipsis">
+      🧪 CI/CD &amp; Test
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#notification" class="md-nav__link">
+    <span class="md-ellipsis">
+      📡 Notification
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#general-tips" class="md-nav__link">
+    <span class="md-ellipsis">
+      🧩 General Tips
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../backend-dev-guide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Backend Dev Guide
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ops-guide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Vận hành & DevOps (Ops Guide)
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Thiết kế Services
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            Thiết kế Services
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4_1" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_1" id="__nav_4_1_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    User Service
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_1">
+            <span class="md-nav__icon md-icon"></span>
+            User Service
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../services/user-service/design/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Tổng quan Thiết kế
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../services/user-service/interface-contract/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Hợp đồng Giao diện
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../services/user-service/data-model/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Mô hình Dữ liệu
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../services/user-service/openapi.yaml" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Đặc tả OpenAPI
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../ADR/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    Quyết định Kiến trúc (ADRs)
+    
+  </span>
+  
+
+            </a>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            Quyết định Kiến trúc (ADRs)
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Mục lục">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Mục lục
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#muc-luc" class="md-nav__link">
+    <span class="md-ellipsis">
+      Mục lục
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1-gioi-thieu-tong-quan" class="md-nav__link">
+    <span class="md-ellipsis">
+      1. Giới thiệu tổng quan
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-cai-at-moi-truong-phat-trien" class="md-nav__link">
+    <span class="md-ellipsis">
+      2. Cài đặt môi trường phát triển
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. Cài đặt môi trường phát triển">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#yeu-cau-he-thong" class="md-nav__link">
+    <span class="md-ellipsis">
+      🧰 Yêu cầu hệ thống
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cau-truc-he-thong-multi-repo" class="md-nav__link">
+    <span class="md-ellipsis">
+      📁 Cấu trúc hệ thống (multi-repo)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cloning-cac-repo-lien-quan" class="md-nav__link">
+    <span class="md-ellipsis">
+      🔗 Cloning các repo liên quan
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cach-chay-mot-service-vd-dx-auth-service" class="md-nav__link">
+    <span class="md-ellipsis">
+      🔄 Cách chạy một service (VD: dx-auth-service)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cach-chay-bang-docker-tuy-service" class="md-nav__link">
+    <span class="md-ellipsis">
+      🔁 Cách chạy bằng Docker (tuỳ service)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#port-mac-inh-tung-service-dev" class="md-nav__link">
+    <span class="md-ellipsis">
+      🧪 Port mặc định từng service (dev)
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-cau-truc-thu-muc-dich-vu" class="md-nav__link">
+    <span class="md-ellipsis">
+      3. Cấu trúc thư mục &amp; dịch vụ
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. Cấu trúc thư mục &amp; dịch vụ">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#phan-loai-cac-repo" class="md-nav__link">
+    <span class="md-ellipsis">
+      🧱 Phân loại các repo
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#goi-y-cau-truc-thu-muc-noi-bo-moi-service-backend" class="md-nav__link">
+    <span class="md-ellipsis">
+      📦 Gợi ý cấu trúc thư mục nội bộ (mỗi service backend)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#giao-tiep-giua-cac-service" class="md-nav__link">
+    <span class="md-ellipsis">
+      🧩 Giao tiếp giữa các service
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#goi-y-chuan-hoa-template" class="md-nav__link">
+    <span class="md-ellipsis">
+      📄 Gợi ý chuẩn hóa template
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-quy-uoc-viet-ma-coding-style" class="md-nav__link">
+    <span class="md-ellipsis">
+      4. Quy ước viết mã &amp; Coding Style
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4. Quy ước viết mã &amp; Coding Style">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#python-backend-services" class="md-nav__link">
+    <span class="md-ellipsis">
+      🐍 Python – Backend Services
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#javascripttypescript-frontend-spa-pwa" class="md-nav__link">
+    <span class="md-ellipsis">
+      🌐 JavaScript/TypeScript – Frontend (SPA &amp; PWA)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ten-bien-ten-ham-ten-file" class="md-nav__link">
+    <span class="md-ellipsis">
+      🔍 Tên biến, tên hàm, tên file
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rbac-permission-naming" class="md-nav__link">
+    <span class="md-ellipsis">
+      🧩 RBAC &amp; Permission Naming
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#commit-message-convention" class="md-nav__link">
+    <span class="md-ellipsis">
+      ✅ Commit Message Convention
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-rbac-phan-quyen-ong" class="md-nav__link">
+    <span class="md-ellipsis">
+      5. RBAC – Phân quyền động
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="5. RBAC – Phân quyền động">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#cau-truc-rbac" class="md-nav__link">
+    <span class="md-ellipsis">
+      ⚙️ Cấu trúc RBAC
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#quy-tac-anh-gia-phan-quyen" class="md-nav__link">
+    <span class="md-ellipsis">
+      🔐 Quy tắc đánh giá phân quyền
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#at-ten-permission" class="md-nav__link">
+    <span class="md-ellipsis">
+      📋 Đặt tên permission
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cach-inh-nghia-permission-moi" class="md-nav__link">
+    <span class="md-ellipsis">
+      📦 Cách định nghĩa permission mới
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#goi-y-khi-thiet-ke-condition" class="md-nav__link">
+    <span class="md-ellipsis">
+      🔍 Gợi ý khi thiết kế condition
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#test-rbac" class="md-nav__link">
+    <span class="md-ellipsis">
+      🧪 Test RBAC
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-thiet-ke-api-openapi" class="md-nav__link">
+    <span class="md-ellipsis">
+      6. Thiết kế API &amp; OpenAPI
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="6. Thiết kế API &amp; OpenAPI">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#nguyen-tac-thiet-ke-api" class="md-nav__link">
+    <span class="md-ellipsis">
+      📐 Nguyên tắc thiết kế API
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cau-truc-response-chuan" class="md-nav__link">
+    <span class="md-ellipsis">
+      📦 Cấu trúc response chuẩn
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#inh-nghia-api-bang-openapi" class="md-nav__link">
+    <span class="md-ellipsis">
+      📘 Định nghĩa API bằng OpenAPI
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#vi-du-repo-dx-user-service" class="md-nav__link">
+    <span class="md-ellipsis">
+      📁 Ví dụ repo dx-user-service
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#api-gateway-routing" class="md-nav__link">
+    <span class="md-ellipsis">
+      ✅ API Gateway routing
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#kiem-thu-api" class="md-nav__link">
+    <span class="md-ellipsis">
+      🧪 Kiểm thử API
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-gui-thong-bao-notification" class="md-nav__link">
+    <span class="md-ellipsis">
+      7. Gửi thông báo (Notification)
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="7. Gửi thông báo (Notification)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#cac-kenh-ho-tro" class="md-nav__link">
+    <span class="md-ellipsis">
+      📬 Các kênh hỗ trợ
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cac-api-chinh" class="md-nav__link">
+    <span class="md-ellipsis">
+      📦 Các API chính
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gui-thong-bao-qua-su-kien-event-driven" class="md-nav__link">
+    <span class="md-ellipsis">
+      📡 Gửi thông báo qua sự kiện (event-driven)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#uu-tien-fallback-kenh" class="md-nav__link">
+    <span class="md-ellipsis">
+      🔄 Ưu tiên &amp; fallback kênh
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#test-notification-service" class="md-nav__link">
+    <span class="md-ellipsis">
+      🧪 Test Notification Service
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8-quy-trinh-test-cicd" class="md-nav__link">
+    <span class="md-ellipsis">
+      8. Quy trình test &amp; CI/CD
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="8. Quy trình test &amp; CI/CD">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#cac-tang-kiem-thu" class="md-nav__link">
+    <span class="md-ellipsis">
+      ✅ Các tầng kiểm thử
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cong-cu" class="md-nav__link">
+    <span class="md-ellipsis">
+      📦 Công cụ
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#chay-test-local" class="md-nav__link">
+    <span class="md-ellipsis">
+      🧪 Chạy test local
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#yeu-cau-coverage" class="md-nav__link">
+    <span class="md-ellipsis">
+      📊 Yêu cầu coverage
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ci-workflow-github-actions" class="md-nav__link">
+    <span class="md-ellipsis">
+      🧱 CI Workflow (GitHub Actions)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#trien-khai-cd" class="md-nav__link">
+    <span class="md-ellipsis">
+      🚀 Triển khai (CD)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#makefile-chuan" class="md-nav__link">
+    <span class="md-ellipsis">
+      🛠 Makefile chuẩn
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#9-migration-quan-ly-co-so-du-lieu" class="md-nav__link">
+    <span class="md-ellipsis">
+      9. Migration &amp; Quản lý cơ sở dữ liệu
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="9. Migration &amp; Quản lý cơ sở dữ liệu">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#cong-cu_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      🗄️ Công cụ
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cau-truc-thu-muc" class="md-nav__link">
+    <span class="md-ellipsis">
+      📦 Cấu trúc thư mục
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tao-migration-moi" class="md-nav__link">
+    <span class="md-ellipsis">
+      🧪 Tạo migration mới
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#chay-migration" class="md-nav__link">
+    <span class="md-ellipsis">
+      🚀 Chạy migration
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rollback-migration" class="md-nav__link">
+    <span class="md-ellipsis">
+      🔁 Rollback migration
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#at-ten-migration-chuan" class="md-nav__link">
+    <span class="md-ellipsis">
+      ✅ Đặt tên migration chuẩn
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#quan-ly-schema-chung" class="md-nav__link">
+    <span class="md-ellipsis">
+      🧩 Quản lý schema chung
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#test-db-local" class="md-nav__link">
+    <span class="md-ellipsis">
+      🧪 Test DB local
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#10-quy-trinh-pull-request-review" class="md-nav__link">
+    <span class="md-ellipsis">
+      10. Quy trình pull request &amp; review
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="10. Quy trình pull request &amp; review">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#quy-trinh-phat-trien-co-ban" class="md-nav__link">
+    <span class="md-ellipsis">
+      🚀 Quy trình phát triển cơ bản
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#quy-inh-at-ten-nhanh" class="md-nav__link">
+    <span class="md-ellipsis">
+      ✅ Quy định đặt tên nhánh
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#checklist-khi-mo-pr" class="md-nav__link">
+    <span class="md-ellipsis">
+      🧩 Checklist khi mở PR
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#reviewer-can-kiem-tra" class="md-nav__link">
+    <span class="md-ellipsis">
+      👀 Reviewer cần kiểm tra
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#luong-pr-ien-hinh" class="md-nav__link">
+    <span class="md-ellipsis">
+      🛡️ Luồng PR điển hình
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#luat-merge" class="md-nav__link">
+    <span class="md-ellipsis">
+      🔒 Luật merge
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#11-theo-doi-van-hanh" class="md-nav__link">
+    <span class="md-ellipsis">
+      11. Theo dõi &amp; vận hành
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="11. Theo dõi &amp; vận hành">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#thanh-phan-quan-sat-chinh" class="md-nav__link">
+    <span class="md-ellipsis">
+      📦 Thành phần quan sát chính
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#moi-service-can-implement" class="md-nav__link">
+    <span class="md-ellipsis">
+      🛠 Mỗi service cần implement
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bao-mat-tong-the-security-overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      🔐 Bảo mật tổng thể (Security Overview)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#log-bao-mat" class="md-nav__link">
+    <span class="md-ellipsis">
+      🔐 Log bảo mật
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#alerting-goi-y" class="md-nav__link">
+    <span class="md-ellipsis">
+      ⚠️ Alerting gợi ý
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#health-check-trace" class="md-nav__link">
+    <span class="md-ellipsis">
+      🧪 Health check &amp; trace
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#12-troubleshooting-loi-thuong-gap" class="md-nav__link">
+    <span class="md-ellipsis">
+      12. Troubleshooting – Lỗi thường gặp
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="12. Troubleshooting – Lỗi thường gặp">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#authentication-token" class="md-nav__link">
+    <span class="md-ellipsis">
+      🔑 Authentication &amp; Token
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rbac-redis" class="md-nav__link">
+    <span class="md-ellipsis">
+      🔐 RBAC &amp; Redis
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#database-migration" class="md-nav__link">
+    <span class="md-ellipsis">
+      🛠 Database &amp; Migration
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#docker-service-dev" class="md-nav__link">
+    <span class="md-ellipsis">
+      📦 Docker &amp; Service Dev
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cicd-test" class="md-nav__link">
+    <span class="md-ellipsis">
+      🧪 CI/CD &amp; Test
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#notification" class="md-nav__link">
+    <span class="md-ellipsis">
+      📡 Notification
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#general-tips" class="md-nav__link">
+    <span class="md-ellipsis">
+      🧩 General Tips
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="dev-guide-dx-vas">📘 Dev Guide – dx-vas<a class="headerlink" href="#dev-guide-dx-vas" title="Permanent link">¶</a></h1>
+<p>Tài liệu này cung cấp hướng dẫn phát triển hệ thống dx-vas cho toàn bộ đội ngũ kỹ thuật. Bao gồm cách cài đặt môi trường, quy ước code, cấu trúc dịch vụ, quản lý RBAC, CI/CD, và các quy trình vận hành liên quan.</p>
+<hr />
+<h2 id="muc-luc">Mục lục<a class="headerlink" href="#muc-luc" title="Permanent link">¶</a></h2>
+<ol>
+<li><a href="#1-giới-thiệu-tổng-quan">Giới thiệu tổng quan</a></li>
+<li><a href="#2-cài-đặt-môi-trường-phát-triển">Cài đặt môi trường phát triển</a></li>
+<li><a href="#3-cấu-trúc-thư-mục--dịch-vụ">Cấu trúc thư mục &amp; dịch vụ</a></li>
+<li><a href="#4-quy-ước-viết-mã--coding-style">Quy ước viết mã &amp; Coding Style</a></li>
+<li><a href="#5-rbac--phân-quyền-động">RBAC – Phân quyền động</a></li>
+<li><a href="#6-thiết-kế-api--openapi">Thiết kế API &amp; OpenAPI</a></li>
+<li><a href="#7-gửi-thông-báo-notification">Gửi thông báo (Notification)</a></li>
+<li><a href="#8-quy-trình-test--ci-cd">Quy trình test &amp; CI/CD</a></li>
+<li><a href="#9-migration--quản-lý-cơ-sở-dữ-liệu">Migration &amp; Quản lý cơ sở dữ liệu</a></li>
+<li><a href="#10-quy-trình-pull-request--review">Quy trình pull request &amp; review</a></li>
+<li><a href="#11-theo-dõi--vận-hành">Theo dõi &amp; vận hành</a></li>
+<li><a href="#12-troubleshooting--lỗi-thường-gặp">Troubleshooting – Lỗi thường gặp</a></li>
+</ol>
+<hr />
+<h2 id="1-gioi-thieu-tong-quan">1. Giới thiệu tổng quan<a class="headerlink" href="#1-gioi-thieu-tong-quan" title="Permanent link">¶</a></h2>
+<ul>
+<li>
+<p>Tài liệu kỹ thuật và hướng dẫn được đặt tại repo <code>dx-vas</code>, đóng vai trò như <strong>repo điều phối trung tâm</strong>, chứa tài liệu hệ thống, sơ đồ kiến trúc, ADR, IC và Dev Guide. Hệ thống dx-vas bao gồm các thành phần:</p>
+</li>
+<li>
+<p>API Gateway (FastAPI)</p>
+</li>
+<li>Core Services: Auth Service, User Service, Notification Service</li>
+<li>Business Adapters: CRM Adapter, SIS Adapter, LMS Adapter</li>
+<li>Các thành phần hạ tầng: Redis, PostgreSQL, MySQL, Pub/Sub, GCS</li>
+<li>Kiến trúc microservices, tất cả triển khai trên Google Cloud Run</li>
+<li>Mọi truy cập đều thông qua API Gateway với kiểm soát RBAC động</li>
+<li>Sơ đồ hệ thống đầy đủ tại: <a href="../../architecture/system-diagrams/">System Diagrams</a></li>
+</ul>
+<h2 id="2-cai-at-moi-truong-phat-trien">2. Cài đặt môi trường phát triển<a class="headerlink" href="#2-cai-at-moi-truong-phat-trien" title="Permanent link">¶</a></h2>
+<p>Mục tiêu: giúp developer khởi tạo môi trường phát triển cho từng service trong hệ thống dx-vas, trong mô hình multi-repo (mỗi service là một Git repository riêng).</p>
+<hr />
+<h3 id="yeu-cau-he-thong">🧰 Yêu cầu hệ thống<a class="headerlink" href="#yeu-cau-he-thong" title="Permanent link">¶</a></h3>
+<ul>
+<li>Python 3.11+ (cho các backend service)</li>
+<li>Node.js 18+ (cho frontend SPA/PWA)</li>
+<li>Docker + Docker Compose</li>
+<li><code>direnv</code> (tuỳ chọn – tiện cho việc nạp biến môi trường)</li>
+<li>VS Code (khuyến nghị)</li>
+</ul>
+<hr />
+<h3 id="cau-truc-he-thong-multi-repo">📁 Cấu trúc hệ thống (multi-repo)<a class="headerlink" href="#cau-truc-he-thong-multi-repo" title="Permanent link">¶</a></h3>
+<p>Mỗi service là <strong>một repo Git riêng biệt</strong>:</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>📦 dx-api-gateway
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>📦 dx-auth-service
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>📦 dx-user-service
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>📦 dx-notification-service
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>📦 dx-crm-adapter
+</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>📦 dx-sis-adapter
+</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>📦 dx-lms-adapter
+</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>📦 dx-admin-webapp
+</span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>📦 dx-customer-portal
+</span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>📦 dx-vas
+</span></code></pre></div>
+<p>Tài liệu <code>dev-guide.md</code> này nằm trong repo <code>dx-vas</code>.</p>
+<hr />
+<h3 id="cloning-cac-repo-lien-quan">🔗 Cloning các repo liên quan<a class="headerlink" href="#cloning-cac-repo-lien-quan" title="Permanent link">¶</a></h3>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>git<span class="w"> </span>clone<span class="w"> </span>git@github.com:vas/dx-api-gateway.git
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>git<span class="w"> </span>clone<span class="w"> </span>git@github.com:vas/dx-auth-service.git
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>git<span class="w"> </span>clone<span class="w"> </span>git@github.com:vas/dx-user-service.git
+</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>git<span class="w"> </span>clone<span class="w"> </span>git@github.com:vas/dx-notification-service.git
+</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>...
+</span></code></pre></div>
+<hr />
+<h3 id="cach-chay-mot-service-vd-dx-auth-service">🔄 Cách chạy một service (VD: dx-auth-service)<a class="headerlink" href="#cach-chay-mot-service-vd-dx-auth-service" title="Permanent link">¶</a></h3>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="nb">cd</span><span class="w"> </span>dx-auth-service
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>cp<span class="w"> </span>.env.example<span class="w"> </span>.env
+</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>
+</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="c1"># Cài virtualenv và cài dependencies</span>
+</span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>python<span class="w"> </span>-m<span class="w"> </span>venv<span class="w"> </span>.venv<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="nb">source</span><span class="w"> </span>.venv/bin/activate
+</span><span id="__span-2-6"><a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>pip<span class="w"> </span>install<span class="w"> </span>-r<span class="w"> </span>requirements.txt
+</span><span id="__span-2-7"><a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a>
+</span><span id="__span-2-8"><a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a><span class="c1"># Chạy service</span>
+</span><span id="__span-2-9"><a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a>uvicorn<span class="w"> </span>main:app<span class="w"> </span>--reload<span class="w"> </span>--port<span class="w"> </span><span class="m">8001</span>
+</span></code></pre></div>
+<hr />
+<h3 id="cach-chay-bang-docker-tuy-service">🔁 Cách chạy bằng Docker (tuỳ service)<a class="headerlink" href="#cach-chay-bang-docker-tuy-service" title="Permanent link">¶</a></h3>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="nb">cd</span><span class="w"> </span>dx-auth-service
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>docker<span class="w"> </span>build<span class="w"> </span>-t<span class="w"> </span>dx-auth<span class="w"> </span>.
+</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>docker<span class="w"> </span>run<span class="w"> </span>--env-file<span class="w"> </span>.env<span class="w"> </span>-p<span class="w"> </span><span class="m">8001</span>:8000<span class="w"> </span>dx-auth
+</span></code></pre></div>
+<hr />
+<h3 id="port-mac-inh-tung-service-dev">🧪 Port mặc định từng service (dev)<a class="headerlink" href="#port-mac-inh-tung-service-dev" title="Permanent link">¶</a></h3>
+<table>
+<thead>
+<tr>
+<th>Service</th>
+<th>Port</th>
+<th>Docs</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Auth Service</td>
+<td>8001</td>
+<td><a href="http://localhost:8001/docs">http://localhost:8001/docs</a></td>
+</tr>
+<tr>
+<td>User Service</td>
+<td>8002</td>
+<td><a href="http://localhost:8002/docs">http://localhost:8002/docs</a></td>
+</tr>
+<tr>
+<td>Notification Service</td>
+<td>8003</td>
+<td><a href="http://localhost:8003/docs">http://localhost:8003/docs</a></td>
+</tr>
+<tr>
+<td>API Gateway</td>
+<td>8080</td>
+<td><a href="http://localhost:8080/docs">http://localhost:8080/docs</a></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<p>📎 Tham khảo sơ đồ kết nối các service tại: <a href="../../architecture/system-diagrams/">System Diagrams</a></p>
+<p>📎 Tham khảo cách thiết kế IC cho từng service tại: <a href="../../interfaces/adr-index/">Interface Contracts</a></p>
+<h2 id="3-cau-truc-thu-muc-dich-vu">3. Cấu trúc thư mục &amp; dịch vụ<a class="headerlink" href="#3-cau-truc-thu-muc-dich-vu" title="Permanent link">¶</a></h2>
+<p>Hệ thống dx-vas sử dụng kiến trúc microservices theo mô hình <strong>multi-repo</strong>, trong đó mỗi service là một repository độc lập, triển khai riêng biệt.</p>
+<hr />
+<h3 id="phan-loai-cac-repo">🧱 Phân loại các repo<a class="headerlink" href="#phan-loai-cac-repo" title="Permanent link">¶</a></h3>
+<table>
+<thead>
+<tr>
+<th>Nhóm</th>
+<th>Repo</th>
+<th>Mô tả</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Gateway</td>
+<td><code>dx-api-gateway</code></td>
+<td>Cổng vào duy nhất, kiểm tra phân quyền (RBAC)</td>
+</tr>
+<tr>
+<td>Core Services</td>
+<td><code>dx-auth-service</code>, <code>dx-user-service</code>, <code>dx-notification-service</code></td>
+<td>Các service lõi chạy độc lập</td>
+</tr>
+<tr>
+<td>Business Adapters</td>
+<td><code>dx-crm-adapter</code>, <code>dx-sis-adapter</code>, <code>dx-lms-adapter</code></td>
+<td>Adapter kết nối đến hệ thống CRM/SIS/LMS bên ngoài</td>
+</tr>
+<tr>
+<td>Frontend</td>
+<td><code>dx-admin-webapp</code>, <code>dx-customer-portal</code></td>
+<td>Giao diện cho admin (SPA) và phụ huynh/học sinh (PWA)</td>
+</tr>
+<tr>
+<td>Tài liệu</td>
+<td><code>dx-docs</code></td>
+<td>Chứa toàn bộ tài liệu kỹ thuật, sơ đồ, hướng dẫn</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3 id="goi-y-cau-truc-thu-muc-noi-bo-moi-service-backend">📦 Gợi ý cấu trúc thư mục nội bộ (mỗi service backend)<a class="headerlink" href="#goi-y-cau-truc-thu-muc-noi-bo-moi-service-backend" title="Permanent link">¶</a></h3>
+<p>Áp dụng cho tất cả backend service (Python + FastAPI):</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>dx-&lt;service&gt;/
+</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>├── app/                    # Source code chính
+</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>│   ├── main.py             # Entry point FastAPI
+</span><span id="__span-4-4"><a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a>│   ├── api/                # Routers
+</span><span id="__span-4-5"><a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a>│   ├── models/             # SQLAlchemy models
+</span><span id="__span-4-6"><a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a>│   ├── schemas/            # Pydantic schemas
+</span><span id="__span-4-7"><a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a>│   ├── services/           # Business logic
+</span><span id="__span-4-8"><a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a>│   └── core/               # Cấu hình, security, middleware
+</span><span id="__span-4-9"><a id="__codelineno-4-9" name="__codelineno-4-9" href="#__codelineno-4-9"></a>├── tests/                  # Unit &amp; integration tests
+</span><span id="__span-4-10"><a id="__codelineno-4-10" name="__codelineno-4-10" href="#__codelineno-4-10"></a>├── alembic/                # Migration (nếu dùng PostgreSQL)
+</span><span id="__span-4-11"><a id="__codelineno-4-11" name="__codelineno-4-11" href="#__codelineno-4-11"></a>├── .env.example            # Mẫu biến môi trường
+</span><span id="__span-4-12"><a id="__codelineno-4-12" name="__codelineno-4-12" href="#__codelineno-4-12"></a>├── requirements.txt        # Dependencies
+</span><span id="__span-4-13"><a id="__codelineno-4-13" name="__codelineno-4-13" href="#__codelineno-4-13"></a>└── README.md
+</span></code></pre></div>
+<hr />
+<h3 id="giao-tiep-giua-cac-service">🧩 Giao tiếp giữa các service<a class="headerlink" href="#giao-tiep-giua-cac-service" title="Permanent link">¶</a></h3>
+<ul>
+<li>Mọi request từ frontend hoặc service khác đều đi qua <strong>API Gateway</strong></li>
+<li>RBAC được kiểm tra tại Gateway trước khi forward request</li>
+<li>Redis được dùng để cache RBAC và session token</li>
+<li>Giao tiếp bất đồng bộ (event) sử dụng Pub/Sub</li>
+</ul>
+<hr />
+<h3 id="goi-y-chuan-hoa-template">📄 Gợi ý chuẩn hóa template<a class="headerlink" href="#goi-y-chuan-hoa-template" title="Permanent link">¶</a></h3>
+<ul>
+<li>Các service nên khởi tạo từ cùng một <strong>service template chuẩn</strong> để đảm bảo:</li>
+<li>Cấu trúc đồng nhất</li>
+<li>Hệ thống logging/tracing thống nhất</li>
+<li>Cùng hệ thống health check, swagger, RBAC header, metrics</li>
+</ul>
+<blockquote>
+<p>📎 Template tham khảo: <a href="https://github.com/vas/dx-service-template"><code>dx-service-template</code></a> <em>(giả định)</em></p>
+</blockquote>
+<hr />
+<p>📎 Sơ đồ luồng giao tiếp các service có thể xem tại: <a href="../../architecture/system-diagrams/">System Diagrams</a></p>
+<h2 id="4-quy-uoc-viet-ma-coding-style">4. Quy ước viết mã &amp; Coding Style<a class="headerlink" href="#4-quy-uoc-viet-ma-coding-style" title="Permanent link">¶</a></h2>
+<p>Quy ước này áp dụng cho toàn bộ backend services và frontend apps trong hệ thống dx-vas nhằm đảm bảo:</p>
+<ul>
+<li>Đồng nhất về style</li>
+<li>Dễ đọc, dễ review</li>
+<li>Dễ bảo trì và mở rộng</li>
+</ul>
+<hr />
+<h3 id="python-backend-services">🐍 Python – Backend Services<a class="headerlink" href="#python-backend-services" title="Permanent link">¶</a></h3>
+<p>Áp dụng cho các repo: <code>dx-auth-service</code>, <code>dx-user-service</code>, <code>dx-notification-service</code>, và các adapter.</p>
+<h4 id="coding-style">✅ Coding style<a class="headerlink" href="#coding-style" title="Permanent link">¶</a></h4>
+<ul>
+<li>Tuân theo chuẩn PEP8</li>
+<li>Sử dụng <code>black</code> để auto-format</li>
+<li>Import theo nhóm (stdlib, third-party, local)</li>
+</ul>
+<h4 id="tool">📦 Tool<a class="headerlink" href="#tool" title="Permanent link">¶</a></h4>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>pip<span class="w"> </span>install<span class="w"> </span>black<span class="w"> </span>isort<span class="w"> </span>flake8
+</span></code></pre></div>
+<h4 id="format-code">🔁 Format code<a class="headerlink" href="#format-code" title="Permanent link">¶</a></h4>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>black<span class="w"> </span>app/
+</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>isort<span class="w"> </span>app/
+</span><span id="__span-6-3"><a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a>flake8<span class="w"> </span>app/
+</span></code></pre></div>
+<h4 id="goi-y-cau-truc-project">📘 Gợi ý cấu trúc project<a class="headerlink" href="#goi-y-cau-truc-project" title="Permanent link">¶</a></h4>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>app/
+</span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>├── main.py            # Entry point FastAPI
+</span><span id="__span-7-3"><a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a>├── api/               # Routers (tổ chức theo domain)
+</span><span id="__span-7-4"><a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a>├── models/            # SQLAlchemy models
+</span><span id="__span-7-5"><a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a>├── schemas/           # Pydantic DTOs
+</span><span id="__span-7-6"><a id="__codelineno-7-6" name="__codelineno-7-6" href="#__codelineno-7-6"></a>├── services/          # Business logic
+</span><span id="__span-7-7"><a id="__codelineno-7-7" name="__codelineno-7-7" href="#__codelineno-7-7"></a>├── core/              # Cấu hình, bảo mật, middleware
+</span><span id="__span-7-8"><a id="__codelineno-7-8" name="__codelineno-7-8" href="#__codelineno-7-8"></a>└── utils/             # Hàm dùng chung
+</span></code></pre></div>
+<hr />
+<h3 id="javascripttypescript-frontend-spa-pwa">🌐 JavaScript/TypeScript – Frontend (SPA &amp; PWA)<a class="headerlink" href="#javascripttypescript-frontend-spa-pwa" title="Permanent link">¶</a></h3>
+<p>Áp dụng cho các repo: <code>dx-admin-webapp</code>, <code>dx-customer-portal</code></p>
+<h4 id="coding-style_1">✅ Coding style<a class="headerlink" href="#coding-style_1" title="Permanent link">¶</a></h4>
+<ul>
+<li>Sử dụng TypeScript toàn bộ</li>
+<li>Tuân theo Airbnb style guide (hoặc ESLint chuẩn Vite/Next)</li>
+<li>Format bằng Prettier</li>
+</ul>
+<h4 id="tool_1">📦 Tool<a class="headerlink" href="#tool_1" title="Permanent link">¶</a></h4>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>npm<span class="w"> </span>install<span class="w"> </span>--save-dev<span class="w"> </span>eslint<span class="w"> </span>prettier
+</span></code></pre></div>
+<h4 id="format-code_1">🔁 Format code<a class="headerlink" href="#format-code_1" title="Permanent link">¶</a></h4>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>npx<span class="w"> </span>prettier<span class="w"> </span>--write<span class="w"> </span>.
+</span><span id="__span-9-2"><a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a>npx<span class="w"> </span>eslint<span class="w"> </span>.<span class="w"> </span>--fix
+</span></code></pre></div>
+<hr />
+<h3 id="ten-bien-ten-ham-ten-file">🔍 Tên biến, tên hàm, tên file<a class="headerlink" href="#ten-bien-ten-ham-ten-file" title="Permanent link">¶</a></h3>
+<table>
+<thead>
+<tr>
+<th>Loại</th>
+<th>Format</th>
+<th>Ví dụ</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Biến Python</td>
+<td>snake_case</td>
+<td><code>access_token</code>, <code>is_active</code></td>
+</tr>
+<tr>
+<td>Class Python</td>
+<td>PascalCase</td>
+<td><code>UserService</code>, <code>PermissionCondition</code></td>
+</tr>
+<tr>
+<td>Route</td>
+<td>kebab-case</td>
+<td><code>/reset-password</code></td>
+</tr>
+<tr>
+<td>File TS</td>
+<td>kebab-case</td>
+<td><code>login-form.tsx</code></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3 id="rbac-permission-naming">🧩 RBAC &amp; Permission Naming<a class="headerlink" href="#rbac-permission-naming" title="Permanent link">¶</a></h3>
+<p>Tuân theo cấu trúc: <code>RESOURCE_ACTION[_SCOPE]</code>
+Ví dụ:</p>
+<ul>
+<li><code>VIEW_SCORE</code></li>
+<li><code>EDIT_SCORE_OWN_CLASS</code></li>
+<li><code>RECEIVE_NOTIFICATION_PARENT</code></li>
+</ul>
+<blockquote>
+<p>📎 Chi tiết tại: <a href="../../architecture/rbac-deep-dive/#5-permission-có-điều-kiện-condition-jsonb">RBAC Deep Dive</a></p>
+</blockquote>
+<hr />
+<h3 id="commit-message-convention">✅ Commit Message Convention<a class="headerlink" href="#commit-message-convention" title="Permanent link">¶</a></h3>
+<p>Áp dụng format <code>type(scope): message</code></p>
+<p>Ví dụ:</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>feat(auth): add OTP fallback logic
+</span><span id="__span-10-2"><a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a>fix(user): wrong default role assignment
+</span><span id="__span-10-3"><a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a>refactor: move shared utils to core/
+</span></code></pre></div>
+<p>Các loại type phổ biến:</p>
+<ul>
+<li><code>feat</code>, <code>fix</code>, <code>refactor</code>, <code>docs</code>, <code>test</code>, <code>chore</code>, <code>perf</code></li>
+</ul>
+<hr />
+<p>📎 Xem ví dụ cấu trúc chuẩn tại: <a href="https://github.com/vas/dx-service-template"><code>dx-service-template</code></a> <em>(giả định)</em></p>
+<h2 id="5-rbac-phan-quyen-ong">5. RBAC – Phân quyền động<a class="headerlink" href="#5-rbac-phan-quyen-ong" title="Permanent link">¶</a></h2>
+<p>Hệ thống dx-vas sử dụng mô hình <strong>RBAC động (Contextual Role-Based Access Control)</strong>, trong đó quyền được đánh giá theo vai trò, hành động và điều kiện <code>condition</code> tùy ngữ cảnh.</p>
+<hr />
+<h3 id="cau-truc-rbac">⚙️ Cấu trúc RBAC<a class="headerlink" href="#cau-truc-rbac" title="Permanent link">¶</a></h3>
+<table>
+<thead>
+<tr>
+<th>Thành phần</th>
+<th>Mô tả</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Role</code></td>
+<td>Vai trò người dùng (admin, teacher, parent...)</td>
+</tr>
+<tr>
+<td><code>Permission</code></td>
+<td>Một hành động cụ thể lên một tài nguyên</td>
+</tr>
+<tr>
+<td><code>Condition (JSONB)</code></td>
+<td>Điều kiện kiểm soát ngữ cảnh – áp dụng theo user, resource, thời điểm</td>
+</tr>
+<tr>
+<td><code>User-Role Mapping</code></td>
+<td>Một user có thể gán nhiều vai trò</td>
+</tr>
+<tr>
+<td><code>Role-Permission Mapping</code></td>
+<td>Mỗi vai trò gán nhiều permission</td>
+</tr>
+</tbody>
+</table>
+<p>📘 Các bảng được mô tả trong: <a href="../../architecture/rbac-deep-dive/#4-cấu-trúc-dữ-liệu-rbac">RBAC Deep Dive</a></p>
+<hr />
+<h3 id="quy-tac-anh-gia-phan-quyen">🔐 Quy tắc đánh giá phân quyền<a class="headerlink" href="#quy-tac-anh-gia-phan-quyen" title="Permanent link">¶</a></h3>
+<ol>
+<li>API Gateway nhận request → kiểm tra token (JWT)</li>
+<li>Trích <code>user_id</code>, <code>role</code>, và context (VD: <code>student_id</code>, <code>class_id</code>, ...)</li>
+<li>Tìm danh sách permission của user từ Redis cache (hoặc gọi <code>User Service</code>)</li>
+<li>Với mỗi permission có <code>condition</code>, evaluate theo <code>context</code></li>
+<li>Nếu có ít nhất 1 permission thỏa điều kiện → allow request</li>
+</ol>
+<hr />
+<h3 id="at-ten-permission">📋 Đặt tên permission<a class="headerlink" href="#at-ten-permission" title="Permanent link">¶</a></h3>
+<p>Tuân theo format:</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a>&lt;RESOURCE&gt;*&lt;ACTION&gt;\[*&lt;SCOPE&gt;]
+</span></code></pre></div>
+<p>Ví dụ:</p>
+<ul>
+<li><code>VIEW_SCORE_OWN_CHILD</code></li>
+<li><code>EDIT_SCORE_CLASS_OWNER</code></li>
+<li><code>RECEIVE_NOTIFICATION_PARENT</code></li>
+</ul>
+<blockquote>
+<p>📎 Chi tiết tại: <a href="../../architecture/rbac-deep-dive/#5-permission-có-điều-kiện-condition-jsonb">RBAC Deep Dive</a></p>
+</blockquote>
+<hr />
+<h3 id="cach-inh-nghia-permission-moi">📦 Cách định nghĩa permission mới<a class="headerlink" href="#cach-inh-nghia-permission-moi" title="Permanent link">¶</a></h3>
+<ol>
+<li>Thêm dòng mới vào file YAML <code>permissions.yaml</code> trong repo <code>dx-user-service</code></li>
+<li>Chạy lệnh migrate RBAC:</li>
+</ol>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a>make<span class="w"> </span>rbac-migrate
+</span></code></pre></div>
+<ol>
+<li>Gán permission này vào role trong bảng <code>role_permission</code></li>
+<li>Gán role cho user → tự động invalidate cache qua sự kiện <code>rbac_updated</code></li>
+</ol>
+<hr />
+<h3 id="goi-y-khi-thiet-ke-condition">🔍 Gợi ý khi thiết kế condition<a class="headerlink" href="#goi-y-khi-thiet-ke-condition" title="Permanent link">¶</a></h3>
+<ul>
+<li>Dùng khóa rõ ràng: <code>class_ids</code>, <code>student_ids</code>, <code>term</code>, ...</li>
+<li>Tránh condition quá phức tạp → phân tách thành nhiều permission đơn giản</li>
+<li>Test với context thực tế qua API Gateway</li>
+</ul>
+<hr />
+<h3 id="test-rbac">🧪 Test RBAC<a class="headerlink" href="#test-rbac" title="Permanent link">¶</a></h3>
+<ul>
+<li>Mock user và role</li>
+<li>Gọi API thật qua Gateway với JWT hợp lệ</li>
+<li>Kiểm tra log: permission granted / denied</li>
+<li>Kiểm tra hành vi với user bị <code>is_active = false</code></li>
+</ul>
+<hr />
+<p>📎 Xem sơ đồ RBAC chi tiết tại: <a href="../../architecture/system-diagrams/#4-rbac-evaluation-flow--luồng-đánh-giá-phân-quyền-động">System Diagrams</a></p>
+<h2 id="6-thiet-ke-api-openapi">6. Thiết kế API &amp; OpenAPI<a class="headerlink" href="#6-thiet-ke-api-openapi" title="Permanent link">¶</a></h2>
+<p>Toàn bộ hệ thống dx-vas tuân theo nguyên tắc API chuẩn RESTful, được định nghĩa bằng <strong>OpenAPI 3.x</strong> (sử dụng FastAPI).</p>
+<hr />
+<h3 id="nguyen-tac-thiet-ke-api">📐 Nguyên tắc thiết kế API<a class="headerlink" href="#nguyen-tac-thiet-ke-api" title="Permanent link">¶</a></h3>
+<table>
+<thead>
+<tr>
+<th>Tiêu chí</th>
+<th>Quy định</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>URL</td>
+<td>lowercase, dùng kebab-case</td>
+</tr>
+<tr>
+<td>Method</td>
+<td>Tuân chuẩn REST: GET/POST/PATCH/DELETE</td>
+</tr>
+<tr>
+<td>Versioning</td>
+<td><code>v1</code> gắn vào prefix: <code>/v1/users/...</code></td>
+</tr>
+<tr>
+<td>Response</td>
+<td>Gói trong <code>data</code>, <code>meta</code>, <code>error</code></td>
+</tr>
+<tr>
+<td>Error</td>
+<td>Dùng mã lỗi chuẩn, message rõ ràng</td>
+</tr>
+<tr>
+<td>RBAC</td>
+<td>Header <code>X-Permissions</code>, context dynamic</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3 id="cau-truc-response-chuan">📦 Cấu trúc response chuẩn<a class="headerlink" href="#cau-truc-response-chuan" title="Permanent link">¶</a></h3>
+<div class="language-json highlight"><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a><span class="p">{</span>
+</span><span id="__span-13-2"><a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a><span class="w">  </span><span class="nt">&quot;data&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="err">...</span><span class="p">},</span>
+</span><span id="__span-13-3"><a id="__codelineno-13-3" name="__codelineno-13-3" href="#__codelineno-13-3"></a><span class="w">  </span><span class="nt">&quot;meta&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-13-4"><a id="__codelineno-13-4" name="__codelineno-13-4" href="#__codelineno-13-4"></a><span class="w">    </span><span class="nt">&quot;request_id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;uuid&quot;</span><span class="p">,</span>
+</span><span id="__span-13-5"><a id="__codelineno-13-5" name="__codelineno-13-5" href="#__codelineno-13-5"></a><span class="w">    </span><span class="nt">&quot;timestamp&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2024-01-01T12:00:00Z&quot;</span>
+</span><span id="__span-13-6"><a id="__codelineno-13-6" name="__codelineno-13-6" href="#__codelineno-13-6"></a><span class="w">  </span><span class="p">},</span>
+</span><span id="__span-13-7"><a id="__codelineno-13-7" name="__codelineno-13-7" href="#__codelineno-13-7"></a><span class="w">  </span><span class="nt">&quot;error&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span>
+</span><span id="__span-13-8"><a id="__codelineno-13-8" name="__codelineno-13-8" href="#__codelineno-13-8"></a><span class="p">}</span>
+</span></code></pre></div>
+<p>Khi lỗi:</p>
+<div class="language-json highlight"><pre><span></span><code><span id="__span-14-1"><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a><span class="p">{</span>
+</span><span id="__span-14-2"><a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a><span class="w">  </span><span class="nt">&quot;data&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
+</span><span id="__span-14-3"><a id="__codelineno-14-3" name="__codelineno-14-3" href="#__codelineno-14-3"></a><span class="w">  </span><span class="nt">&quot;meta&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="err">...</span><span class="p">},</span>
+</span><span id="__span-14-4"><a id="__codelineno-14-4" name="__codelineno-14-4" href="#__codelineno-14-4"></a><span class="w">  </span><span class="nt">&quot;error&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-14-5"><a id="__codelineno-14-5" name="__codelineno-14-5" href="#__codelineno-14-5"></a><span class="w">    </span><span class="nt">&quot;code&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;USER_NOT_FOUND&quot;</span><span class="p">,</span>
+</span><span id="__span-14-6"><a id="__codelineno-14-6" name="__codelineno-14-6" href="#__codelineno-14-6"></a><span class="w">    </span><span class="nt">&quot;message&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;User does not exist&quot;</span>
+</span><span id="__span-14-7"><a id="__codelineno-14-7" name="__codelineno-14-7" href="#__codelineno-14-7"></a><span class="w">  </span><span class="p">}</span>
+</span><span id="__span-14-8"><a id="__codelineno-14-8" name="__codelineno-14-8" href="#__codelineno-14-8"></a><span class="p">}</span>
+</span></code></pre></div>
+<hr />
+<h3 id="inh-nghia-api-bang-openapi">📘 Định nghĩa API bằng OpenAPI<a class="headerlink" href="#inh-nghia-api-bang-openapi" title="Permanent link">¶</a></h3>
+<ul>
+<li>Mỗi service có một file <code>openapi.yaml</code> định nghĩa OpenAPI 3.x</li>
+<li>Có thể generate tự động từ FastAPI hoặc viết tay với VS Code plugin</li>
+<li>Dùng Redoc, Swagger UI hoặc Stoplight Studio để xem</li>
+</ul>
+<hr />
+<h3 id="vi-du-repo-dx-user-service">📁 Ví dụ repo <code>dx-user-service</code><a class="headerlink" href="#vi-du-repo-dx-user-service" title="Permanent link">¶</a></h3>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-15-1"><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a>dx-user-service/
+</span><span id="__span-15-2"><a id="__codelineno-15-2" name="__codelineno-15-2" href="#__codelineno-15-2"></a>├── app/
+</span><span id="__span-15-3"><a id="__codelineno-15-3" name="__codelineno-15-3" href="#__codelineno-15-3"></a>│   ├── api/
+</span><span id="__span-15-4"><a id="__codelineno-15-4" name="__codelineno-15-4" href="#__codelineno-15-4"></a>│   │   └── users.py         # Define @router.get(&quot;/users&quot;)
+</span><span id="__span-15-5"><a id="__codelineno-15-5" name="__codelineno-15-5" href="#__codelineno-15-5"></a>├── docs/
+</span><span id="__span-15-6"><a id="__codelineno-15-6" name="__codelineno-15-6" href="#__codelineno-15-6"></a>│   └── openapi.yaml         # OpenAPI 3.x schema
+</span></code></pre></div>
+<hr />
+<h3 id="api-gateway-routing">✅ API Gateway routing<a class="headerlink" href="#api-gateway-routing" title="Permanent link">¶</a></h3>
+<ul>
+<li>API Gateway định tuyến đến các service theo rule</li>
+<li>
+<p>Mỗi route có thể được gắn với:</p>
+</li>
+<li>
+<p><code>target_service</code></p>
+</li>
+<li><code>required_permissions</code></li>
+<li><code>path_rewrite</code> (nếu cần)</li>
+</ul>
+<hr />
+<h3 id="kiem-thu-api">🧪 Kiểm thử API<a class="headerlink" href="#kiem-thu-api" title="Permanent link">¶</a></h3>
+<ul>
+<li>Gọi trực tiếp local (FastAPI): <a href="http://localhost:8001/docs">http://localhost:8001/docs</a></li>
+<li>Gọi qua API Gateway (RBAC enforced): <a href="http://localhost:8080/v1/">http://localhost:8080/v1/</a>...</li>
+<li>Dùng Postman, HTTPie, Swagger UI, hoặc test script tự động</li>
+</ul>
+<hr />
+<p>📎 Xem Interface Contracts (ICs) tại: <a href="../interfaces/"><code>docs/interfaces/</code></a></p>
+<p>📎 Định dạng chuẩn response/error được mô tả tại: <a href="../ADR/adr-001-fastapi.md"><code>adr-001-fastapi</code></a> <em>(giả định)</em></p>
+<h2 id="7-gui-thong-bao-notification">7. Gửi thông báo (Notification)<a class="headerlink" href="#7-gui-thong-bao-notification" title="Permanent link">¶</a></h2>
+<p>Notification Service là một core service trong dx-vas, chịu trách nhiệm gửi thông báo đến người dùng qua nhiều kênh khác nhau: Web, Email, Zalo OA, Google Chat.</p>
+<hr />
+<h3 id="cac-kenh-ho-tro">📬 Các kênh hỗ trợ<a class="headerlink" href="#cac-kenh-ho-tro" title="Permanent link">¶</a></h3>
+<table>
+<thead>
+<tr>
+<th>Kênh</th>
+<th>Đối tượng chính</th>
+<th>Ghi chú</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>WebPush</td>
+<td>Học sinh, giáo viên</td>
+<td>Nhận trong Admin Webapp hoặc PWA</td>
+</tr>
+<tr>
+<td>Gmail API</td>
+<td>Phụ huynh, giáo viên</td>
+<td>Gửi email qua Google Workspace</td>
+</tr>
+<tr>
+<td>Zalo ZNS</td>
+<td>Phụ huynh</td>
+<td>Yêu cầu đăng ký OA + duyệt template</td>
+</tr>
+<tr>
+<td>Google Chat</td>
+<td>Nhân viên nội bộ</td>
+<td>Dành cho thông báo hệ thống, vận hành</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3 id="cac-api-chinh">📦 Các API chính<a class="headerlink" href="#cac-api-chinh" title="Permanent link">¶</a></h3>
+<blockquote>
+<p>Tất cả API đều gọi qua API Gateway<br />
+Gateway kiểm tra quyền <code>RECEIVE_NOTIFICATION_*</code></p>
+</blockquote>
+<h4 id="post-notificationssend"><code>POST /notifications/send</code><a class="headerlink" href="#post-notificationssend" title="Permanent link">¶</a></h4>
+<p>Gửi thông báo theo template:</p>
+<div class="language-json highlight"><pre><span></span><code><span id="__span-16-1"><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a><span class="p">{</span>
+</span><span id="__span-16-2"><a id="__codelineno-16-2" name="__codelineno-16-2" href="#__codelineno-16-2"></a><span class="w">  </span><span class="nt">&quot;channel&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;zalo&quot;</span><span class="p">,</span>
+</span><span id="__span-16-3"><a id="__codelineno-16-3" name="__codelineno-16-3" href="#__codelineno-16-3"></a><span class="w">  </span><span class="nt">&quot;user_id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;u123&quot;</span><span class="p">,</span>
+</span><span id="__span-16-4"><a id="__codelineno-16-4" name="__codelineno-16-4" href="#__codelineno-16-4"></a><span class="w">  </span><span class="nt">&quot;template_id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;ZALO_FEE_REMINDER&quot;</span><span class="p">,</span>
+</span><span id="__span-16-5"><a id="__codelineno-16-5" name="__codelineno-16-5" href="#__codelineno-16-5"></a><span class="w">  </span><span class="nt">&quot;payload&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-16-6"><a id="__codelineno-16-6" name="__codelineno-16-6" href="#__codelineno-16-6"></a><span class="w">    </span><span class="nt">&quot;amount&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2.000.000&quot;</span><span class="p">,</span>
+</span><span id="__span-16-7"><a id="__codelineno-16-7" name="__codelineno-16-7" href="#__codelineno-16-7"></a><span class="w">    </span><span class="nt">&quot;due_date&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2024-01-10&quot;</span>
+</span><span id="__span-16-8"><a id="__codelineno-16-8" name="__codelineno-16-8" href="#__codelineno-16-8"></a><span class="w">  </span><span class="p">}</span>
+</span><span id="__span-16-9"><a id="__codelineno-16-9" name="__codelineno-16-9" href="#__codelineno-16-9"></a><span class="p">}</span>
+</span></code></pre></div>
+<h4 id="post-notificationsregister-channel"><code>POST /notifications/register-channel</code><a class="headerlink" href="#post-notificationsregister-channel" title="Permanent link">¶</a></h4>
+<p>Gán user với thông tin thiết bị (device token, Zalo ID, email...)</p>
+<hr />
+<h3 id="gui-thong-bao-qua-su-kien-event-driven">📡 Gửi thông báo qua sự kiện (event-driven)<a class="headerlink" href="#gui-thong-bao-qua-su-kien-event-driven" title="Permanent link">¶</a></h3>
+<ul>
+<li>Các service như CRM/SIS/LMS có thể phát sự kiện <code>NOTIFICATION_REQUESTED</code></li>
+<li>Notification Service subscribe từ Pub/Sub</li>
+<li>Ví dụ event:</li>
+</ul>
+<div class="language-json highlight"><pre><span></span><code><span id="__span-17-1"><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a><span class="p">{</span>
+</span><span id="__span-17-2"><a id="__codelineno-17-2" name="__codelineno-17-2" href="#__codelineno-17-2"></a><span class="w">  </span><span class="nt">&quot;event&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;NOTIFICATION_REQUESTED&quot;</span><span class="p">,</span>
+</span><span id="__span-17-3"><a id="__codelineno-17-3" name="__codelineno-17-3" href="#__codelineno-17-3"></a><span class="w">  </span><span class="nt">&quot;user_id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;u123&quot;</span><span class="p">,</span>
+</span><span id="__span-17-4"><a id="__codelineno-17-4" name="__codelineno-17-4" href="#__codelineno-17-4"></a><span class="w">  </span><span class="nt">&quot;channel&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;email&quot;</span><span class="p">,</span>
+</span><span id="__span-17-5"><a id="__codelineno-17-5" name="__codelineno-17-5" href="#__codelineno-17-5"></a><span class="w">  </span><span class="nt">&quot;template_id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;WELCOME&quot;</span><span class="p">,</span>
+</span><span id="__span-17-6"><a id="__codelineno-17-6" name="__codelineno-17-6" href="#__codelineno-17-6"></a><span class="w">  </span><span class="nt">&quot;payload&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-17-7"><a id="__codelineno-17-7" name="__codelineno-17-7" href="#__codelineno-17-7"></a><span class="w">    </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Nguyễn Văn A&quot;</span>
+</span><span id="__span-17-8"><a id="__codelineno-17-8" name="__codelineno-17-8" href="#__codelineno-17-8"></a><span class="w">  </span><span class="p">}</span>
+</span><span id="__span-17-9"><a id="__codelineno-17-9" name="__codelineno-17-9" href="#__codelineno-17-9"></a><span class="p">}</span>
+</span></code></pre></div>
+<hr />
+<h3 id="uu-tien-fallback-kenh">🔄 Ưu tiên &amp; fallback kênh<a class="headerlink" href="#uu-tien-fallback-kenh" title="Permanent link">¶</a></h3>
+<ul>
+<li>Mỗi user có thể cấu hình kênh ưa thích (stored in User Service)</li>
+<li>Nếu gửi thất bại (timeout/quota), có thể fallback sang email</li>
+</ul>
+<hr />
+<h3 id="test-notification-service">🧪 Test Notification Service<a class="headerlink" href="#test-notification-service" title="Permanent link">¶</a></h3>
+<ul>
+<li>Gọi thử API <code>/send</code> với JWT hợp lệ</li>
+<li>Kiểm tra log gửi thành công/thất bại</li>
+<li>Giả lập sự kiện trên Pub/Sub</li>
+<li>Kiểm tra trạng thái từng message qua Admin Webapp</li>
+</ul>
+<hr />
+<p>📎 Xem sơ đồ Notification Flow tại: <a href="../../architecture/system-diagrams/#3-notification-flow--luồng-gửi-thông-báo">System Diagrams</a></p>
+<p>📎 Định nghĩa chi tiết tại IC: <a href="../../interfaces/ic-04-notification/"><code>ic-04-notification.md</code></a></p>
+<h2 id="8-quy-trinh-test-cicd">8. Quy trình test &amp; CI/CD<a class="headerlink" href="#8-quy-trinh-test-cicd" title="Permanent link">¶</a></h2>
+<p>Hệ thống dx-vas áp dụng quy trình kiểm thử và triển khai liên tục cho từng service độc lập. Mỗi service có workflow CI/CD riêng, chạy tự động trên GitHub Actions hoặc Google Cloud Build.</p>
+<hr />
+<h3 id="cac-tang-kiem-thu">✅ Các tầng kiểm thử<a class="headerlink" href="#cac-tang-kiem-thu" title="Permanent link">¶</a></h3>
+<table>
+<thead>
+<tr>
+<th>Loại test</th>
+<th>Mục tiêu</th>
+<th>Ví dụ</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Unit test</td>
+<td>Kiểm tra logic đơn vị</td>
+<td>Hàm xử lý OTP, parse template</td>
+</tr>
+<tr>
+<td>Integration test</td>
+<td>Kiểm tra nhiều module kết hợp</td>
+<td>Gọi API <code>/users</code> → trả response đúng</td>
+</tr>
+<tr>
+<td>E2E test</td>
+<td>Kiểm tra end-to-end toàn hệ thống (tùy chọn)</td>
+<td>Đăng ký học sinh từ CRM → đồng bộ qua SIS, LMS</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3 id="cong-cu">📦 Công cụ<a class="headerlink" href="#cong-cu" title="Permanent link">¶</a></h3>
+<ul>
+<li><code>pytest</code>, <code>pytest-cov</code>: cho Python services</li>
+<li><code>requests</code>, <code>httpx</code>: test API</li>
+<li><code>docker-compose.test.yml</code>: khởi chạy môi trường test có DB/Redis</li>
+<li><code>testcontainers</code>: nếu muốn test với Redis/PostgreSQL thật</li>
+</ul>
+<hr />
+<h3 id="chay-test-local">🧪 Chạy test local<a class="headerlink" href="#chay-test-local" title="Permanent link">¶</a></h3>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-18-1"><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a><span class="c1"># Trong từng repo service</span>
+</span><span id="__span-18-2"><a id="__codelineno-18-2" name="__codelineno-18-2" href="#__codelineno-18-2"></a>pytest<span class="w"> </span>tests/
+</span><span id="__span-18-3"><a id="__codelineno-18-3" name="__codelineno-18-3" href="#__codelineno-18-3"></a>pytest<span class="w"> </span>--cov<span class="o">=</span>app<span class="w"> </span>tests/
+</span></code></pre></div>
+<hr />
+<h3 id="yeu-cau-coverage">📊 Yêu cầu coverage<a class="headerlink" href="#yeu-cau-coverage" title="Permanent link">¶</a></h3>
+<ul>
+<li>Core logic (RBAC, Auth, Notification): ≥ 85%</li>
+<li>Adapter/API layer: ≥ 70%</li>
+</ul>
+<blockquote>
+<p>CI sẽ fail nếu coverage thấp hơn ngưỡng quy định</p>
+</blockquote>
+<hr />
+<h3 id="ci-workflow-github-actions">🧱 CI Workflow (GitHub Actions)<a class="headerlink" href="#ci-workflow-github-actions" title="Permanent link">¶</a></h3>
+<div class="language-yaml highlight"><pre><span></span><code><span id="__span-19-1"><a id="__codelineno-19-1" name="__codelineno-19-1" href="#__codelineno-19-1"></a><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">CI</span>
+</span><span id="__span-19-2"><a id="__codelineno-19-2" name="__codelineno-19-2" href="#__codelineno-19-2"></a>
+</span><span id="__span-19-3"><a id="__codelineno-19-3" name="__codelineno-19-3" href="#__codelineno-19-3"></a><span class="nt">on</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">push</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">pull_request</span><span class="p p-Indicator">]</span>
+</span><span id="__span-19-4"><a id="__codelineno-19-4" name="__codelineno-19-4" href="#__codelineno-19-4"></a>
+</span><span id="__span-19-5"><a id="__codelineno-19-5" name="__codelineno-19-5" href="#__codelineno-19-5"></a><span class="nt">jobs</span><span class="p">:</span>
+</span><span id="__span-19-6"><a id="__codelineno-19-6" name="__codelineno-19-6" href="#__codelineno-19-6"></a><span class="w">  </span><span class="nt">test</span><span class="p">:</span>
+</span><span id="__span-19-7"><a id="__codelineno-19-7" name="__codelineno-19-7" href="#__codelineno-19-7"></a><span class="w">    </span><span class="nt">runs-on</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ubuntu-latest</span>
+</span><span id="__span-19-8"><a id="__codelineno-19-8" name="__codelineno-19-8" href="#__codelineno-19-8"></a><span class="w">    </span><span class="nt">steps</span><span class="p">:</span>
+</span><span id="__span-19-9"><a id="__codelineno-19-9" name="__codelineno-19-9" href="#__codelineno-19-9"></a><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">actions/checkout@v3</span>
+</span><span id="__span-19-10"><a id="__codelineno-19-10" name="__codelineno-19-10" href="#__codelineno-19-10"></a><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Set up Python</span>
+</span><span id="__span-19-11"><a id="__codelineno-19-11" name="__codelineno-19-11" href="#__codelineno-19-11"></a><span class="w">        </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">actions/setup-python@v4</span>
+</span><span id="__span-19-12"><a id="__codelineno-19-12" name="__codelineno-19-12" href="#__codelineno-19-12"></a><span class="w">        </span><span class="nt">with</span><span class="p">:</span>
+</span><span id="__span-19-13"><a id="__codelineno-19-13" name="__codelineno-19-13" href="#__codelineno-19-13"></a><span class="w">          </span><span class="nt">python-version</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;3.11&#39;</span>
+</span><span id="__span-19-14"><a id="__codelineno-19-14" name="__codelineno-19-14" href="#__codelineno-19-14"></a><span class="w">      </span><span class="c1"># Trong GitHub Actions hoặc Google Cloud Build</span>
+</span><span id="__span-19-15"><a id="__codelineno-19-15" name="__codelineno-19-15" href="#__codelineno-19-15"></a><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">run</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">make test</span>
+</span><span id="__span-19-16"><a id="__codelineno-19-16" name="__codelineno-19-16" href="#__codelineno-19-16"></a><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">run</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">make format</span>
+</span></code></pre></div>
+<hr />
+<h3 id="trien-khai-cd">🚀 Triển khai (CD)<a class="headerlink" href="#trien-khai-cd" title="Permanent link">¶</a></h3>
+<ul>
+<li>Dùng Google Cloud Build / GitHub Actions</li>
+<li>Triển khai Cloud Run theo branch/tag:</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>Branch</th>
+<th>Môi trường</th>
+<th>Ghi chú</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>dev</code></td>
+<td>Staging</td>
+<td>Auto-deploy</td>
+</tr>
+<tr>
+<td><code>main</code></td>
+<td>Production</td>
+<td>Require approval</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3 id="makefile-chuan">🛠 Makefile chuẩn<a class="headerlink" href="#makefile-chuan" title="Permanent link">¶</a></h3>
+<p>Mỗi repo nên có:</p>
+<div class="language-make highlight"><pre><span></span><code><span id="__span-20-1"><a id="__codelineno-20-1" name="__codelineno-20-1" href="#__codelineno-20-1"></a><span class="c"># Makefile ví dụ</span>
+</span><span id="__span-20-2"><a id="__codelineno-20-2" name="__codelineno-20-2" href="#__codelineno-20-2"></a>
+</span><span id="__span-20-3"><a id="__codelineno-20-3" name="__codelineno-20-3" href="#__codelineno-20-3"></a><span class="nf">run</span><span class="o">:</span>
+</span><span id="__span-20-4"><a id="__codelineno-20-4" name="__codelineno-20-4" href="#__codelineno-20-4"></a><span class="w">  </span>uvicorn<span class="w"> </span>app.main:app<span class="w"> </span>--reload<span class="w"> </span>--port<span class="o">=</span><span class="m">8001</span>
+</span><span id="__span-20-5"><a id="__codelineno-20-5" name="__codelineno-20-5" href="#__codelineno-20-5"></a>
+</span><span id="__span-20-6"><a id="__codelineno-20-6" name="__codelineno-20-6" href="#__codelineno-20-6"></a><span class="nf">test</span><span class="o">:</span>
+</span><span id="__span-20-7"><a id="__codelineno-20-7" name="__codelineno-20-7" href="#__codelineno-20-7"></a><span class="w">  </span>pytest<span class="w"> </span>--cov<span class="o">=</span>app<span class="w"> </span>tests/
+</span><span id="__span-20-8"><a id="__codelineno-20-8" name="__codelineno-20-8" href="#__codelineno-20-8"></a>
+</span><span id="__span-20-9"><a id="__codelineno-20-9" name="__codelineno-20-9" href="#__codelineno-20-9"></a><span class="nf">format</span><span class="o">:</span>
+</span><span id="__span-20-10"><a id="__codelineno-20-10" name="__codelineno-20-10" href="#__codelineno-20-10"></a><span class="w">  </span>black<span class="w"> </span>app/<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>isort<span class="w"> </span>app/
+</span></code></pre></div>
+<hr />
+<p>📎 Xem ADR CI/CD tại: <a href="../../ADR/adr-001-ci-cd/"><code>adr-001-ci-cd.md</code></a></p>
+<h2 id="9-migration-quan-ly-co-so-du-lieu">9. Migration &amp; Quản lý cơ sở dữ liệu<a class="headerlink" href="#9-migration-quan-ly-co-so-du-lieu" title="Permanent link">¶</a></h2>
+<p>Mỗi service trong dx-vas quản lý database riêng biệt, không chia sẻ DB trực tiếp. Core Services dùng PostgreSQL, Adapters dùng MySQL. Mọi thay đổi dữ liệu đều được quản lý qua migration có version.</p>
+<hr />
+<h3 id="cong-cu_1">🗄️ Công cụ<a class="headerlink" href="#cong-cu_1" title="Permanent link">¶</a></h3>
+<table>
+<thead>
+<tr>
+<th>Loại DB</th>
+<th>Công cụ</th>
+<th>Ghi chú</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>PostgreSQL</td>
+<td>Alembic</td>
+<td>Dùng chung với SQLAlchemy</td>
+</tr>
+<tr>
+<td>MySQL</td>
+<td>Alembic hoặc raw SQL</td>
+<td>Tùy dịch vụ</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3 id="cau-truc-thu-muc">📦 Cấu trúc thư mục<a class="headerlink" href="#cau-truc-thu-muc" title="Permanent link">¶</a></h3>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-21-1"><a id="__codelineno-21-1" name="__codelineno-21-1" href="#__codelineno-21-1"></a>dx-user-service/
+</span><span id="__span-21-2"><a id="__codelineno-21-2" name="__codelineno-21-2" href="#__codelineno-21-2"></a>├── alembic/
+</span><span id="__span-21-3"><a id="__codelineno-21-3" name="__codelineno-21-3" href="#__codelineno-21-3"></a>│   ├── versions/
+</span><span id="__span-21-4"><a id="__codelineno-21-4" name="__codelineno-21-4" href="#__codelineno-21-4"></a>│   └── env.py
+</span><span id="__span-21-5"><a id="__codelineno-21-5" name="__codelineno-21-5" href="#__codelineno-21-5"></a>├── alembic.ini
+</span></code></pre></div>
+<hr />
+<h3 id="tao-migration-moi">🧪 Tạo migration mới<a class="headerlink" href="#tao-migration-moi" title="Permanent link">¶</a></h3>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-22-1"><a id="__codelineno-22-1" name="__codelineno-22-1" href="#__codelineno-22-1"></a>alembic<span class="w"> </span>revision<span class="w"> </span>-m<span class="w"> </span><span class="s2">&quot;add table permission&quot;</span>
+</span></code></pre></div>
+<p>Sau đó sửa file trong <code>versions/</code> để định nghĩa lệnh SQL.</p>
+<hr />
+<h3 id="chay-migration">🚀 Chạy migration<a class="headerlink" href="#chay-migration" title="Permanent link">¶</a></h3>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-23-1"><a id="__codelineno-23-1" name="__codelineno-23-1" href="#__codelineno-23-1"></a>alembic<span class="w"> </span>upgrade<span class="w"> </span>head
+</span></code></pre></div>
+<blockquote>
+<p>⚠️ Cần chắc chắn kết nối <code>DATABASE_URL</code> đã đúng (env/dev.env)</p>
+</blockquote>
+<hr />
+<h3 id="rollback-migration">🔁 Rollback migration<a class="headerlink" href="#rollback-migration" title="Permanent link">¶</a></h3>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-24-1"><a id="__codelineno-24-1" name="__codelineno-24-1" href="#__codelineno-24-1"></a>alembic<span class="w"> </span>downgrade<span class="w"> </span>-1
+</span></code></pre></div>
+<hr />
+<h3 id="at-ten-migration-chuan">✅ Đặt tên migration chuẩn<a class="headerlink" href="#at-ten-migration-chuan" title="Permanent link">¶</a></h3>
+<p>Format: <code>yymmdd_hhmm_&lt;slug&gt;.py</code></p>
+<p>Ví dụ: <code>240112_1030_add_role_table.py</code></p>
+<hr />
+<h3 id="quan-ly-schema-chung">🧩 Quản lý schema chung<a class="headerlink" href="#quan-ly-schema-chung" title="Permanent link">¶</a></h3>
+<ul>
+<li>Core schema như <code>Permission</code>, <code>Role</code>, <code>User</code> được chuẩn hóa và migrate từ <code>dx-user-service</code></li>
+<li>Không sửa trực tiếp dữ liệu RBAC trong DB → dùng migration hoặc API quản trị</li>
+<li>Dữ liệu ban đầu (seed) được load qua script Python hoặc fixture <code>.sql</code></li>
+</ul>
+<hr />
+<h3 id="test-db-local">🧪 Test DB local<a class="headerlink" href="#test-db-local" title="Permanent link">¶</a></h3>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-25-1"><a id="__codelineno-25-1" name="__codelineno-25-1" href="#__codelineno-25-1"></a>docker<span class="w"> </span>run<span class="w"> </span>--rm<span class="w"> </span>-e<span class="w"> </span><span class="nv">POSTGRES_PASSWORD</span><span class="o">=</span>dx<span class="w"> </span>-p<span class="w"> </span><span class="m">5432</span>:5432<span class="w"> </span>postgres:15
+</span></code></pre></div>
+<p>Hoặc dùng Docker Compose trong <code>dev</code> môi trường</p>
+<hr />
+<p>📎 Xem định nghĩa schema chuẩn tại: <a href="../../architecture/rbac-deep-dive/#4-cấu-trúc-dữ-liệu-rbac">RBAC Deep Dive</a></p>
+<h2 id="10-quy-trinh-pull-request-review">10. Quy trình pull request &amp; review<a class="headerlink" href="#10-quy-trinh-pull-request-review" title="Permanent link">¶</a></h2>
+<p>Mỗi thay đổi trong hệ thống dx-vas phải được thực hiện thông qua Pull Request (PR) theo quy trình rõ ràng và có kiểm duyệt. Quy trình này đảm bảo:</p>
+<ul>
+<li>Code rõ ràng, đúng chuẩn style</li>
+<li>Logic được test và review</li>
+<li>Không ảnh hưởng đến hệ thống vận hành</li>
+</ul>
+<hr />
+<h3 id="quy-trinh-phat-trien-co-ban">🚀 Quy trình phát triển cơ bản<a class="headerlink" href="#quy-trinh-phat-trien-co-ban" title="Permanent link">¶</a></h3>
+<ol>
+<li><strong>Tạo nhánh mới từ <code>dev</code></strong></li>
+</ol>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-26-1"><a id="__codelineno-26-1" name="__codelineno-26-1" href="#__codelineno-26-1"></a>git<span class="w"> </span>checkout<span class="w"> </span>dev
+</span><span id="__span-26-2"><a id="__codelineno-26-2" name="__codelineno-26-2" href="#__codelineno-26-2"></a>git<span class="w"> </span>pull
+</span><span id="__span-26-3"><a id="__codelineno-26-3" name="__codelineno-26-3" href="#__codelineno-26-3"></a>git<span class="w"> </span>checkout<span class="w"> </span>-b<span class="w"> </span>feat/&lt;service&gt;-&lt;short-desc&gt;
+</span></code></pre></div>
+<ol>
+<li><strong>Viết code &amp; test</strong></li>
+<li><strong>Chạy test + format code</strong></li>
+<li><strong>Push lên GitHub</strong></li>
+<li><strong>Tạo PR về <code>dev</code></strong></li>
+</ol>
+<hr />
+<h3 id="quy-inh-at-ten-nhanh">✅ Quy định đặt tên nhánh<a class="headerlink" href="#quy-inh-at-ten-nhanh" title="Permanent link">¶</a></h3>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-27-1"><a id="__codelineno-27-1" name="__codelineno-27-1" href="#__codelineno-27-1"></a>feat/&lt;service&gt;-ten-tinh-nang
+</span><span id="__span-27-2"><a id="__codelineno-27-2" name="__codelineno-27-2" href="#__codelineno-27-2"></a>fix/&lt;service&gt;-ten-loi
+</span><span id="__span-27-3"><a id="__codelineno-27-3" name="__codelineno-27-3" href="#__codelineno-27-3"></a>refactor/&lt;service&gt;-ten-module
+</span></code></pre></div>
+<p>Ví dụ:</p>
+<ul>
+<li><code>feat/auth-otp-login</code></li>
+<li><code>fix/user-role-sync-error</code></li>
+</ul>
+<hr />
+<h3 id="checklist-khi-mo-pr">🧩 Checklist khi mở PR<a class="headerlink" href="#checklist-khi-mo-pr" title="Permanent link">¶</a></h3>
+<ul class="task-list">
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Đã viết unit test và integration test (nếu cần)</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Đã chạy <code>black</code>, <code>isort</code>, <code>flake8</code> (Python)</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Đã chạy <code>prettier</code>, <code>eslint</code> (Frontend)</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Không push <code>.env</code>, credential, dữ liệu cá nhân</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Không sửa file cấu hình deployment production trừ khi được duyệt</li>
+</ul>
+<hr />
+<h3 id="reviewer-can-kiem-tra">👀 Reviewer cần kiểm tra<a class="headerlink" href="#reviewer-can-kiem-tra" title="Permanent link">¶</a></h3>
+<ul>
+<li>Logic có hợp lý không?</li>
+<li>Tên biến, tên hàm có rõ ràng?</li>
+<li>Có gây side effect không mong muốn?</li>
+<li>Đã có test &amp; chạy pass chưa?</li>
+<li>Có ảnh hưởng đến schema / RBAC không? (→ cần update migration hoặc IC?)</li>
+</ul>
+<hr />
+<h3 id="luong-pr-ien-hinh">🛡️ Luồng PR điển hình<a class="headerlink" href="#luong-pr-ien-hinh" title="Permanent link">¶</a></h3>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-28-1"><a id="__codelineno-28-1" name="__codelineno-28-1" href="#__codelineno-28-1"></a>Dev → Push lên nhánh feat/... → Mở PR → Review + Comment → Sửa đổi → Merge
+</span></code></pre></div>
+<hr />
+<h3 id="luat-merge">🔒 Luật merge<a class="headerlink" href="#luat-merge" title="Permanent link">¶</a></h3>
+<table>
+<thead>
+<tr>
+<th>Môi trường</th>
+<th>Nhánh</th>
+<th>Merge vào</th>
+<th>Ghi chú</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Staging</td>
+<td><code>dev</code></td>
+<td><code>dev</code></td>
+<td>Merge sau khi pass CI</td>
+</tr>
+<tr>
+<td>Production</td>
+<td><code>main</code></td>
+<td><code>main</code></td>
+<td>Require approval 2 người</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<p>📎 Xem CI/CD detail: <a href="../../ADR/adr-001-ci-cd/"><code>adr-001-ci-cd.md</code></a></p>
+<p>📎 Xem Coding Style tại: <a href="#4-quy-ước-viết-mã--coding-style">Mục 4 – Quy ước viết mã</a></p>
+<h2 id="11-theo-doi-van-hanh">11. Theo dõi &amp; vận hành<a class="headerlink" href="#11-theo-doi-van-hanh" title="Permanent link">¶</a></h2>
+<p>Hệ thống dx-vas được triển khai theo kiến trúc phân tán, yêu cầu giám sát chủ động và khả năng truy vết lỗi hiệu quả. Tất cả service đều chạy trên Google Cloud Run và tích hợp logging/tracing tập trung.</p>
+<hr />
+<h3 id="thanh-phan-quan-sat-chinh">📦 Thành phần quan sát chính<a class="headerlink" href="#thanh-phan-quan-sat-chinh" title="Permanent link">¶</a></h3>
+<table>
+<thead>
+<tr>
+<th>Thành phần</th>
+<th>Mục tiêu</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Cloud Logging</td>
+<td>Tập trung log từ tất cả container</td>
+</tr>
+<tr>
+<td>Cloud Monitoring</td>
+<td>Giám sát CPU, latency, error rate</td>
+</tr>
+<tr>
+<td>Cloud Trace</td>
+<td>Theo dõi trace request phân tán</td>
+</tr>
+<tr>
+<td>Cloud Alerting</td>
+<td>Thiết lập cảnh báo theo rule</td>
+</tr>
+<tr>
+<td>Pub/Sub Dead Letter</td>
+<td>Ghi nhận sự kiện xử lý lỗi / timeout</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3 id="moi-service-can-implement">🛠 Mỗi service cần implement<a class="headerlink" href="#moi-service-can-implement" title="Permanent link">¶</a></h3>
+<ul>
+<li>
+<p>Logging chuẩn hóa theo JSON:
+  <div class="language-json highlight"><pre><span></span><code><span id="__span-29-1"><a id="__codelineno-29-1" name="__codelineno-29-1" href="#__codelineno-29-1"></a><span class="p">{</span>
+</span><span id="__span-29-2"><a id="__codelineno-29-2" name="__codelineno-29-2" href="#__codelineno-29-2"></a><span class="w">  </span><span class="nt">&quot;level&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;INFO&quot;</span><span class="p">,</span>
+</span><span id="__span-29-3"><a id="__codelineno-29-3" name="__codelineno-29-3" href="#__codelineno-29-3"></a><span class="w">  </span><span class="nt">&quot;service&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;user-service&quot;</span><span class="p">,</span>
+</span><span id="__span-29-4"><a id="__codelineno-29-4" name="__codelineno-29-4" href="#__codelineno-29-4"></a><span class="w">  </span><span class="nt">&quot;request_id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;abc-123&quot;</span><span class="p">,</span>
+</span><span id="__span-29-5"><a id="__codelineno-29-5" name="__codelineno-29-5" href="#__codelineno-29-5"></a><span class="w">  </span><span class="nt">&quot;message&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;User updated&quot;</span><span class="p">,</span>
+</span><span id="__span-29-6"><a id="__codelineno-29-6" name="__codelineno-29-6" href="#__codelineno-29-6"></a><span class="w">  </span><span class="nt">&quot;user_id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;u789&quot;</span>
+</span><span id="__span-29-7"><a id="__codelineno-29-7" name="__codelineno-29-7" href="#__codelineno-29-7"></a><span class="p">}</span>
+</span></code></pre></div></p>
+</li>
+<li>
+<p>Trace header (<code>X-Request-ID</code>) cần được truyền xuyên suốt mọi service</p>
+</li>
+<li>Bắt timeout, quota error từ external API (Zalo, Gmail...) → log cảnh báo</li>
+</ul>
+<hr />
+<h3 id="bao-mat-tong-the-security-overview">🔐 Bảo mật tổng thể (Security Overview)<a class="headerlink" href="#bao-mat-tong-the-security-overview" title="Permanent link">¶</a></h3>
+<p>Các chính sách và cơ chế bảo mật chính:</p>
+<ul>
+<li><strong>RBAC động:</strong> Kiểm soát truy cập chi tiết theo ngữ cảnh</li>
+<li><strong>Xác thực token:</strong> OAuth2, JWT, OTP theo user group</li>
+<li><strong>Giới hạn truy cập:</strong> Rate limiting, CAPTCHA với public endpoint</li>
+<li><strong>Audit log:</strong> Ghi lại thay đổi RBAC, lỗi xác thực, hành vi bất thường</li>
+<li><strong>Header signing / mTLS:</strong> Cho giao tiếp giữa các service nội bộ</li>
+</ul>
+<blockquote>
+<p>📎 Tham khảo: <a href="../../ADR/adr-004-security/"><code>adr-004-security.md</code></a><br />
+📎 Chi tiết RBAC: <a href="../../architecture/rbac-deep-dive/">RBAC Deep Dive</a></p>
+</blockquote>
+<hr />
+<h3 id="log-bao-mat">🔐 Log bảo mật<a class="headerlink" href="#log-bao-mat" title="Permanent link">¶</a></h3>
+<ul>
+<li>Log RBAC: <code>permission_denied</code>, <code>rbac_modified_by</code>, <code>invalid_token</code></li>
+<li>Log auth: <code>login_failed</code>, <code>otp_failed</code>, <code>user_locked</code></li>
+<li>
+<p>Gửi alert khi:</p>
+</li>
+<li>
+<p>Đăng nhập sai liên tiếp &gt; 5 lần</p>
+</li>
+<li>Thay đổi quyền role đặc biệt</li>
+<li>Truy cập endpoint nhạy cảm thất bại</li>
+</ul>
+<hr />
+<h3 id="alerting-goi-y">⚠️ Alerting gợi ý<a class="headerlink" href="#alerting-goi-y" title="Permanent link">¶</a></h3>
+<table>
+<thead>
+<tr>
+<th>Rule</th>
+<th>Điều kiện</th>
+<th>Mức</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Gateway error spike</td>
+<td><code>5xx</code> tăng &gt; 20% trong 5 phút</td>
+<td>⚠️ Warning</td>
+</tr>
+<tr>
+<td>Pub/Sub failed ack</td>
+<td><code>notification_event</code> timeout &gt; 10 lần</td>
+<td>🚨 Critical</td>
+</tr>
+<tr>
+<td>Redis miss rate cao</td>
+<td>Miss rate &gt; 40% trong 10 phút</td>
+<td>⚠️ Warning</td>
+</tr>
+<tr>
+<td>Login fail</td>
+<td>10+ lần từ 1 IP trong 1 phút</td>
+<td>🚨 Security</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3 id="health-check-trace">🧪 Health check &amp; trace<a class="headerlink" href="#health-check-trace" title="Permanent link">¶</a></h3>
+<ul>
+<li>Tất cả service expose <code>/healthz</code> trả <code>200 OK</code></li>
+<li>Gateway trace từng request → gắn <code>request_id</code></li>
+<li>Pub/Sub và Redis có dashboard trạng thái riêng</li>
+</ul>
+<hr />
+<p>📎 Xem thêm: <a href="../../ADR/adr-008-audit-logging/"><code>adr-008-audit-logging.md</code></a></p>
+<p>📎 Sơ đồ triển khai observability: <a href="../../architecture/system-diagrams/#9-deployment-overview-diagram--sơ-đồ-triển-khai-tổng-quan">System Diagrams</a></p>
+<h2 id="12-troubleshooting-loi-thuong-gap">12. Troubleshooting – Lỗi thường gặp<a class="headerlink" href="#12-troubleshooting-loi-thuong-gap" title="Permanent link">¶</a></h2>
+<p>Dưới đây là danh sách một số lỗi thường gặp trong quá trình phát triển, test hoặc vận hành hệ thống dx-vas – cùng với cách xử lý đề xuất.</p>
+<hr />
+<h3 id="authentication-token">🔑 Authentication &amp; Token<a class="headerlink" href="#authentication-token" title="Permanent link">¶</a></h3>
+<table>
+<thead>
+<tr>
+<th>Lỗi</th>
+<th>Nguyên nhân</th>
+<th>Giải pháp</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>401 Unauthorized</code></td>
+<td>Thiếu hoặc sai JWT</td>
+<td>Kiểm tra <code>Authorization: Bearer &lt;token&gt;</code></td>
+</tr>
+<tr>
+<td><code>Signature has expired</code></td>
+<td>Token hết hạn</td>
+<td>Gọi lại <code>/refresh-token</code></td>
+</tr>
+<tr>
+<td><code>403 Forbidden</code></td>
+<td>Không có quyền</td>
+<td>Kiểm tra permission hoặc header <code>X-Permissions</code></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3 id="rbac-redis">🔐 RBAC &amp; Redis<a class="headerlink" href="#rbac-redis" title="Permanent link">¶</a></h3>
+<table>
+<thead>
+<tr>
+<th>Lỗi</th>
+<th>Nguyên nhân</th>
+<th>Giải pháp</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>permission denied</code></td>
+<td>Không match <code>condition</code></td>
+<td>Debug bằng context gửi qua request</td>
+</tr>
+<tr>
+<td>Cache không cập nhật</td>
+<td>RBAC chưa được invalidate</td>
+<td>Gọi lại API hoặc đợi TTL Redis (~5 phút)</td>
+</tr>
+<tr>
+<td><code>KeyError</code> RBAC</td>
+<td>Sai format permission</td>
+<td>Kiểm tra file <code>permissions.yaml</code> và migration</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3 id="database-migration">🛠 Database &amp; Migration<a class="headerlink" href="#database-migration" title="Permanent link">¶</a></h3>
+<table>
+<thead>
+<tr>
+<th>Lỗi</th>
+<th>Nguyên nhân</th>
+<th>Giải pháp</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>alembic error</code></td>
+<td>Thiếu <code>env.py</code> hoặc config</td>
+<td>Kiểm tra <code>alembic.ini</code> &amp; env var <code>DATABASE_URL</code></td>
+</tr>
+<tr>
+<td><code>table does not exist</code></td>
+<td>Quên migrate</td>
+<td><code>alembic upgrade head</code></td>
+</tr>
+<tr>
+<td><code>duplicate key</code></td>
+<td>Trùng dữ liệu seed</td>
+<td>Kiểm tra file insert hoặc set <code>on_conflict</code></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3 id="docker-service-dev">📦 Docker &amp; Service Dev<a class="headerlink" href="#docker-service-dev" title="Permanent link">¶</a></h3>
+<table>
+<thead>
+<tr>
+<th>Lỗi</th>
+<th>Nguyên nhân</th>
+<th>Giải pháp</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>address already in use</code></td>
+<td>Port bị chiếm</td>
+<td>Đổi port trong <code>.env</code> hoặc docker</td>
+</tr>
+<tr>
+<td><code>ModuleNotFoundError</code></td>
+<td>Thiếu dependency</td>
+<td><code>pip install -r requirements.txt</code> hoặc rebuild container</td>
+</tr>
+<tr>
+<td>Service không start</td>
+<td>Lỗi env hoặc lỗi DB</td>
+<td>Kiểm tra <code>.env</code>, log DB, Redis, Pub/Sub</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3 id="cicd-test">🧪 CI/CD &amp; Test<a class="headerlink" href="#cicd-test" title="Permanent link">¶</a></h3>
+<table>
+<thead>
+<tr>
+<th>Lỗi</th>
+<th>Nguyên nhân</th>
+<th>Giải pháp</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>pytest ImportError</code></td>
+<td>Chạy ngoài virtualenv</td>
+<td><code>source .venv/bin/activate</code></td>
+</tr>
+<tr>
+<td><code>coverage &lt; 70%</code></td>
+<td>Thiếu test cho logic chính</td>
+<td>Thêm unit test cho service, router, schema</td>
+</tr>
+<tr>
+<td>CI fail ở <code>black</code></td>
+<td>Không format code</td>
+<td><code>black app/</code> rồi commit lại</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3 id="notification">📡 Notification<a class="headerlink" href="#notification" title="Permanent link">¶</a></h3>
+<table>
+<thead>
+<tr>
+<th>Lỗi</th>
+<th>Nguyên nhân</th>
+<th>Giải pháp</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Không gửi Zalo</td>
+<td>Sai template hoặc quota</td>
+<td>Kiểm tra token OA + cấu hình template ID</td>
+</tr>
+<tr>
+<td>Gửi email thất bại</td>
+<td>Lỗi Gmail API quota</td>
+<td>Chờ retry hoặc contact admin</td>
+</tr>
+<tr>
+<td>Push không nhận</td>
+<td>User chưa đăng ký device token</td>
+<td>Gọi <code>/notifications/register-channel</code> trước</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3 id="general-tips">🧩 General Tips<a class="headerlink" href="#general-tips" title="Permanent link">¶</a></h3>
+<ul>
+<li>Sử dụng header <code>X-Request-ID</code> → dễ truy vết trong log</li>
+<li>Dùng <code>curl</code> hoặc <code>httpie</code> để test đơn giản</li>
+<li>Kiểm tra log Cloud Run hoặc container local nếu service crash</li>
+<li>Dùng <code>direnv</code>, <code>.env.example</code>, <code>.envrc</code> để tránh quên biến môi trường</li>
+</ul>
+<hr />
+<p>📎 Xem log và trace tại: <a href="../../architecture/system-diagrams/#9-deployment-overview-diagram--sơ-đồ-triển-khai-tổng-quan">System Diagrams</a></p>
+<p>📎 Vấn đề liên quan đến RBAC: <a href="../../architecture/rbac-deep-dive/">RBAC Deep Dive</a></p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var labels=set.querySelector(".tabbed-labels");for(var tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Trở lại mục lục
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.tabs", "navigation.tabs.sticky", "navigation.sections", "navigation.expand", "navigation.top", "navigation.indexes", "search.suggest", "search.highlight", "content.code.annotate", "content.tabs.link"], "search": "../../assets/javascripts/workers/search.d50fe291.min.js", "tags": null, "translations": {"clipboard.copied": "\u0110\u00e3 sao ch\u00e9p", "clipboard.copy": "Sao ch\u00e9p v\u00e0o b\u1ed9 nh\u1edb t\u1ea1m", "search.result.more.one": "1 t\u1eeb kh\u00e1c trong trang", "search.result.more.other": "# t\u1eeb kh\u00e1c trong trang", "search.result.none": "Kh\u00f4ng t\u00ecm th\u1ea5y t\u00e0i li\u1ec7u li\u00ean quan", "search.result.one": "1 t\u00e0i li\u1ec7u li\u00ean quan", "search.result.other": "# t\u00e0i li\u1ec7u li\u00ean quan", "search.result.placeholder": "Nh\u1eadp \u0111\u1ec3 b\u1eaft \u0111\u1ea7u t\u00ecm ki\u1ebfm", "search.result.term.missing": "Kh\u00f4ng", "select.version": "Ch\u1ecdn phi\u00ean b\u1ea3n"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.13a4f30d.min.js"></script>
+      
+    
+  </body>
+</html>

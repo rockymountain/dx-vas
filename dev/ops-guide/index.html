@@ -1,0 +1,3166 @@
+
+<!DOCTYPE html>
+
+<html class="no-js" lang="vi">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width,initial-scale=1" name="viewport"/>
+<meta content="Tài liệu kiến trúc và phát triển cho dự án Chuyển đổi số Trường Việt Anh (dx_vas)." name="description"/>
+<meta content="DX VAS Team" name="author"/>
+<link href="https://dx.truongvietanh.edu.vn/dev/ops-guide/" rel="canonical"/>
+<link href="../backend-dev-guide/" rel="prev"/>
+<link href="../../services/user-service/design/" rel="next"/>
+<link href="../../assets/images/favicon.ico" rel="icon"/>
+<meta content="mkdocs-1.6.1, mkdocs-material-9.6.14" name="generator"/>
+<title>Vận hành &amp; DevOps (Ops Guide) - DX VAS - Docs</title>
+<link href="../../assets/stylesheets/main.342714a4.min.css" rel="stylesheet"/>
+<link href="../../assets/stylesheets/palette.06af60db.min.css" rel="stylesheet"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&amp;display=fallback" rel="stylesheet"/>
+<style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+<script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+</head>
+<body data-md-color-accent="pink" data-md-color-primary="indigo" data-md-color-scheme="default" dir="ltr">
+<input autocomplete="off" class="md-toggle" data-md-toggle="drawer" id="__drawer" type="checkbox"/>
+<input autocomplete="off" class="md-toggle" data-md-toggle="search" id="__search" type="checkbox"/>
+<label class="md-overlay" for="__drawer"></label>
+<div data-md-component="skip">
+<a class="md-skip" href="#ops-guide-dx-vas">
+          Bỏ qua
+        </a>
+</div>
+<div data-md-component="announce">
+</div>
+<header class="md-header md-header--shadow md-header--lifted" data-md-component="header">
+<nav aria-label="Đầu trang" class="md-header__inner md-grid">
+<a aria-label="DX VAS - Docs" class="md-header__button md-logo" data-md-component="logo" href="../.." title="DX VAS - Docs">
+<img alt="logo" src="../../assets/images/logo.png"/>
+</a>
+<label class="md-header__button md-icon" for="__drawer">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"></path></svg>
+</label>
+<div class="md-header__title" data-md-component="header-title">
+<div class="md-header__ellipsis">
+<div class="md-header__topic">
+<span class="md-ellipsis">
+            DX VAS - Docs
+          </span>
+</div>
+<div class="md-header__topic" data-md-component="header-topic">
+<span class="md-ellipsis">
+            
+              Vận hành &amp; DevOps (Ops Guide)
+            
+          </span>
+</div>
+</div>
+</div>
+<form class="md-header__option" data-md-component="palette">
+<input aria-label="Switch to dark mode" class="md-option" data-md-color-accent="pink" data-md-color-media="(prefers-color-scheme: light)" data-md-color-primary="indigo" data-md-color-scheme="default" id="__palette_0" name="__palette" type="radio"/>
+<label class="md-header__button md-icon" for="__palette_1" hidden="" title="Switch to dark mode">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0-7 2.39 3.42C13.65 5.15 12.84 5 12 5s-1.65.15-2.39.42zM3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29zm.02 10 1.76-3.77a7.131 7.131 0 0 0 2.38 4.14zM20.65 7l-1.77 3.79a7.02 7.02 0 0 0-2.38-4.15zm-.01 10-4.14.36c.59-.51 1.12-1.14 1.54-1.86.42-.73.69-1.5.83-2.29zM12 22l-2.41-3.44c.74.27 1.55.44 2.41.44.82 0 1.63-.17 2.37-.44z"></path></svg>
+</label>
+<input aria-label="Switch to light mode" class="md-option" data-md-color-accent="lime" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-primary="blue" data-md-color-scheme="slate" id="__palette_1" name="__palette" type="radio"/>
+<label class="md-header__button md-icon" for="__palette_0" hidden="" title="Switch to light mode">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="m17.75 4.09-2.53 1.94.91 3.06-2.63-1.81-2.63 1.81.91-3.06-2.53-1.94L12.44 4l1.06-3 1.06 3zm3.5 6.91-1.64 1.25.59 1.98-1.7-1.17-1.7 1.17.59-1.98L15.75 11l2.06-.05L18.5 9l.69 1.95zm-2.28 4.95c.83-.08 1.72 1.1 1.19 1.85-.32.45-.66.87-1.08 1.27C15.17 23 8.84 23 4.94 19.07c-3.91-3.9-3.91-10.24 0-14.14.4-.4.82-.76 1.27-1.08.75-.53 1.93.36 1.85 1.19-.27 2.86.69 5.83 2.89 8.02a9.96 9.96 0 0 0 8.02 2.89m-1.64 2.02a12.08 12.08 0 0 1-7.8-3.47c-2.17-2.19-3.33-5-3.49-7.82-2.81 3.14-2.7 7.96.31 10.98 3.02 3.01 7.84 3.12 10.98.31"></path></svg>
+</label>
+</form>
+<script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+<label class="md-header__button md-icon" for="__search">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"></path></svg>
+</label>
+<div class="md-search" data-md-component="search" role="dialog">
+<label class="md-search__overlay" for="__search"></label>
+<div class="md-search__inner" role="search">
+<form class="md-search__form" name="search">
+<input aria-label="Tìm kiếm" autocapitalize="off" autocomplete="off" autocorrect="off" class="md-search__input" data-md-component="search-query" name="query" placeholder="Tìm kiếm" required="" spellcheck="false" type="text"/>
+<label class="md-search__icon md-icon" for="__search">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"></path></svg>
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"></path></svg>
+</label>
+<nav aria-label="Tìm kiếm" class="md-search__options">
+<button aria-label="Xoá" class="md-search__icon md-icon" tabindex="-1" title="Xoá" type="reset">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"></path></svg>
+</button>
+</nav>
+<div class="md-search__suggest" data-md-component="search-suggest"></div>
+</form>
+<div class="md-search__output">
+<div class="md-search__scrollwrap" data-md-scrollfix="" tabindex="0">
+<div class="md-search-result" data-md-component="search-result">
+<div class="md-search-result__meta">
+            Initializing search
+          </div>
+<ol class="md-search-result__list" role="presentation"></ol>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="md-header__source">
+<a class="md-source" data-md-component="source" href="https://github.com/rockymountain/dx-vas.git" title="Xem mã nguồn">
+<div class="md-source__icon md-icon">
+<svg viewbox="0 0 448 512" xmlns="http://www.w3.org/2000/svg"><!--! Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81"></path></svg>
+</div>
+<div class="md-source__repository">
+    rockymountain/dx-vas
+  </div>
+</a>
+</div>
+</nav>
+<nav aria-label="Tabs" class="md-tabs" data-md-component="tabs">
+<div class="md-grid">
+<ul class="md-tabs__list">
+<li class="md-tabs__item">
+<a class="md-tabs__link" href="../..">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+</li>
+<li class="md-tabs__item">
+<a class="md-tabs__link" href="../..">
+          
+  
+  
+    
+  
+  Kiến trúc Hệ thống
+
+        </a>
+</li>
+<li class="md-tabs__item md-tabs__item--active">
+<a class="md-tabs__link" href="../dev-guide/">
+          
+  
+  
+    
+  
+  Hướng dẫn Phát triển
+
+        </a>
+</li>
+<li class="md-tabs__item">
+<a class="md-tabs__link" href="../../services/user-service/design/">
+          
+  
+  
+    
+  
+  Thiết kế Services
+
+        </a>
+</li>
+<li class="md-tabs__item">
+<a class="md-tabs__link" href="../../ADR/">
+          
+  
+  
+    
+  
+  Quyết định Kiến trúc (ADRs)
+
+        </a>
+</li>
+</ul>
+</div>
+</nav>
+</header>
+<div class="md-container" data-md-component="container">
+<main class="md-main" data-md-component="main">
+<div class="md-main__inner md-grid">
+<div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation">
+<div class="md-sidebar__scrollwrap">
+<div class="md-sidebar__inner">
+<nav aria-label="Thanh điều hướng" class="md-nav md-nav--primary md-nav--lifted" data-md-level="0">
+<label class="md-nav__title" for="__drawer">
+<a aria-label="DX VAS - Docs" class="md-nav__button md-logo" data-md-component="logo" href="../.." title="DX VAS - Docs">
+<img alt="logo" src="../../assets/images/logo.png"/>
+</a>
+    DX VAS - Docs
+  </label>
+<div class="md-nav__source">
+<a class="md-source" data-md-component="source" href="https://github.com/rockymountain/dx-vas.git" title="Xem mã nguồn">
+<div class="md-source__icon md-icon">
+<svg viewbox="0 0 448 512" xmlns="http://www.w3.org/2000/svg"><!--! Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81"></path></svg>
+</div>
+<div class="md-source__repository">
+    rockymountain/dx-vas
+  </div>
+</a>
+</div>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="../..">
+<span class="md-ellipsis">
+    Home
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item md-nav__item--nested">
+<input class="md-nav__toggle md-toggle md-toggle--indeterminate" id="__nav_2" type="checkbox"/>
+<div class="md-nav__link md-nav__container">
+<a class="md-nav__link" href="../..">
+<span class="md-ellipsis">
+    Kiến trúc Hệ thống
+    
+  </span>
+</a>
+<label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+<span class="md-nav__icon md-icon"></span>
+</label>
+</div>
+<nav aria-expanded="false" aria-labelledby="__nav_2_label" class="md-nav" data-md-level="1">
+<label class="md-nav__title" for="__nav_2">
+<span class="md-nav__icon md-icon"></span>
+            Kiến trúc Hệ thống
+          </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../architecture/system-diagrams/">
+<span class="md-ellipsis">
+    Sơ đồ Hệ thống
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../architecture/rbac-deep-dive/">
+<span class="md-ellipsis">
+    RBAC Chi tiết
+    
+  </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+<input checked="" class="md-nav__toggle md-toggle" id="__nav_3" type="checkbox"/>
+<label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+<span class="md-ellipsis">
+    Hướng dẫn Phát triển
+    
+  </span>
+<span class="md-nav__icon md-icon"></span>
+</label>
+<nav aria-expanded="true" aria-labelledby="__nav_3_label" class="md-nav" data-md-level="1">
+<label class="md-nav__title" for="__nav_3">
+<span class="md-nav__icon md-icon"></span>
+            Hướng dẫn Phát triển
+          </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="../dev-guide/">
+<span class="md-ellipsis">
+    Tổng quan Phát triển (Dev Guide)
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../backend-dev-guide/">
+<span class="md-ellipsis">
+    Backend Dev Guide
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item md-nav__item--active">
+<input class="md-nav__toggle md-toggle" id="__toc" type="checkbox"/>
+<label class="md-nav__link md-nav__link--active" for="__toc">
+<span class="md-ellipsis">
+    Vận hành &amp; DevOps (Ops Guide)
+    
+  </span>
+<span class="md-nav__icon md-icon"></span>
+</label>
+<a class="md-nav__link md-nav__link--active" href="./">
+<span class="md-ellipsis">
+    Vận hành &amp; DevOps (Ops Guide)
+    
+  </span>
+</a>
+<nav aria-label="Mục lục" class="md-nav md-nav--secondary">
+<label class="md-nav__title" for="__toc">
+<span class="md-nav__icon md-icon"></span>
+      Mục lục
+    </label>
+<ul class="md-nav__list" data-md-component="toc" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#muc-luc">
+<span class="md-ellipsis">
+      Mục lục
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#1-tong-quan-trien-khai-ha-tang">
+<span class="md-ellipsis">
+      1. Tổng quan triển khai hạ tầng
+    </span>
+</a>
+<nav aria-label="1. Tổng quan triển khai hạ tầng" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#kien-truc-trien-khai-chinh">
+<span class="md-ellipsis">
+      ⚙️ Kiến trúc triển khai chính
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#ha-tang-phan-tang">
+<span class="md-ellipsis">
+      ☁️ Hạ tầng phân tầng
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#moi-truong-trien-khai">
+<span class="md-ellipsis">
+      🗂️ Môi trường triển khai
+    </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#2-trien-khai-dich-vu-moi-truong">
+<span class="md-ellipsis">
+      2. Triển khai dịch vụ &amp; môi trường
+    </span>
+</a>
+<nav aria-label="2. Triển khai dịch vụ &amp; môi trường" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#mo-hinh-multi-repo">
+<span class="md-ellipsis">
+      📦 Mô hình multi-repo
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#quy-trinh-trien-khai-ien-hinh">
+<span class="md-ellipsis">
+      🧱 Quy trình triển khai điển hình
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#cau-hinh-deploy-vi-du-github-actions">
+<span class="md-ellipsis">
+      🛠 Cấu hình deploy (ví dụ GitHub Actions)
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#cau-hinh-bien-moi-truong-cloud-run">
+<span class="md-ellipsis">
+      📁 Cấu hình biến môi trường (Cloud Run)
+    </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#3-giam-sat-canh-bao">
+<span class="md-ellipsis">
+      3. Giám sát &amp; cảnh báo
+    </span>
+</a>
+<nav aria-label="3. Giám sát &amp; cảnh báo" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#cac-loai-metric-giam-sat">
+<span class="md-ellipsis">
+      📊 Các loại metric giám sát
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#alerting-rule-goi-y">
+<span class="md-ellipsis">
+      ⚠️ Alerting rule gợi ý
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#dashboard-e-xuat">
+<span class="md-ellipsis">
+      📉 Dashboard đề xuất
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#canh-bao-thong-bao">
+<span class="md-ellipsis">
+      🔄 Cảnh báo &amp; thông báo
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#so-o-luong-canh-bao-monitoring-alerts">
+<span class="md-ellipsis">
+      🛎️ Sơ đồ luồng cảnh báo (Monitoring Alerts)
+    </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#4-logging-trace-phan-tan">
+<span class="md-ellipsis">
+      4. Logging &amp; Trace phân tán
+    </span>
+</a>
+<nav aria-label="4. Logging &amp; Trace phân tán" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#inh-dang-log-chuan">
+<span class="md-ellipsis">
+      🧾 Định dạng log chuẩn
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#trace-phan-tan">
+<span class="md-ellipsis">
+      🔍 Trace phân tán
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#su-dung-log-trace">
+<span class="md-ellipsis">
+      📊 Sử dụng log &amp; trace
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#goi-y-log-prefix">
+<span class="md-ellipsis">
+      🗂️ Gợi ý log prefix
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#log-bao-mat">
+<span class="md-ellipsis">
+      🔐 Log bảo mật
+    </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#5-quan-ly-bao-mat-credentials">
+<span class="md-ellipsis">
+      5. Quản lý bảo mật &amp; credentials
+    </span>
+</a>
+<nav aria-label="5. Quản lý bảo mật &amp; credentials" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#loai-thong-tin-can-bao-ve">
+<span class="md-ellipsis">
+      🔐 Loại thông tin cần bảo vệ
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#quan-ly-cau-hinh-ong-khong-nhay-cam">
+<span class="md-ellipsis">
+      🧩 Quản lý cấu hình động (không nhạy cảm)
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#quy-trinh-quan-ly-secret">
+<span class="md-ellipsis">
+      🧱 Quy trình quản lý secret
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#thuc-hanh-tot">
+<span class="md-ellipsis">
+      📦 Thực hành tốt
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#kiem-tra-nhanh">
+<span class="md-ellipsis">
+      🧪 Kiểm tra nhanh
+    </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#6-chien-luoc-scaling-autoscale">
+<span class="md-ellipsis">
+      6. Chiến lược scaling &amp; autoscale
+    </span>
+</a>
+<nav aria-label="6. Chiến lược scaling &amp; autoscale" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#autoscaling-mac-inh">
+<span class="md-ellipsis">
+      ⚙️ Autoscaling mặc định
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#hanh-vi-scaling">
+<span class="md-ellipsis">
+      🔁 Hành vi scaling
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#toi-uu-scaling">
+<span class="md-ellipsis">
+      📉 Tối ưu scaling
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#luu-y_1">
+<span class="md-ellipsis">
+      🔐 Lưu ý
+    </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#7-quy-trinh-cap-nhat-rollback">
+<span class="md-ellipsis">
+      7. Quy trình cập nhật &amp; rollback
+    </span>
+</a>
+<nav aria-label="7. Quy trình cập nhật &amp; rollback" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#quy-trinh-cap-nhat">
+<span class="md-ellipsis">
+      🚀 Quy trình cập nhật
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#kiem-soat-theo-moi-truong">
+<span class="md-ellipsis">
+      📦 Kiểm soát theo môi trường
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#rollback-khi-loi">
+<span class="md-ellipsis">
+      🛑 Rollback khi lỗi
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#luu-y-khi-kiem-tra-version">
+<span class="md-ellipsis">
+      🧪 Lưu ý khi kiểm tra version
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#nhung-rui-ro-can-chu-y">
+<span class="md-ellipsis">
+      ⚠️ Những rủi ro cần chú ý
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#zero-downtime-deployment-canary-release-cloud-run">
+<span class="md-ellipsis">
+      ✨ Zero Downtime Deployment &amp; Canary Release (Cloud Run)
+    </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#8-quan-ly-pubsub-dead-letter">
+<span class="md-ellipsis">
+      8. Quản lý Pub/Sub &amp; Dead Letter
+    </span>
+</a>
+<nav aria-label="8. Quản lý Pub/Sub &amp; Dead Letter" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#cac-topic-chinh">
+<span class="md-ellipsis">
+      🔁 Các topic chính
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#dead-letter-topics-dlt">
+<span class="md-ellipsis">
+      📦 Dead Letter Topics (DLT)
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#giam-sat-pubsub">
+<span class="md-ellipsis">
+      🔍 Giám sát Pub/Sub
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#handling-retry">
+<span class="md-ellipsis">
+      🛠 Handling retry
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#debug-dlt-message">
+<span class="md-ellipsis">
+      ✏️ Debug DLT message
+    </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#9-kiem-soat-chi-phi-toi-uu-tai-nguyen">
+<span class="md-ellipsis">
+      9. Kiểm soát chi phí &amp; tối ưu tài nguyên
+    </span>
+</a>
+<nav aria-label="9. Kiểm soát chi phí &amp; tối ưu tài nguyên" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#cac-thanh-phan-ton-chi-phi">
+<span class="md-ellipsis">
+      💰 Các thành phần tốn chi phí
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#network-egress-costs">
+<span class="md-ellipsis">
+      🌐 Network Egress Costs
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#theo-doi-chi-phi">
+<span class="md-ellipsis">
+      📊 Theo dõi chi phí
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#chien-luoc-toi-uu">
+<span class="md-ellipsis">
+      🎯 Chiến lược tối ưu
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#canh-bao-thuc-te">
+<span class="md-ellipsis">
+      ⚠️ Cảnh báo thực tế
+    </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#10-checklist-inh-ky-van-hanh">
+<span class="md-ellipsis">
+      10. Checklist định kỳ vận hành
+    </span>
+</a>
+<nav aria-label="10. Checklist định kỳ vận hành" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#hang-tuan">
+<span class="md-ellipsis">
+      🔁 Hàng tuần
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#hang-thang">
+<span class="md-ellipsis">
+      📅 Hàng tháng
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#hang-quy">
+<span class="md-ellipsis">
+      📣 Hàng quý
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#cach-theo-doi-checklist">
+<span class="md-ellipsis">
+      📌 Cách theo dõi checklist
+    </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#11-ung-pho-su-co-khoi-phuc">
+<span class="md-ellipsis">
+      11. Ứng phó sự cố &amp; khôi phục
+    </span>
+</a>
+<nav aria-label="11. Ứng phó sự cố &amp; khôi phục" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#vai-tro-trong-quy-trinh-ung-pho-su-co-incident-response-roles">
+<span class="md-ellipsis">
+      🧑‍🚒 Vai trò trong quy trình ứng phó sự cố (Incident Response Roles)
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#phan-loai-su-co">
+<span class="md-ellipsis">
+      🚨 Phân loại sự cố
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#checklist-phan-ung-nhanh">
+<span class="md-ellipsis">
+      🧯 Checklist phản ứng nhanh
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#log-cong-cu-ho-tro">
+<span class="md-ellipsis">
+      🗂 Log &amp; công cụ hỗ trợ
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#postmortem-template">
+<span class="md-ellipsis">
+      📋 Postmortem template
+    </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#12-backup-disaster-recovery-dr">
+<span class="md-ellipsis">
+      12. Backup &amp; Disaster Recovery (DR)
+    </span>
+</a>
+<nav aria-label="12. Backup &amp; Disaster Recovery (DR)" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#rto-rpo-muc-tieu">
+<span class="md-ellipsis">
+      🎯 RTO &amp; RPO mục tiêu
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#backup-chien-luoc">
+<span class="md-ellipsis">
+      📦 Backup chiến lược
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#kiem-thu-dr-inh-ky">
+<span class="md-ellipsis">
+      🔁 Kiểm thử DR định kỳ
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#luu-y-bao-mat">
+<span class="md-ellipsis">
+      🔐 Lưu ý bảo mật
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#cong-cu-kiem-tra-khoi-phuc">
+<span class="md-ellipsis">
+      🧪 Công cụ kiểm tra &amp; khôi phục
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#vi-du-kich-ban-dr-mat-ket-noi-cloud-sql">
+<span class="md-ellipsis">
+      🧪 Ví dụ: Kịch bản DR – Mất kết nối Cloud SQL
+    </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#13-security-audit-compliance">
+<span class="md-ellipsis">
+      13. Security audit &amp; compliance
+    </span>
+</a>
+<nav aria-label="13. Security audit &amp; compliance" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#kiem-tra-inh-ky">
+<span class="md-ellipsis">
+      🔍 Kiểm tra định kỳ
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#lich-audit-goi-y">
+<span class="md-ellipsis">
+      📅 Lịch audit gợi ý
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#cong-cu-ho-tro-audit">
+<span class="md-ellipsis">
+      🛠 Công cụ hỗ trợ audit
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#compliance-noi-bo">
+<span class="md-ellipsis">
+      🔒 Compliance (nội bộ)
+    </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#14-cong-cu-dashboard-ho-tro">
+<span class="md-ellipsis">
+      14. Công cụ &amp; dashboard hỗ trợ
+    </span>
+</a>
+<nav aria-label="14. Công cụ &amp; dashboard hỗ trợ" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#bo-cong-cu-chinh">
+<span class="md-ellipsis">
+      🧰 Bộ công cụ chính
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#dashboard-tham-khao">
+<span class="md-ellipsis">
+      📊 Dashboard tham khảo
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#bang-lenh-cli-devops-thuong-dung-gcp-cloud-run-pubsub-cloud-sql">
+<span class="md-ellipsis">
+      🧰 Bảng lệnh CLI DevOps thường dùng (GCP – Cloud Run, Pub/Sub, Cloud SQL)
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#uong-dan-huu-ich">
+<span class="md-ellipsis">
+      📎 Đường dẫn hữu ích
+    </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+</ul>
+</nav>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item md-nav__item--nested">
+<input class="md-nav__toggle md-toggle md-toggle--indeterminate" id="__nav_4" type="checkbox"/>
+<label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+<span class="md-ellipsis">
+    Thiết kế Services
+    
+  </span>
+<span class="md-nav__icon md-icon"></span>
+</label>
+<nav aria-expanded="false" aria-labelledby="__nav_4_label" class="md-nav" data-md-level="1">
+<label class="md-nav__title" for="__nav_4">
+<span class="md-nav__icon md-icon"></span>
+            Thiết kế Services
+          </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item md-nav__item--nested">
+<input class="md-nav__toggle md-toggle md-toggle--indeterminate" id="__nav_4_1" type="checkbox"/>
+<label class="md-nav__link" for="__nav_4_1" id="__nav_4_1_label" tabindex="0">
+<span class="md-ellipsis">
+    User Service
+    
+  </span>
+<span class="md-nav__icon md-icon"></span>
+</label>
+<nav aria-expanded="false" aria-labelledby="__nav_4_1_label" class="md-nav" data-md-level="2">
+<label class="md-nav__title" for="__nav_4_1">
+<span class="md-nav__icon md-icon"></span>
+            User Service
+          </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../services/user-service/design/">
+<span class="md-ellipsis">
+    Tổng quan Thiết kế
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../services/user-service/interface-contract/">
+<span class="md-ellipsis">
+    Hợp đồng Giao diện
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../services/user-service/data-model/">
+<span class="md-ellipsis">
+    Mô hình Dữ liệu
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../services/user-service/openapi.yaml">
+<span class="md-ellipsis">
+    Đặc tả OpenAPI
+    
+  </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item md-nav__item--nested">
+<input class="md-nav__toggle md-toggle md-toggle--indeterminate" id="__nav_5" type="checkbox"/>
+<div class="md-nav__link md-nav__container">
+<a class="md-nav__link" href="../../ADR/">
+<span class="md-ellipsis">
+    Quyết định Kiến trúc (ADRs)
+    
+  </span>
+</a>
+</div>
+<nav aria-expanded="false" aria-labelledby="__nav_5_label" class="md-nav" data-md-level="1">
+<label class="md-nav__title" for="__nav_5">
+<span class="md-nav__icon md-icon"></span>
+            Quyết định Kiến trúc (ADRs)
+          </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+</ul>
+</nav>
+</li>
+</ul>
+</nav>
+</div>
+</div>
+</div>
+<div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc">
+<div class="md-sidebar__scrollwrap">
+<div class="md-sidebar__inner">
+<nav aria-label="Mục lục" class="md-nav md-nav--secondary">
+<label class="md-nav__title" for="__toc">
+<span class="md-nav__icon md-icon"></span>
+      Mục lục
+    </label>
+<ul class="md-nav__list" data-md-component="toc" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#muc-luc">
+<span class="md-ellipsis">
+      Mục lục
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#1-tong-quan-trien-khai-ha-tang">
+<span class="md-ellipsis">
+      1. Tổng quan triển khai hạ tầng
+    </span>
+</a>
+<nav aria-label="1. Tổng quan triển khai hạ tầng" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#kien-truc-trien-khai-chinh">
+<span class="md-ellipsis">
+      ⚙️ Kiến trúc triển khai chính
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#ha-tang-phan-tang">
+<span class="md-ellipsis">
+      ☁️ Hạ tầng phân tầng
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#moi-truong-trien-khai">
+<span class="md-ellipsis">
+      🗂️ Môi trường triển khai
+    </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#2-trien-khai-dich-vu-moi-truong">
+<span class="md-ellipsis">
+      2. Triển khai dịch vụ &amp; môi trường
+    </span>
+</a>
+<nav aria-label="2. Triển khai dịch vụ &amp; môi trường" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#mo-hinh-multi-repo">
+<span class="md-ellipsis">
+      📦 Mô hình multi-repo
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#quy-trinh-trien-khai-ien-hinh">
+<span class="md-ellipsis">
+      🧱 Quy trình triển khai điển hình
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#cau-hinh-deploy-vi-du-github-actions">
+<span class="md-ellipsis">
+      🛠 Cấu hình deploy (ví dụ GitHub Actions)
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#cau-hinh-bien-moi-truong-cloud-run">
+<span class="md-ellipsis">
+      📁 Cấu hình biến môi trường (Cloud Run)
+    </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#3-giam-sat-canh-bao">
+<span class="md-ellipsis">
+      3. Giám sát &amp; cảnh báo
+    </span>
+</a>
+<nav aria-label="3. Giám sát &amp; cảnh báo" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#cac-loai-metric-giam-sat">
+<span class="md-ellipsis">
+      📊 Các loại metric giám sát
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#alerting-rule-goi-y">
+<span class="md-ellipsis">
+      ⚠️ Alerting rule gợi ý
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#dashboard-e-xuat">
+<span class="md-ellipsis">
+      📉 Dashboard đề xuất
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#canh-bao-thong-bao">
+<span class="md-ellipsis">
+      🔄 Cảnh báo &amp; thông báo
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#so-o-luong-canh-bao-monitoring-alerts">
+<span class="md-ellipsis">
+      🛎️ Sơ đồ luồng cảnh báo (Monitoring Alerts)
+    </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#4-logging-trace-phan-tan">
+<span class="md-ellipsis">
+      4. Logging &amp; Trace phân tán
+    </span>
+</a>
+<nav aria-label="4. Logging &amp; Trace phân tán" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#inh-dang-log-chuan">
+<span class="md-ellipsis">
+      🧾 Định dạng log chuẩn
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#trace-phan-tan">
+<span class="md-ellipsis">
+      🔍 Trace phân tán
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#su-dung-log-trace">
+<span class="md-ellipsis">
+      📊 Sử dụng log &amp; trace
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#goi-y-log-prefix">
+<span class="md-ellipsis">
+      🗂️ Gợi ý log prefix
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#log-bao-mat">
+<span class="md-ellipsis">
+      🔐 Log bảo mật
+    </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#5-quan-ly-bao-mat-credentials">
+<span class="md-ellipsis">
+      5. Quản lý bảo mật &amp; credentials
+    </span>
+</a>
+<nav aria-label="5. Quản lý bảo mật &amp; credentials" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#loai-thong-tin-can-bao-ve">
+<span class="md-ellipsis">
+      🔐 Loại thông tin cần bảo vệ
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#quan-ly-cau-hinh-ong-khong-nhay-cam">
+<span class="md-ellipsis">
+      🧩 Quản lý cấu hình động (không nhạy cảm)
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#quy-trinh-quan-ly-secret">
+<span class="md-ellipsis">
+      🧱 Quy trình quản lý secret
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#thuc-hanh-tot">
+<span class="md-ellipsis">
+      📦 Thực hành tốt
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#kiem-tra-nhanh">
+<span class="md-ellipsis">
+      🧪 Kiểm tra nhanh
+    </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#6-chien-luoc-scaling-autoscale">
+<span class="md-ellipsis">
+      6. Chiến lược scaling &amp; autoscale
+    </span>
+</a>
+<nav aria-label="6. Chiến lược scaling &amp; autoscale" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#autoscaling-mac-inh">
+<span class="md-ellipsis">
+      ⚙️ Autoscaling mặc định
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#hanh-vi-scaling">
+<span class="md-ellipsis">
+      🔁 Hành vi scaling
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#toi-uu-scaling">
+<span class="md-ellipsis">
+      📉 Tối ưu scaling
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#luu-y_1">
+<span class="md-ellipsis">
+      🔐 Lưu ý
+    </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#7-quy-trinh-cap-nhat-rollback">
+<span class="md-ellipsis">
+      7. Quy trình cập nhật &amp; rollback
+    </span>
+</a>
+<nav aria-label="7. Quy trình cập nhật &amp; rollback" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#quy-trinh-cap-nhat">
+<span class="md-ellipsis">
+      🚀 Quy trình cập nhật
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#kiem-soat-theo-moi-truong">
+<span class="md-ellipsis">
+      📦 Kiểm soát theo môi trường
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#rollback-khi-loi">
+<span class="md-ellipsis">
+      🛑 Rollback khi lỗi
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#luu-y-khi-kiem-tra-version">
+<span class="md-ellipsis">
+      🧪 Lưu ý khi kiểm tra version
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#nhung-rui-ro-can-chu-y">
+<span class="md-ellipsis">
+      ⚠️ Những rủi ro cần chú ý
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#zero-downtime-deployment-canary-release-cloud-run">
+<span class="md-ellipsis">
+      ✨ Zero Downtime Deployment &amp; Canary Release (Cloud Run)
+    </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#8-quan-ly-pubsub-dead-letter">
+<span class="md-ellipsis">
+      8. Quản lý Pub/Sub &amp; Dead Letter
+    </span>
+</a>
+<nav aria-label="8. Quản lý Pub/Sub &amp; Dead Letter" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#cac-topic-chinh">
+<span class="md-ellipsis">
+      🔁 Các topic chính
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#dead-letter-topics-dlt">
+<span class="md-ellipsis">
+      📦 Dead Letter Topics (DLT)
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#giam-sat-pubsub">
+<span class="md-ellipsis">
+      🔍 Giám sát Pub/Sub
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#handling-retry">
+<span class="md-ellipsis">
+      🛠 Handling retry
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#debug-dlt-message">
+<span class="md-ellipsis">
+      ✏️ Debug DLT message
+    </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#9-kiem-soat-chi-phi-toi-uu-tai-nguyen">
+<span class="md-ellipsis">
+      9. Kiểm soát chi phí &amp; tối ưu tài nguyên
+    </span>
+</a>
+<nav aria-label="9. Kiểm soát chi phí &amp; tối ưu tài nguyên" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#cac-thanh-phan-ton-chi-phi">
+<span class="md-ellipsis">
+      💰 Các thành phần tốn chi phí
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#network-egress-costs">
+<span class="md-ellipsis">
+      🌐 Network Egress Costs
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#theo-doi-chi-phi">
+<span class="md-ellipsis">
+      📊 Theo dõi chi phí
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#chien-luoc-toi-uu">
+<span class="md-ellipsis">
+      🎯 Chiến lược tối ưu
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#canh-bao-thuc-te">
+<span class="md-ellipsis">
+      ⚠️ Cảnh báo thực tế
+    </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#10-checklist-inh-ky-van-hanh">
+<span class="md-ellipsis">
+      10. Checklist định kỳ vận hành
+    </span>
+</a>
+<nav aria-label="10. Checklist định kỳ vận hành" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#hang-tuan">
+<span class="md-ellipsis">
+      🔁 Hàng tuần
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#hang-thang">
+<span class="md-ellipsis">
+      📅 Hàng tháng
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#hang-quy">
+<span class="md-ellipsis">
+      📣 Hàng quý
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#cach-theo-doi-checklist">
+<span class="md-ellipsis">
+      📌 Cách theo dõi checklist
+    </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#11-ung-pho-su-co-khoi-phuc">
+<span class="md-ellipsis">
+      11. Ứng phó sự cố &amp; khôi phục
+    </span>
+</a>
+<nav aria-label="11. Ứng phó sự cố &amp; khôi phục" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#vai-tro-trong-quy-trinh-ung-pho-su-co-incident-response-roles">
+<span class="md-ellipsis">
+      🧑‍🚒 Vai trò trong quy trình ứng phó sự cố (Incident Response Roles)
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#phan-loai-su-co">
+<span class="md-ellipsis">
+      🚨 Phân loại sự cố
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#checklist-phan-ung-nhanh">
+<span class="md-ellipsis">
+      🧯 Checklist phản ứng nhanh
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#log-cong-cu-ho-tro">
+<span class="md-ellipsis">
+      🗂 Log &amp; công cụ hỗ trợ
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#postmortem-template">
+<span class="md-ellipsis">
+      📋 Postmortem template
+    </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#12-backup-disaster-recovery-dr">
+<span class="md-ellipsis">
+      12. Backup &amp; Disaster Recovery (DR)
+    </span>
+</a>
+<nav aria-label="12. Backup &amp; Disaster Recovery (DR)" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#rto-rpo-muc-tieu">
+<span class="md-ellipsis">
+      🎯 RTO &amp; RPO mục tiêu
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#backup-chien-luoc">
+<span class="md-ellipsis">
+      📦 Backup chiến lược
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#kiem-thu-dr-inh-ky">
+<span class="md-ellipsis">
+      🔁 Kiểm thử DR định kỳ
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#luu-y-bao-mat">
+<span class="md-ellipsis">
+      🔐 Lưu ý bảo mật
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#cong-cu-kiem-tra-khoi-phuc">
+<span class="md-ellipsis">
+      🧪 Công cụ kiểm tra &amp; khôi phục
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#vi-du-kich-ban-dr-mat-ket-noi-cloud-sql">
+<span class="md-ellipsis">
+      🧪 Ví dụ: Kịch bản DR – Mất kết nối Cloud SQL
+    </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#13-security-audit-compliance">
+<span class="md-ellipsis">
+      13. Security audit &amp; compliance
+    </span>
+</a>
+<nav aria-label="13. Security audit &amp; compliance" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#kiem-tra-inh-ky">
+<span class="md-ellipsis">
+      🔍 Kiểm tra định kỳ
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#lich-audit-goi-y">
+<span class="md-ellipsis">
+      📅 Lịch audit gợi ý
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#cong-cu-ho-tro-audit">
+<span class="md-ellipsis">
+      🛠 Công cụ hỗ trợ audit
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#compliance-noi-bo">
+<span class="md-ellipsis">
+      🔒 Compliance (nội bộ)
+    </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#14-cong-cu-dashboard-ho-tro">
+<span class="md-ellipsis">
+      14. Công cụ &amp; dashboard hỗ trợ
+    </span>
+</a>
+<nav aria-label="14. Công cụ &amp; dashboard hỗ trợ" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#bo-cong-cu-chinh">
+<span class="md-ellipsis">
+      🧰 Bộ công cụ chính
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#dashboard-tham-khao">
+<span class="md-ellipsis">
+      📊 Dashboard tham khảo
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#bang-lenh-cli-devops-thuong-dung-gcp-cloud-run-pubsub-cloud-sql">
+<span class="md-ellipsis">
+      🧰 Bảng lệnh CLI DevOps thường dùng (GCP – Cloud Run, Pub/Sub, Cloud SQL)
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#uong-dan-huu-ich">
+<span class="md-ellipsis">
+      📎 Đường dẫn hữu ích
+    </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+</ul>
+</nav>
+</div>
+</div>
+</div>
+<div class="md-content" data-md-component="content">
+<article class="md-content__inner md-typeset">
+<h1 id="ops-guide-dx-vas">📘 Ops Guide – dx-vas<a class="headerlink" href="#ops-guide-dx-vas" title="Permanent link">¶</a></h1>
+<p>Tài liệu này dành cho DevOps/SRE vận hành hệ thống dx-vas trên môi trường production và staging. Bao gồm giám sát, triển khai, scaling, bảo mật, kiểm tra sự cố và các quy trình vận hành thường nhật.</p>
+<hr/>
+<h2 id="muc-luc">Mục lục<a class="headerlink" href="#muc-luc" title="Permanent link">¶</a></h2>
+<ol>
+<li><a href="#1-tổng-quan-triển-khai-hạ-tầng">Tổng quan triển khai hạ tầng</a></li>
+<li><a href="#2-triển-khai-dịch-vụ--môi-trường">Triển khai dịch vụ &amp; môi trường</a></li>
+<li><a href="#3-giám-sát--cảnh-báo">Giám sát &amp; cảnh báo</a></li>
+<li><a href="#4-logging--trace-phân-tán">Logging &amp; Trace phân tán</a></li>
+<li><a href="#5-quản-lý-bảo-mật--credentials">Quản lý bảo mật &amp; credentials</a></li>
+<li><a href="#6-chiến-lược-scaling--autoscale">Chiến lược scaling &amp; autoscale</a></li>
+<li><a href="#7-quy-trình-cập-nhật--rollback">Quy trình cập nhật &amp; rollback</a></li>
+<li><a href="#8-quản-lý-pubsub--dead-letter">Quản lý Pub/Sub &amp; Dead Letter</a></li>
+<li><a href="#9-kiểm-soát-chi-phí--tối-ưu-tài-nguyên">Kiểm soát chi phí &amp; tối ưu tài nguyên</a></li>
+<li><a href="#10-checklist-định-kỳ-vận-hành">Checklist định kỳ vận hành</a></li>
+<li><a href="#11-ứng-phó-sự-cố--khôi-phục">Ứng phó sự cố &amp; khôi phục</a></li>
+<li><a href="#12-backup--disaster-recovery-dr">Backup &amp; Disaster Recovery (DR)</a></li>
+<li><a href="#13-security-audit--compliance">Security audit &amp; compliance</a></li>
+<li><a href="#14-công-cụ--dashboard-hỗ-trợ">Công cụ &amp; dashboard hỗ trợ</a></li>
+</ol>
+<hr/>
+<h2 id="1-tong-quan-trien-khai-ha-tang">1. Tổng quan triển khai hạ tầng<a class="headerlink" href="#1-tong-quan-trien-khai-ha-tang" title="Permanent link">¶</a></h2>
+<p>Hệ thống dx-vas được triển khai hoàn toàn trên hạ tầng <strong>Google Cloud Platform (GCP)</strong>, sử dụng các dịch vụ serverless và managed để đảm bảo khả năng mở rộng, bảo trì đơn giản và vận hành ổn định.</p>
+<hr/>
+<h3 id="kien-truc-trien-khai-chinh">⚙️ Kiến trúc triển khai chính<a class="headerlink" href="#kien-truc-trien-khai-chinh" title="Permanent link">¶</a></h3>
+<table>
+<thead>
+<tr>
+<th>Thành phần</th>
+<th>Triển khai trên</th>
+<th>Ghi chú</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>API Gateway</td>
+<td>Cloud Run</td>
+<td>Kiểm soát truy cập, kiểm tra RBAC</td>
+</tr>
+<tr>
+<td>Core Services (Auth, User, Notification)</td>
+<td>Cloud Run</td>
+<td>Độc lập, stateless</td>
+</tr>
+<tr>
+<td>Business Adapters (CRM/SIS/LMS)</td>
+<td>Cloud Run</td>
+<td>Kết nối hệ thống bên ngoài</td>
+</tr>
+<tr>
+<td>Redis Cache</td>
+<td>Memorystore</td>
+<td>Lưu RBAC cache, token, session</td>
+</tr>
+<tr>
+<td>PostgreSQL (Core)</td>
+<td>Cloud SQL</td>
+<td>CSDL chính cho RBAC, người dùng</td>
+</tr>
+<tr>
+<td>MySQL (Adapters)</td>
+<td>Cloud SQL</td>
+<td>Tương thích với hệ thống CRM/SIS/LMS</td>
+</tr>
+<tr>
+<td>Pub/Sub</td>
+<td>GCP Pub/Sub</td>
+<td>Event bus cho Notification &amp; Sync</td>
+</tr>
+<tr>
+<td>GCS</td>
+<td>Google Cloud Storage</td>
+<td>Lưu trữ ảnh, file tĩnh, JSON config</td>
+</tr>
+</tbody>
+</table>
+<hr/>
+<h3 id="ha-tang-phan-tang">☁️ Hạ tầng phân tầng<a class="headerlink" href="#ha-tang-phan-tang" title="Permanent link">¶</a></h3>
+<ul>
+<li><strong>Cloud Run</strong>: Mỗi service là một container riêng biệt, autoscale theo lưu lượng.</li>
+<li><strong>Cloud SQL</strong>: Instance riêng cho PostgreSQL (core) và MySQL (adapters), bật PITR.</li>
+<li><strong>VPC &amp; firewall rules</strong>: Tất cả Cloud Run → DB hoặc Redis đều qua VPC connector.</li>
+<li><strong>IAM &amp; Secret Manager</strong>: Quản lý phân quyền truy cập service-level và secrets.</li>
+</ul>
+<hr/>
+<h3 id="moi-truong-trien-khai">🗂️ Môi trường triển khai<a class="headerlink" href="#moi-truong-trien-khai" title="Permanent link">¶</a></h3>
+<table>
+<thead>
+<tr>
+<th>Môi trường</th>
+<th>Nhánh Git</th>
+<th>Ghi chú</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Staging</td>
+<td><code>dev</code></td>
+<td>Tự động deploy khi merge PR</td>
+</tr>
+<tr>
+<td>Production</td>
+<td><code>main</code></td>
+<td>Deploy có approval</td>
+</tr>
+</tbody>
+</table>
+<hr/>
+<p>📎 Sơ đồ kiến trúc tổng quan: <a href="../../architecture/system-diagrams/#9-deployment-overview-diagram--sơ-đồ-triển-khai-tổng-quan">System Diagrams</a></p>
+<p>📎 Chi tiết RBAC: <a href="../../architecture/rbac-deep-dive/">RBAC Deep Dive</a></p>
+<hr/>
+<h2 id="2-trien-khai-dich-vu-moi-truong">2. Triển khai dịch vụ &amp; môi trường<a class="headerlink" href="#2-trien-khai-dich-vu-moi-truong" title="Permanent link">¶</a></h2>
+<p>Hệ thống dx-vas gồm nhiều service độc lập, mỗi service là một Dockerized microservice được triển khai lên <strong>Google Cloud Run</strong>. Mỗi service có repository riêng biệt, CI/CD riêng, và tách biệt giữa staging và production.</p>
+<hr/>
+<h3 id="mo-hinh-multi-repo">📦 Mô hình multi-repo<a class="headerlink" href="#mo-hinh-multi-repo" title="Permanent link">¶</a></h3>
+<table>
+<thead>
+<tr>
+<th>Service</th>
+<th>Repo</th>
+<th>CI/CD</th>
+<th>Port dev</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>API Gateway</td>
+<td><code>dx-api-gateway</code></td>
+<td>GitHub Actions → Cloud Run</td>
+<td>8080</td>
+</tr>
+<tr>
+<td>Auth Service</td>
+<td><code>dx-auth-service</code></td>
+<td>GitHub Actions → Cloud Run</td>
+<td>8001</td>
+</tr>
+<tr>
+<td>User Service</td>
+<td><code>dx-user-service</code></td>
+<td>GitHub Actions → Cloud Run</td>
+<td>8002</td>
+</tr>
+<tr>
+<td>Notification Service</td>
+<td><code>dx-notification-service</code></td>
+<td>GitHub Actions → Cloud Run</td>
+<td>8003</td>
+</tr>
+<tr>
+<td>CRM Adapter</td>
+<td><code>dx-crm-adapter</code></td>
+<td>GitHub Actions → Cloud Run</td>
+<td>8011</td>
+</tr>
+<tr>
+<td>SIS Adapter</td>
+<td><code>dx-sis-adapter</code></td>
+<td>GitHub Actions → Cloud Run</td>
+<td>8012</td>
+</tr>
+<tr>
+<td>LMS Adapter</td>
+<td><code>dx-lms-adapter</code></td>
+<td>GitHub Actions → Cloud Run</td>
+<td>8013</td>
+</tr>
+</tbody>
+</table>
+<hr/>
+<h3 id="quy-trinh-trien-khai-ien-hinh">🧱 Quy trình triển khai điển hình<a class="headerlink" href="#quy-trinh-trien-khai-ien-hinh" title="Permanent link">¶</a></h3>
+<ol>
+<li>Developer push code lên nhánh <code>dev</code></li>
+<li>CI chạy test + lint + security scan</li>
+<li>Nếu pass:</li>
+<li>Tự động build image → upload Container Registry (Artifact Registry)</li>
+<li>Deploy lên Cloud Run môi trường Staging</li>
+<li>Với <code>main</code>:</li>
+<li>Chỉ được merge khi có 2 approval</li>
+<li>Yêu cầu xác nhận deploy → Production</li>
+</ol>
+<hr/>
+<h3 id="cau-hinh-deploy-vi-du-github-actions">🛠 Cấu hình deploy (ví dụ GitHub Actions)<a class="headerlink" href="#cau-hinh-deploy-vi-du-github-actions" title="Permanent link">¶</a></h3>
+<div class="language-yaml highlight"><pre><span></span><code><span id="__span-0-1"><a href="#__codelineno-0-1" id="__codelineno-0-1" name="__codelineno-0-1"></a><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Deploy to Cloud Run</span>
+</span><span id="__span-0-2"><a href="#__codelineno-0-2" id="__codelineno-0-2" name="__codelineno-0-2"></a><span class="w">  </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">google-github-actions/deploy-cloudrun@v1</span>
+</span><span id="__span-0-3"><a href="#__codelineno-0-3" id="__codelineno-0-3" name="__codelineno-0-3"></a><span class="w">  </span><span class="nt">with</span><span class="p">:</span>
+</span><span id="__span-0-4"><a href="#__codelineno-0-4" id="__codelineno-0-4" name="__codelineno-0-4"></a><span class="w">    </span><span class="nt">service</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">user-service</span>
+</span><span id="__span-0-5"><a href="#__codelineno-0-5" id="__codelineno-0-5" name="__codelineno-0-5"></a><span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">gcr.io/$PROJECT_ID/user-service:$GITHUB_SHA</span>
+</span><span id="__span-0-6"><a href="#__codelineno-0-6" id="__codelineno-0-6" name="__codelineno-0-6"></a><span class="w">    </span><span class="nt">region</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">asia-southeast1</span>
+</span><span id="__span-0-7"><a href="#__codelineno-0-7" id="__codelineno-0-7" name="__codelineno-0-7"></a><span class="w">    </span><span class="nt">env_vars</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ENV=${{ github.ref == 'refs/heads/main' &amp;&amp; 'production' || 'staging' }}</span>
+</span></code></pre></div>
+<p>📌 Trong workflow thực tế, biến ENV không gán cứng mà được xác định tự động dựa trên nhánh (hoặc GitHub environment). Có thể sử dụng biến github.ref hoặc GitHub Environments (production, staging) để thiết lập đúng biến môi trường cho Cloud Run.</p>
+<hr/>
+<h3 id="cau-hinh-bien-moi-truong-cloud-run">📁 Cấu hình biến môi trường (Cloud Run)<a class="headerlink" href="#cau-hinh-bien-moi-truong-cloud-run" title="Permanent link">¶</a></h3>
+<ul>
+<li>Dùng Secret Manager để lưu token nhạy cảm</li>
+<li>Các biến <code>.env</code> được sync thông qua deploy script</li>
+<li>Một số biến môi trường điển hình:</li>
+</ul>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-1-1"><a href="#__codelineno-1-1" id="__codelineno-1-1" name="__codelineno-1-1"></a>ENV=production
+</span><span id="__span-1-2"><a href="#__codelineno-1-2" id="__codelineno-1-2" name="__codelineno-1-2"></a>DATABASE_URL=...
+</span><span id="__span-1-3"><a href="#__codelineno-1-3" id="__codelineno-1-3" name="__codelineno-1-3"></a>REDIS_URL=...
+</span><span id="__span-1-4"><a href="#__codelineno-1-4" id="__codelineno-1-4" name="__codelineno-1-4"></a>JWT_SECRET=...
+</span><span id="__span-1-5"><a href="#__codelineno-1-5" id="__codelineno-1-5" name="__codelineno-1-5"></a>PUBSUB_PROJECT_ID=...
+</span></code></pre></div>
+<hr/>
+<p>📎 Chi tiết CI/CD: <a href="../dev-guide/#8-quy-trình-test--ci-cd">Dev Guide</a></p>
+<p>📎 Cấu trúc môi trường Cloud Run: <a href="../../architecture/system-diagrams/#9-deployment-overview-diagram--sơ-đồ-triển-khai-tổng-quan">System Diagrams</a></p>
+<hr/>
+<h2 id="3-giam-sat-canh-bao">3. Giám sát &amp; cảnh báo<a class="headerlink" href="#3-giam-sat-canh-bao" title="Permanent link">¶</a></h2>
+<p>Hệ thống dx-vas sử dụng Google Cloud Monitoring để theo dõi trạng thái dịch vụ, hiệu năng, tỉ lệ lỗi và thiết lập cảnh báo theo rule tùy chỉnh. Mỗi service được giám sát độc lập và có dashboard riêng.</p>
+<hr/>
+<h3 id="cac-loai-metric-giam-sat">📊 Các loại metric giám sát<a class="headerlink" href="#cac-loai-metric-giam-sat" title="Permanent link">¶</a></h3>
+<table>
+<thead>
+<tr>
+<th>Nhóm</th>
+<th>Metric</th>
+<th>Ví dụ</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Cloud Run</td>
+<td>Request count, latency, error rate</td>
+<td>5xx tăng bất thường</td>
+</tr>
+<tr>
+<td>Pub/Sub</td>
+<td>Pending messages, retry count</td>
+<td>Queue bị kẹt</td>
+</tr>
+<tr>
+<td>Redis</td>
+<td>Miss rate, latency</td>
+<td>Cache chậm hoặc mất</td>
+</tr>
+<tr>
+<td>Database</td>
+<td>Connection usage, slow queries</td>
+<td>PostgreSQL / MySQL</td>
+</tr>
+<tr>
+<td>RBAC</td>
+<td>Permission denied, cache invalidated</td>
+<td>Sự kiện bảo mật</td>
+</tr>
+<tr>
+<td>Notification</td>
+<td>Success/failure rate theo kênh</td>
+<td>Zalo/Gmail thất bại</td>
+</tr>
+</tbody>
+</table>
+<hr/>
+<h3 id="alerting-rule-goi-y">⚠️ Alerting rule gợi ý<a class="headerlink" href="#alerting-rule-goi-y" title="Permanent link">¶</a></h3>
+<table>
+<thead>
+<tr>
+<th>Rule</th>
+<th>Điều kiện</th>
+<th>Severity</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Gateway error spike</td>
+<td>5xx &gt; 20% trong 5 phút</td>
+<td>🔥 Critical</td>
+</tr>
+<tr>
+<td>Redis miss tăng cao</td>
+<td>Miss rate &gt; 50% trong 10 phút</td>
+<td>⚠️ Warning</td>
+</tr>
+<tr>
+<td>Pub/Sub backlog</td>
+<td>&gt; 500 messages trong 5 phút</td>
+<td>⚠️ Warning</td>
+</tr>
+<tr>
+<td>Đăng nhập thất bại</td>
+<td>&gt; 10 lần từ 1 IP trong 1 phút</td>
+<td>🚨 Security</td>
+</tr>
+<tr>
+<td>DB connection full</td>
+<td>Sử dụng &gt; 90% connection pool</td>
+<td>🔥 Critical</td>
+</tr>
+</tbody>
+</table>
+<hr/>
+<h3 id="dashboard-e-xuat">📉 Dashboard đề xuất<a class="headerlink" href="#dashboard-e-xuat" title="Permanent link">¶</a></h3>
+<ul>
+<li>Một dashboard chung toàn hệ thống (multi-service)</li>
+<li>Dashboard riêng cho từng service:</li>
+<li><code>gateway-dashboard</code></li>
+<li><code>auth-dashboard</code></li>
+<li><code>user-dashboard</code></li>
+<li><code>notification-dashboard</code></li>
+<li>Có thể dùng dashboard template từ Google Cloud Monitoring</li>
+</ul>
+<hr/>
+<h3 id="canh-bao-thong-bao">🔄 Cảnh báo &amp; thông báo<a class="headerlink" href="#canh-bao-thong-bao" title="Permanent link">¶</a></h3>
+<ul>
+<li>Cảnh báo gửi qua:</li>
+<li>Google Chat (devops channel)</li>
+<li>Email (alerts@truongvietanh.edu.vn)</li>
+<li>Định kỳ audit cảnh báo sai lệch hoặc trùng lặp</li>
+</ul>
+<hr/>
+<h3 id="so-o-luong-canh-bao-monitoring-alerts">🛎️ Sơ đồ luồng cảnh báo (Monitoring Alerts)<a class="headerlink" href="#so-o-luong-canh-bao-monitoring-alerts" title="Permanent link">¶</a></h3>
+<pre class="mermaid"><code>flowchart TD
+    A[Service Metrics <br/> Cloud Run, Redis, DB...]
+    B[Cloud Monitoring]
+    C[Alert Policy <br/> Threshold Rules]
+    D[Notification Channel <br/> Google Chat, Email]
+    E[Incident Response <br/> Ops team]
+
+    A --&gt; B
+    B --&gt; C
+    C --&gt; D
+    D --&gt; E
+
+    click C href "https://console.cloud.google.com/monitoring/alerting" "View Alerting Policy"
+    click D href "https://console.cloud.google.com/monitoring/settings" "View Notification Settings"
+</code></pre>
+<p><strong>Giải thích:</strong></p>
+<ol>
+<li><strong>Service Metrics:</strong> Metrics được export từ Cloud Run, Redis, Cloud SQL, v.v. (VD: CPU usage, 5xx error rate).</li>
+<li><strong>Cloud Monitoring:</strong> Thu thập và phân tích các metric.</li>
+<li><strong>Alert Policy:</strong> Định nghĩa ngưỡng cảnh báo (ví dụ: nếu error rate &gt; 5% trong 1 phút).</li>
+<li><strong>Notification Channel:</strong> Khi có cảnh báo, hệ thống gửi tới các kênh như Google Chat, Email, PagerDuty (nếu có).</li>
+<li><strong>Incident Response:</strong> Đội ngũ vận hành nhận cảnh báo và thực hiện xử lý theo Runbook.</li>
+</ol>
+<p>📌 Các bước tiếp theo có thể được trigger tự động (gửi cảnh báo qua bot, mở ticket, cập nhật dashboard…). Bạn có thể nhúng thêm link hoặc mở rộng nếu dùng Alertmanager hoặc bên thứ ba như OpsGenie, PagerDuty.</p>
+<hr/>
+<p>📎 Xem thêm cấu trúc trace/log tại: <a href="#4-logging--trace-phân-tán">Mục 4 – Logging &amp; Trace</a> </p>
+<p>📎 Định nghĩa dashboard: <a href="../observability/">Observability</a></p>
+<hr/>
+<h2 id="4-logging-trace-phan-tan">4. Logging &amp; Trace phân tán<a class="headerlink" href="#4-logging-trace-phan-tan" title="Permanent link">¶</a></h2>
+<p>Mọi service trong dx-vas đều ghi log theo định dạng JSON chuẩn hóa, có gắn <code>request_id</code>, và gửi về Google Cloud Logging. Hệ thống đồng thời hỗ trợ tracing phân tán với Google Cloud Trace để theo dõi luồng xử lý xuyên suốt nhiều service.</p>
+<hr/>
+<h3 id="inh-dang-log-chuan">🧾 Định dạng log chuẩn<a class="headerlink" href="#inh-dang-log-chuan" title="Permanent link">¶</a></h3>
+<div class="language-json highlight"><pre><span></span><code><span id="__span-2-1"><a href="#__codelineno-2-1" id="__codelineno-2-1" name="__codelineno-2-1"></a><span class="p">{</span>
+</span><span id="__span-2-2"><a href="#__codelineno-2-2" id="__codelineno-2-2" name="__codelineno-2-2"></a><span class="w">  </span><span class="nt">"timestamp"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2024-06-01T10:15:00Z"</span><span class="p">,</span>
+</span><span id="__span-2-3"><a href="#__codelineno-2-3" id="__codelineno-2-3" name="__codelineno-2-3"></a><span class="w">  </span><span class="nt">"level"</span><span class="p">:</span><span class="w"> </span><span class="s2">"INFO"</span><span class="p">,</span>
+</span><span id="__span-2-4"><a href="#__codelineno-2-4" id="__codelineno-2-4" name="__codelineno-2-4"></a><span class="w">  </span><span class="nt">"service"</span><span class="p">:</span><span class="w"> </span><span class="s2">"user-service"</span><span class="p">,</span>
+</span><span id="__span-2-5"><a href="#__codelineno-2-5" id="__codelineno-2-5" name="__codelineno-2-5"></a><span class="w">  </span><span class="nt">"request_id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"req-123456"</span><span class="p">,</span>
+</span><span id="__span-2-6"><a href="#__codelineno-2-6" id="__codelineno-2-6" name="__codelineno-2-6"></a><span class="w">  </span><span class="nt">"message"</span><span class="p">:</span><span class="w"> </span><span class="s2">"User updated successfully"</span><span class="p">,</span>
+</span><span id="__span-2-7"><a href="#__codelineno-2-7" id="__codelineno-2-7" name="__codelineno-2-7"></a><span class="w">  </span><span class="nt">"user_id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"u789"</span>
+</span><span id="__span-2-8"><a href="#__codelineno-2-8" id="__codelineno-2-8" name="__codelineno-2-8"></a><span class="p">}</span>
+</span></code></pre></div>
+<h4 id="luu-y">📌 Lưu ý:<a class="headerlink" href="#luu-y" title="Permanent link">¶</a></h4>
+<ul>
+<li>Log theo cấu trúc (structured logging) để dễ filter và alert</li>
+<li>Gắn <code>request_id</code> xuyên suốt: từ client → gateway → service → pub/sub</li>
+</ul>
+<hr/>
+<h3 id="trace-phan-tan">🔍 Trace phân tán<a class="headerlink" href="#trace-phan-tan" title="Permanent link">¶</a></h3>
+<ul>
+<li>Mỗi request đều gắn <code>X-Request-ID</code> và <code>X-Trace-ID</code></li>
+<li>Gateway khởi tạo trace → propagate xuống các service</li>
+<li>Google Cloud Trace ghi nhận timeline xuyên service (gọi API, DB, Pub/Sub...)</li>
+</ul>
+<hr/>
+<h3 id="su-dung-log-trace">📊 Sử dụng log &amp; trace<a class="headerlink" href="#su-dung-log-trace" title="Permanent link">¶</a></h3>
+<ul>
+<li>Tìm theo <code>request_id</code>: truy vết lỗi logic liên service</li>
+<li>So sánh <code>start_time</code> – <code>end_time</code>: đo độ trễ từng hop</li>
+<li>Lọc theo <code>level: ERROR</code>: phát hiện service mất ổn định</li>
+<li>Trace các retry / fail event từ Notification, RBAC, Auth</li>
+</ul>
+<hr/>
+<h3 id="goi-y-log-prefix">🗂️ Gợi ý log prefix<a class="headerlink" href="#goi-y-log-prefix" title="Permanent link">¶</a></h3>
+<table>
+<thead>
+<tr>
+<th>Thành phần</th>
+<th>Prefix gợi ý</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Gateway</td>
+<td><code>[GATEWAY]</code></td>
+</tr>
+<tr>
+<td>Auth Service</td>
+<td><code>[AUTH]</code></td>
+</tr>
+<tr>
+<td>User Service</td>
+<td><code>[USER]</code></td>
+</tr>
+<tr>
+<td>Notification</td>
+<td><code>[NOTI]</code></td>
+</tr>
+<tr>
+<td>RBAC</td>
+<td><code>[RBAC]</code></td>
+</tr>
+<tr>
+<td>Redis</td>
+<td><code>[CACHE]</code></td>
+</tr>
+</tbody>
+</table>
+<hr/>
+<h3 id="log-bao-mat">🔐 Log bảo mật<a class="headerlink" href="#log-bao-mat" title="Permanent link">¶</a></h3>
+<ul>
+<li>
+<p>Log các sự kiện nhạy cảm:</p>
+</li>
+<li>
+<p>Đăng nhập sai, lock tài khoản</p>
+</li>
+<li>Thay đổi role/permission</li>
+<li>Lỗi RBAC condition</li>
+</ul>
+<hr/>
+<p>📎 Hướng dẫn chi tiết log/tracing: <a href="../../ADR/adr-008-audit-logging/"><code>adr-008-audit-logging.md</code></a></p>
+<p>📎 Cấu trúc trace → diagram: <a href="../../architecture/system-diagrams/#4-rbac-evaluation-flow--luồng-đánh-giá-phân-quyền-động">System Diagrams</a></p>
+<hr/>
+<h2 id="5-quan-ly-bao-mat-credentials">5. Quản lý bảo mật &amp; credentials<a class="headerlink" href="#5-quan-ly-bao-mat-credentials" title="Permanent link">¶</a></h2>
+<p>Tất cả thông tin nhạy cảm như token, secret, key API đều được quản lý qua <strong>Google Secret Manager</strong>, có kiểm soát quyền truy cập bằng IAM. Không để bất kỳ credential nào trong repo code hoặc biến môi trường công khai.</p>
+<hr/>
+<h3 id="loai-thong-tin-can-bao-ve">🔐 Loại thông tin cần bảo vệ<a class="headerlink" href="#loai-thong-tin-can-bao-ve" title="Permanent link">¶</a></h3>
+<table>
+<thead>
+<tr>
+<th>Loại</th>
+<th>Ví dụ</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>JWT secret</td>
+<td><code>JWT_SECRET</code>, <code>REFRESH_SECRET</code></td>
+</tr>
+<tr>
+<td>OAuth credentials</td>
+<td>Google OAuth Client ID/Secret</td>
+</tr>
+<tr>
+<td>Redis password</td>
+<td><code>REDIS_AUTH</code> nếu bật ACL</td>
+</tr>
+<tr>
+<td>DB credentials</td>
+<td><code>DATABASE_URL</code></td>
+</tr>
+<tr>
+<td>API key bên thứ ba</td>
+<td>Zalo OA, Gmail API</td>
+</tr>
+<tr>
+<td>Webhook URL</td>
+<td>Google Chat, Slack alerting</td>
+</tr>
+</tbody>
+</table>
+<hr/>
+<h3 id="quan-ly-cau-hinh-ong-khong-nhay-cam">🧩 Quản lý cấu hình động (không nhạy cảm)<a class="headerlink" href="#quan-ly-cau-hinh-ong-khong-nhay-cam" title="Permanent link">¶</a></h3>
+<p>Ngoài credentials, hệ thống có thể cần cấu hình các giá trị động như:</p>
+<ul>
+<li>Feature flags</li>
+<li>Ngưỡng cảnh báo tùy chỉnh</li>
+<li>Cấu hình luồng nghiệp vụ</li>
+</ul>
+<p>📌 dx_vas hiện hỗ trợ đọc các cấu hình động từ:</p>
+<ul>
+<li><strong>Google Cloud Storage (GCS)</strong>: chứa file <code>.json</code> cấu hình chung (VD: <code>config/global.json</code>)</li>
+<li><strong>Firestore (option)</strong>: nếu cần cập nhật realtime (VD: cấu hình theo người dùng, theo campus)</li>
+<li><strong>Hardcoded YAML</strong> (có kiểm soát qua Git): dùng cho cấu hình ít thay đổi như RBAC schema</li>
+</ul>
+<blockquote>
+<p>✅ Mọi thay đổi cấu hình cần version, audit và tránh cập nhật runtime nếu không kiểm soát rollback.</p>
+</blockquote>
+<hr/>
+<h3 id="quy-trinh-quan-ly-secret">🧱 Quy trình quản lý secret<a class="headerlink" href="#quy-trinh-quan-ly-secret" title="Permanent link">¶</a></h3>
+<ol>
+<li>Tạo secret trên GCP:</li>
+</ol>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-3-1"><a href="#__codelineno-3-1" id="__codelineno-3-1" name="__codelineno-3-1"></a>gcloud<span class="w"> </span>secrets<span class="w"> </span>create<span class="w"> </span>dx-auth-jwt-secret<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-3-2"><a href="#__codelineno-3-2" id="__codelineno-3-2" name="__codelineno-3-2"></a><span class="w">  </span>--replication-policy<span class="w"> </span>automatic
+</span></code></pre></div>
+<ol>
+<li>Upload version:</li>
+</ol>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-4-1"><a href="#__codelineno-4-1" id="__codelineno-4-1" name="__codelineno-4-1"></a><span class="nb">echo</span><span class="w"> </span><span class="s2">"supersecret123"</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>gcloud<span class="w"> </span>secrets<span class="w"> </span>versions<span class="w"> </span>add<span class="w"> </span>dx-auth-jwt-secret<span class="w"> </span>--data-file<span class="o">=</span>-
+</span></code></pre></div>
+<ol>
+<li>Gán quyền IAM cho Cloud Run:</li>
+</ol>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-5-1"><a href="#__codelineno-5-1" id="__codelineno-5-1" name="__codelineno-5-1"></a>gcloud<span class="w"> </span>secrets<span class="w"> </span>add-iam-policy-binding<span class="w"> </span>dx-auth-jwt-secret<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-5-2"><a href="#__codelineno-5-2" id="__codelineno-5-2" name="__codelineno-5-2"></a><span class="w">  </span>--member<span class="o">=</span>serviceAccount:auth-service@PROJECT_ID.iam.gserviceaccount.com<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-5-3"><a href="#__codelineno-5-3" id="__codelineno-5-3" name="__codelineno-5-3"></a><span class="w">  </span>--role<span class="o">=</span>roles/secretmanager.secretAccessor
+</span></code></pre></div>
+<ol>
+<li>Truy xuất trong runtime (qua ENV hoặc SDK)</li>
+</ol>
+<hr/>
+<h3 id="thuc-hanh-tot">📦 Thực hành tốt<a class="headerlink" href="#thuc-hanh-tot" title="Permanent link">¶</a></h3>
+<ul>
+<li>Secret chỉ cấp quyền <code>read</code>, không <code>write</code> từ service</li>
+<li>Rotate định kỳ mỗi 90 ngày</li>
+<li>Bắt buộc audit nếu secret bị thay đổi</li>
+<li>Không để <code>.env</code> chứa secret trong repo – dùng <code>.env.example</code></li>
+</ul>
+<hr/>
+<h3 id="kiem-tra-nhanh">🧪 Kiểm tra nhanh<a class="headerlink" href="#kiem-tra-nhanh" title="Permanent link">¶</a></h3>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-6-1"><a href="#__codelineno-6-1" id="__codelineno-6-1" name="__codelineno-6-1"></a>gcloud<span class="w"> </span>secrets<span class="w"> </span>list
+</span><span id="__span-6-2"><a href="#__codelineno-6-2" id="__codelineno-6-2" name="__codelineno-6-2"></a>gcloud<span class="w"> </span>secrets<span class="w"> </span>versions<span class="w"> </span>list<span class="w"> </span>dx-auth-jwt-secret
+</span></code></pre></div>
+<hr/>
+<p>📎 Chính sách bảo mật chi tiết: <a href="../../ADR/adr-003-secrets/"><code>adr-003-secrets.md</code></a></p>
+<p>📎 Tổng quan bảo mật toàn hệ thống: <a href="../dev-guide/#11-theo-dõi--vận-hành">Dev Guide – Mục 11.3</a></p>
+<hr/>
+<h2 id="6-chien-luoc-scaling-autoscale">6. Chiến lược scaling &amp; autoscale<a class="headerlink" href="#6-chien-luoc-scaling-autoscale" title="Permanent link">¶</a></h2>
+<p>Hệ thống dx-vas sử dụng <strong>Google Cloud Run</strong> để triển khai toàn bộ service backend. Cloud Run cung cấp khả năng autoscale theo số lượng request, đảm bảo hệ thống luôn phản hồi nhanh nhưng tiết kiệm tài nguyên.</p>
+<hr/>
+<h3 id="autoscaling-mac-inh">⚙️ Autoscaling mặc định<a class="headerlink" href="#autoscaling-mac-inh" title="Permanent link">¶</a></h3>
+<table>
+<thead>
+<tr>
+<th>Service</th>
+<th>Min instance</th>
+<th>Max instance</th>
+<th>Concurrency (requests/instance)</th>
+<th>Ghi chú</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Gateway</td>
+<td>2</td>
+<td>50</td>
+<td>10</td>
+<td>Luôn duy trì sẵn sàng</td>
+</tr>
+<tr>
+<td>Auth/User</td>
+<td>1</td>
+<td>20</td>
+<td>10</td>
+<td>Core services, nhạy cảm với độ trễ</td>
+</tr>
+<tr>
+<td>Notification</td>
+<td>0</td>
+<td>30</td>
+<td>20</td>
+<td>Có thể burst cao khi gửi hàng loạt</td>
+</tr>
+<tr>
+<td>Adapters</td>
+<td>0</td>
+<td>10</td>
+<td>10</td>
+<td>Tùy theo mức độ tích hợp (CRM, SIS, LMS)</td>
+</tr>
+</tbody>
+</table>
+<p>📌 Giá trị concurrency mặc định của Cloud Run là <code>80 requests/instance</code>. Hệ thống dx-vas đã cấu hình lại (giảm) để đảm bảo độ trễ thấp cho các service xử lý dữ liệu nhạy cảm như Auth và User.</p>
+<hr/>
+<h3 id="hanh-vi-scaling">🔁 Hành vi scaling<a class="headerlink" href="#hanh-vi-scaling" title="Permanent link">¶</a></h3>
+<ul>
+<li>Tăng instance khi số lượng request vượt concurrency threshold</li>
+<li>Giảm instance khi idle trong một thời gian (15 phút mặc định)</li>
+<li>Cloud Run đảm bảo mỗi container xử lý tối đa <code>CONCURRENCY</code> request cùng lúc</li>
+</ul>
+<hr/>
+<h3 id="toi-uu-scaling">📉 Tối ưu scaling<a class="headerlink" href="#toi-uu-scaling" title="Permanent link">¶</a></h3>
+<ul>
+<li>Sử dụng health check <code>/healthz</code> để loại bỏ container lỗi khỏi autoscaler</li>
+<li>Log metric <code>request count</code>, <code>concurrency</code>, <code>latency</code> để đánh giá scaling thực tế</li>
+<li>Có thể gán hạn mức chi phí/quotas cho từng service nếu cần kiểm soát tải</li>
+</ul>
+<hr/>
+<h3 id="luu-y_1">🔐 Lưu ý<a class="headerlink" href="#luu-y_1" title="Permanent link">¶</a></h3>
+<ul>
+<li>Luôn bật min instance = 1 với Auth và User Service để giảm cold start</li>
+<li>Sử dụng VPC Connector cho Cloud SQL/Redis – đảm bảo scaling không bị nghẽn</li>
+<li>Không scale vô hạn: max instance cần được cấu hình phù hợp để tránh quá tải DB</li>
+</ul>
+<hr/>
+<p>📎 Cấu trúc triển khai: <a href="../../architecture/system-diagrams/#9-deployment-overview-diagram--sơ-đồ-triển-khai-tổng-quan">System Diagrams</a> </p>
+<p>📎 Tham khảo thêm: <a href="../dev-guide/#8-quy-trình-test--ci-cd">Dev Guide</a></p>
+<hr/>
+<h2 id="7-quy-trinh-cap-nhat-rollback">7. Quy trình cập nhật &amp; rollback<a class="headerlink" href="#7-quy-trinh-cap-nhat-rollback" title="Permanent link">¶</a></h2>
+<p>Hệ thống dx-vas sử dụng CI/CD để triển khai dịch vụ lên Cloud Run. Mỗi lần cập nhật đều tạo ra một bản phát hành mới (revision) và có thể rollback về bản cũ nhanh chóng nếu phát sinh sự cố.</p>
+<hr/>
+<h3 id="quy-trinh-cap-nhat">🚀 Quy trình cập nhật<a class="headerlink" href="#quy-trinh-cap-nhat" title="Permanent link">¶</a></h3>
+<ol>
+<li>Developer merge code vào nhánh <code>dev</code> hoặc <code>main</code></li>
+<li>GitHub Actions thực hiện:</li>
+<li>Chạy test</li>
+<li>Build Docker image → đẩy lên Artifact Registry</li>
+<li>Deploy Cloud Run service với revision mới</li>
+<li>Cloud Run giữ lại toàn bộ revision đã deploy (trừ khi bị xóa)</li>
+</ol>
+<hr/>
+<h3 id="kiem-soat-theo-moi-truong">📦 Kiểm soát theo môi trường<a class="headerlink" href="#kiem-soat-theo-moi-truong" title="Permanent link">¶</a></h3>
+<table>
+<thead>
+<tr>
+<th>Nhánh</th>
+<th>Môi trường</th>
+<th>Auto Deploy</th>
+<th>Require Approval</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>dev</code></td>
+<td>Staging</td>
+<td>✅</td>
+<td>❌</td>
+</tr>
+<tr>
+<td><code>main</code></td>
+<td>Production</td>
+<td>⚠️ (Có thể bật/tắt)</td>
+<td>✅ Required</td>
+</tr>
+</tbody>
+</table>
+<hr/>
+<h3 id="rollback-khi-loi">🛑 Rollback khi lỗi<a class="headerlink" href="#rollback-khi-loi" title="Permanent link">¶</a></h3>
+<p>Nếu sau deploy xảy ra lỗi:</p>
+<ol>
+<li>Vào Google Cloud Console → Cloud Run → Service</li>
+<li>Chọn tab <strong>Revisions</strong></li>
+<li>Click <strong>Pin traffic</strong> hoặc <strong>Rollback</strong> về revision trước đó</li>
+<li>Hoặc dùng lệnh CLI:</li>
+</ol>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-7-1"><a href="#__codelineno-7-1" id="__codelineno-7-1" name="__codelineno-7-1"></a>gcloud<span class="w"> </span>run<span class="w"> </span>services<span class="w"> </span>update-traffic<span class="w"> </span>user-service<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-7-2"><a href="#__codelineno-7-2" id="__codelineno-7-2" name="__codelineno-7-2"></a><span class="w">  </span>--to-revisions<span class="o">=</span>rev-1234<span class="o">=</span><span class="m">100</span>
+</span></code></pre></div>
+<hr/>
+<h3 id="luu-y-khi-kiem-tra-version">🧪 Lưu ý khi kiểm tra version<a class="headerlink" href="#luu-y-khi-kiem-tra-version" title="Permanent link">¶</a></h3>
+<ul>
+<li>Mỗi revision có label: <code>git_sha</code>, <code>build_time</code></li>
+<li>Gateway hoặc các service có thể trả <code>X-Revision-ID</code> trong header</li>
+<li>Có thể tạo endpoint <code>/__version__</code> trả về git commit + thời gian build</li>
+</ul>
+<hr/>
+<h3 id="nhung-rui-ro-can-chu-y">⚠️ Những rủi ro cần chú ý<a class="headerlink" href="#nhung-rui-ro-can-chu-y" title="Permanent link">¶</a></h3>
+<ul>
+<li>Rollback logic có thể không rollback được DB schema → dùng <code>alembic downgrade</code> nếu cần</li>
+<li>Cache hoặc RBAC có thể cần invalidate nếu rollback auth/user</li>
+<li>Nếu sử dụng secret mới trong phiên bản mới → rollback phải đảm bảo backward-compatible</li>
+</ul>
+<hr/>
+<h3 id="zero-downtime-deployment-canary-release-cloud-run">✨ Zero Downtime Deployment &amp; Canary Release (Cloud Run)<a class="headerlink" href="#zero-downtime-deployment-canary-release-cloud-run" title="Permanent link">¶</a></h3>
+<p>Cloud Run hỗ trợ triển khai <strong>không downtime</strong> bằng cách tự động route traffic sang revision mới sau khi build &amp; deploy thành công. Bạn không cần cấu hình load balancer phức tạp như VM/Container truyền thống.</p>
+<p><strong>Chiến lược triển khai có thể áp dụng:</strong></p>
+<h4 id="1-all-or-nothing-mac-inh">✅ 1. All-or-nothing (Mặc định)<a class="headerlink" href="#1-all-or-nothing-mac-inh" title="Permanent link">¶</a></h4>
+<ul>
+<li>Sau khi deploy, toàn bộ traffic được chuyển sang revision mới.</li>
+<li>Nếu có sự cố, rollback về revision cũ bằng lệnh:
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-8-1"><a href="#__codelineno-8-1" id="__codelineno-8-1" name="__codelineno-8-1"></a>gcloud<span class="w"> </span>run<span class="w"> </span>services<span class="w"> </span>update-traffic<span class="w"> </span>my-service<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-8-2"><a href="#__codelineno-8-2" id="__codelineno-8-2" name="__codelineno-8-2"></a><span class="w">  </span>--to-revisions<span class="o">=</span>rev-abc123<span class="o">=</span><span class="m">100</span>
+</span></code></pre></div></li>
+</ul>
+<h4 id="2-canary-release-traffic-splitting">🧪 2. Canary Release (Traffic Splitting)<a class="headerlink" href="#2-canary-release-traffic-splitting" title="Permanent link">¶</a></h4>
+<ul>
+<li>Cho phép chia traffic giữa revision cũ và mới (VD: 90% - 10%)</li>
+</ul>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-9-1"><a href="#__codelineno-9-1" id="__codelineno-9-1" name="__codelineno-9-1"></a>gcloud<span class="w"> </span>run<span class="w"> </span>services<span class="w"> </span>update-traffic<span class="w"> </span>my-service<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-9-2"><a href="#__codelineno-9-2" id="__codelineno-9-2" name="__codelineno-9-2"></a><span class="w">  </span>--to-revisions<span class="o">=</span>rev-old<span class="o">=</span><span class="m">90</span>,rev-new<span class="o">=</span><span class="m">10</span>
+</span></code></pre></div>
+<ul>
+<li>Theo dõi metric (error rate, latency) trong vài phút, sau đó tăng dần lên 100%.</li>
+</ul>
+<h4 id="luu-y_2">🛡️ Lưu ý:<a class="headerlink" href="#luu-y_2" title="Permanent link">¶</a></h4>
+<ul>
+<li>Mỗi revision là một phiên bản độc lập (immutable).</li>
+<li>Đảm bảo backward compatibility trong DB schema nếu cần rollback.</li>
+<li>Có thể tự động hóa canary via GitHub Actions + monitoring alert.</li>
+</ul>
+<p>📌 Canary release giúp giảm rủi ro sản xuất – rất phù hợp cho các service nhạy cảm (như User Service, Notification).</p>
+<hr/>
+<p>📎 Hướng dẫn CI/CD chi tiết: <a href="../dev-guide/#8-quy-trình-test--ci-cd">Dev Guide</a></p>
+<p>📎 Checklist sự cố: <a href="#11-ứng-phó-sự-cố--khôi-phục">Mục 11 – Ứng phó sự cố</a></p>
+<hr/>
+<h2 id="8-quan-ly-pubsub-dead-letter">8. Quản lý Pub/Sub &amp; Dead Letter<a class="headerlink" href="#8-quan-ly-pubsub-dead-letter" title="Permanent link">¶</a></h2>
+<p>Hệ thống dx-vas sử dụng Google Cloud Pub/Sub để truyền sự kiện bất đồng bộ giữa các service (Notification, Sync, Audit...). Mỗi topic có ít nhất một subscription. Nếu xử lý lỗi hoặc timeout, message sẽ được chuyển sang Dead Letter Topic (DLT).</p>
+<hr/>
+<h3 id="cac-topic-chinh">🔁 Các topic chính<a class="headerlink" href="#cac-topic-chinh" title="Permanent link">¶</a></h3>
+<table>
+<thead>
+<tr>
+<th>Topic</th>
+<th>Publisher</th>
+<th>Subscriber</th>
+<th>Mô tả</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>notification-events</code></td>
+<td>CRM, SIS, Gateway</td>
+<td>Notification Service</td>
+<td>Gửi thông báo theo sự kiện</td>
+</tr>
+<tr>
+<td><code>user-events</code></td>
+<td>Auth, CRM</td>
+<td>User Service</td>
+<td>Đồng bộ trạng thái, RBAC</td>
+</tr>
+<tr>
+<td><code>sync-events</code></td>
+<td>CRM Adapter</td>
+<td>SIS Adapter, LMS Adapter</td>
+<td>Đồng bộ học sinh sau tuyển sinh</td>
+</tr>
+<tr>
+<td><code>audit-events</code></td>
+<td>All</td>
+<td>Audit Logger</td>
+<td>Ghi nhận hành vi nhạy cảm</td>
+</tr>
+</tbody>
+</table>
+<hr/>
+<h3 id="dead-letter-topics-dlt">📦 Dead Letter Topics (DLT)<a class="headerlink" href="#dead-letter-topics-dlt" title="Permanent link">¶</a></h3>
+<p>Mỗi subscription đều có cấu hình DLT đi kèm, ví dụ:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-10-1"><a href="#__codelineno-10-1" id="__codelineno-10-1" name="__codelineno-10-1"></a>gcloud<span class="w"> </span>pubsub<span class="w"> </span>subscriptions<span class="w"> </span>update<span class="w"> </span>my-subscription<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-10-2"><a href="#__codelineno-10-2" id="__codelineno-10-2" name="__codelineno-10-2"></a><span class="w">  </span>--dead-letter-topic<span class="o">=</span>projects/<span class="nv">$PROJECT_ID</span>/topics/my-sub-dlt<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-10-3"><a href="#__codelineno-10-3" id="__codelineno-10-3" name="__codelineno-10-3"></a><span class="w">  </span>--max-delivery-attempts<span class="o">=</span><span class="m">5</span>
+</span></code></pre></div>
+<p>Khi message retry quá 5 lần → chuyển sang DLT → log lại sự kiện lỗi.</p>
+<hr/>
+<h3 id="giam-sat-pubsub">🔍 Giám sát Pub/Sub<a class="headerlink" href="#giam-sat-pubsub" title="Permanent link">¶</a></h3>
+<ul>
+<li>
+<p>Sử dụng metric:</p>
+</li>
+<li>
+<p><code>num_undelivered_messages</code></p>
+</li>
+<li><code>ack_latency</code></li>
+<li><code>dead_letter_message_count</code></li>
+<li>
+<p>Có thể tạo alert khi:</p>
+</li>
+<li>
+<p>DLT tăng đột biến</p>
+</li>
+<li>Tồn đọng nhiều message chưa xử lý</li>
+<li>Dashboard: <code>pubsub-dashboard</code>, <code>notification-dlt-dashboard</code></li>
+</ul>
+<hr/>
+<h3 id="handling-retry">🛠 Handling retry<a class="headerlink" href="#handling-retry" title="Permanent link">¶</a></h3>
+<ul>
+<li>Logic subscriber cần <strong>idempotent</strong> (xử lý lại không gây lỗi)</li>
+<li>Dùng <code>message_id</code> để detect duplicate</li>
+<li>Nếu sử dụng database → dùng transaction + retry-safe query</li>
+</ul>
+<hr/>
+<h3 id="debug-dlt-message">✏️ Debug DLT message<a class="headerlink" href="#debug-dlt-message" title="Permanent link">¶</a></h3>
+<ol>
+<li>Subscribe tạm thời vào DLT</li>
+<li>Ghi log nội dung message để phân tích</li>
+<li>Quyết định: sửa lỗi source, hoặc re-publish message (thận trọng)</li>
+</ol>
+<hr/>
+<p>📎 Ví dụ triển khai subscriber: <a href="https://github.com/vas-org/dx-notification-service/tree/main/app/events"><code>dx-notification-service</code></a></p>
+<p>📎 Sơ đồ flow: <a href="../../architecture/system-diagrams/#5-data-synchronization-flow--đồng-bộ-học-sinh-crm--sis--lms">System Diagrams</a></p>
+<hr/>
+<h2 id="9-kiem-soat-chi-phi-toi-uu-tai-nguyen">9. Kiểm soát chi phí &amp; tối ưu tài nguyên<a class="headerlink" href="#9-kiem-soat-chi-phi-toi-uu-tai-nguyen" title="Permanent link">¶</a></h2>
+<p>Hệ thống dx-vas sử dụng nhiều dịch vụ managed (Cloud Run, SQL, Pub/Sub...) – giúp vận hành đơn giản nhưng cũng cần theo dõi sát để tránh chi phí vượt kiểm soát. Chi phí chủ yếu phát sinh từ Cloud Run, Cloud SQL, Pub/Sub, Storage và Network.</p>
+<hr/>
+<h3 id="cac-thanh-phan-ton-chi-phi">💰 Các thành phần tốn chi phí<a class="headerlink" href="#cac-thanh-phan-ton-chi-phi" title="Permanent link">¶</a></h3>
+<table>
+<thead>
+<tr>
+<th>Dịch vụ</th>
+<th>Nhóm chính</th>
+<th>Chi phí tính theo</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Cloud Run</td>
+<td>API Gateway, các service</td>
+<td>Số request, CPU/Memory usage</td>
+</tr>
+<tr>
+<td>Cloud SQL</td>
+<td>PostgreSQL, MySQL</td>
+<td>Instance uptime + storage</td>
+</tr>
+<tr>
+<td>Redis (MemoryStore)</td>
+<td>RBAC cache</td>
+<td>GB RAM provisioned</td>
+</tr>
+<tr>
+<td>Pub/Sub</td>
+<td>Event-driven flow</td>
+<td>Message volume + retention</td>
+</tr>
+<tr>
+<td>GCS</td>
+<td>Static assets, backup</td>
+<td>GB lưu trữ + truy xuất</td>
+</tr>
+<tr>
+<td>IAM/Secret Manager</td>
+<td>Token, config</td>
+<td>Rất nhỏ nhưng có định mức</td>
+</tr>
+</tbody>
+</table>
+<hr/>
+<h3 id="network-egress-costs">🌐 Network Egress Costs<a class="headerlink" href="#network-egress-costs" title="Permanent link">¶</a></h3>
+<ul>
+<li>Cloud Run bị tính phí <strong>egress</strong> nếu gọi ra ngoài VPC, đặc biệt là:</li>
+<li>Gọi API bên thứ ba (Zalo, Gmail...)</li>
+<li>Truy cập GCS nếu không bật <strong>Private Google Access</strong></li>
+<li>Giao tiếp liên vùng (multi-region)</li>
+</ul>
+<p>📌 Cách tối ưu:</p>
+<table>
+<thead>
+<tr>
+<th>Giải pháp</th>
+<th>Mô tả</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Private Google Access</td>
+<td>Cho phép Cloud Run gọi GCS/PubSub mà không tính egress</td>
+</tr>
+<tr>
+<td>VPC Service Controls</td>
+<td>Hạn chế egress trái phép từ service nội bộ</td>
+</tr>
+<tr>
+<td>Region matching</td>
+<td>Đảm bảo Redis, SQL, Cloud Run cùng region (vd: <code>asia-southeast1</code>)</td>
+</tr>
+<tr>
+<td>API Gateway batching</td>
+<td>Gộp nhiều API outbound thành 1 request nếu được</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>⚠️ Một số quota miễn phí của GCP không áp dụng cho traffic egress giữa vùng hoặc ra Internet.</p>
+</blockquote>
+<hr/>
+<h3 id="theo-doi-chi-phi">📊 Theo dõi chi phí<a class="headerlink" href="#theo-doi-chi-phi" title="Permanent link">¶</a></h3>
+<ul>
+<li>Sử dụng Cloud Billing → Cost Table + Cost Breakdown theo service</li>
+<li>Tạo <strong>budget alert</strong> qua Billing Budgets:</li>
+</ul>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-11-1"><a href="#__codelineno-11-1" id="__codelineno-11-1" name="__codelineno-11-1"></a>gcloud<span class="w"> </span>billing<span class="w"> </span>budgets<span class="w"> </span>create<span class="w"> </span>--display-name<span class="o">=</span><span class="s2">"VAS Monthly Budget"</span><span class="w"> </span>...
+</span></code></pre></div>
+<ul>
+<li>Gửi cảnh báo qua email hoặc Google Chat</li>
+</ul>
+<hr/>
+<h3 id="chien-luoc-toi-uu">🎯 Chiến lược tối ưu<a class="headerlink" href="#chien-luoc-toi-uu" title="Permanent link">¶</a></h3>
+<table>
+<thead>
+<tr>
+<th>Dịch vụ</th>
+<th>Chiến lược</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Cloud Run</td>
+<td>Set max instance limit, tuning concurrency</td>
+</tr>
+<tr>
+<td>Redis</td>
+<td>Chỉ cache permission nóng, TTL ngắn (5–10 phút)</td>
+</tr>
+<tr>
+<td>Cloud SQL</td>
+<td>Tắt instance staging ban đêm, sử dụng shared tier nếu load thấp</td>
+</tr>
+<tr>
+<td>Pub/Sub</td>
+<td>Giảm message size, kiểm tra retry quá mức</td>
+</tr>
+<tr>
+<td>GCS</td>
+<td>Xoá ảnh cũ/backup quá hạn, dùng <code>lifecycle rule</code></td>
+</tr>
+</tbody>
+</table>
+<hr/>
+<h3 id="canh-bao-thuc-te">⚠️ Cảnh báo thực tế<a class="headerlink" href="#canh-bao-thuc-te" title="Permanent link">¶</a></h3>
+<ul>
+<li>Cloud SQL chiếm ~50% tổng bill nếu không tối ưu idle time</li>
+<li>Redis billing theo GB RAM provisioned  <blockquote>
+<p>📌 dx-vas hiện sử dụng <strong>Memorystore for Redis (standard tier, non-cluster)</strong> – không tự động scale. Nếu cần scaling theo chiều ngang, có thể cân nhắc nâng cấp lên <strong>Memorystore for Redis Cluster</strong>.</p>
+</blockquote>
+</li>
+<li>Pub/Sub có thể phát sinh retry loop gây bill ẩn</li>
+</ul>
+<hr/>
+<p>📎 Theo dõi chi phí chi tiết: GCP → Billing → Reports</p>
+<p>📎 Cảnh báo sử dụng resource: Xem thêm <a href="#3-giám-sát--cảnh-báo">Mục 3 – Giám sát &amp; cảnh báo</a></p>
+<hr/>
+<h2 id="10-checklist-inh-ky-van-hanh">10. Checklist định kỳ vận hành<a class="headerlink" href="#10-checklist-inh-ky-van-hanh" title="Permanent link">¶</a></h2>
+<p>Việc kiểm tra định kỳ là thiết yếu để đảm bảo hệ thống dx-vas hoạt động an toàn, hiệu quả và không phát sinh chi phí ngoài kiểm soát. Checklist sau đây được chia theo tần suất: hàng tuần, hàng tháng và hàng quý.</p>
+<hr/>
+<h3 id="hang-tuan">🔁 Hàng tuần<a class="headerlink" href="#hang-tuan" title="Permanent link">¶</a></h3>
+<ul class="task-list">
+<li class="task-list-item"><label class="task-list-control"><input disabled="" type="checkbox"><span class="task-list-indicator"></span></input></label> Kiểm tra Cloud Run error rate ≥ 5%</li>
+<li class="task-list-item"><label class="task-list-control"><input disabled="" type="checkbox"><span class="task-list-indicator"></span></input></label> Xác minh các alert Pub/Sub/Redis có bị miss không</li>
+<li class="task-list-item"><label class="task-list-control"><input disabled="" type="checkbox"><span class="task-list-indicator"></span></input></label> Xem lại DLT logs → xử lý message fail lặp lại</li>
+<li class="task-list-item"><label class="task-list-control"><input disabled="" type="checkbox"><span class="task-list-indicator"></span></input></label> Kiểm tra trạng thái deploy của các service staging</li>
+<li class="task-list-item"><label class="task-list-control"><input disabled="" type="checkbox"><span class="task-list-indicator"></span></input></label> Check audit log liên quan đến RBAC, Auth</li>
+</ul>
+<hr/>
+<h3 id="hang-thang">📅 Hàng tháng<a class="headerlink" href="#hang-thang" title="Permanent link">¶</a></h3>
+<ul class="task-list">
+<li class="task-list-item"><label class="task-list-control"><input disabled="" type="checkbox"><span class="task-list-indicator"></span></input></label> Xoá Cloud SQL backups cũ (nếu không cần thiết)</li>
+<li class="task-list-item"><label class="task-list-control"><input disabled="" type="checkbox"><span class="task-list-indicator"></span></input></label> Review budget report → so với usage thực tế</li>
+<li class="task-list-item"><label class="task-list-control"><input disabled="" type="checkbox"><span class="task-list-indicator"></span></input></label> Rotate JWT signing key (nếu bật chế độ ngắn hạn)</li>
+<li class="task-list-item"><label class="task-list-control"><input disabled="" type="checkbox"><span class="task-list-indicator"></span></input></label> Check Cloud Storage → xoá ảnh/file/log quá hạn</li>
+<li class="task-list-item"><label class="task-list-control"><input disabled="" type="checkbox"><span class="task-list-indicator"></span></input></label> Chạy lại test E2E: Webform → CRM → SIS → LMS</li>
+<li class="task-list-item"><label class="task-list-control"><input disabled="" type="checkbox"><span class="task-list-indicator"></span></input></label> Kiểm tra lại giới hạn Cloud Run (max instance, timeout)</li>
+</ul>
+<hr/>
+<h3 id="hang-quy">📣 Hàng quý<a class="headerlink" href="#hang-quy" title="Permanent link">¶</a></h3>
+<ul class="task-list">
+<li class="task-list-item"><label class="task-list-control"><input disabled="" type="checkbox"/><span class="task-list-indicator"></span></label> Rà soát IAM roles trên toàn bộ dự án</li>
+<li class="task-list-item"><label class="task-list-control"><input disabled="" type="checkbox"/><span class="task-list-indicator"></span></label> Đánh giá lại quota của Redis, Cloud SQL, Pub/Sub</li>
+<li class="task-list-item"><label class="task-list-control"><input disabled="" type="checkbox"/><span class="task-list-indicator"></span></label> Kiểm thử kịch bản rollback và DR (Disaster Recovery)</li>
+<li class="task-list-item"><label class="task-list-control"><input disabled="" type="checkbox"/><span class="task-list-indicator"></span></label> Đánh giá performance thực tế → điều chỉnh autoscale</li>
+<li class="task-list-item"><label class="task-list-control"><input disabled="" type="checkbox"/><span class="task-list-indicator"></span></label> Cập nhật bảng permission &amp; roles (RBAC evolution)</li>
+</ul>
+<hr/>
+<h3 id="cach-theo-doi-checklist">📌 Cách theo dõi checklist<a class="headerlink" href="#cach-theo-doi-checklist" title="Permanent link">¶</a></h3>
+<ul>
+<li>Lưu checklist trên Notion/Google Sheet theo ngày</li>
+<li>Dùng Google Calendar để nhắc lịch định kỳ</li>
+<li>Gắn vào buổi họp kỹ thuật hàng tháng (KT Sync)</li>
+</ul>
+<hr/>
+<p>📎 Các log hỗ trợ: <a href="#4-logging--trace-phân-tán">Mục 4 – Logging &amp; Trace</a> </p>
+<p>📎 Chi phí/quota → <a href="#9-kiểm-soát-chi-phí--tối-ưu-tài-nguyên">Mục 9 – Kiểm soát chi phí</a></p>
+<hr/>
+<h2 id="11-ung-pho-su-co-khoi-phuc">11. Ứng phó sự cố &amp; khôi phục<a class="headerlink" href="#11-ung-pho-su-co-khoi-phuc" title="Permanent link">¶</a></h2>
+<p>Trong mọi hệ thống sản phẩm, khả năng phản ứng nhanh khi xảy ra lỗi nghiêm trọng là yếu tố sống còn. dx-vas áp dụng mô hình chuẩn hóa: phân loại sự cố, xử lý theo checklist, ghi nhận hậu kiểm (postmortem).</p>
+<hr/>
+<h3 id="vai-tro-trong-quy-trinh-ung-pho-su-co-incident-response-roles">🧑‍🚒 Vai trò trong quy trình ứng phó sự cố (Incident Response Roles)<a class="headerlink" href="#vai-tro-trong-quy-trinh-ung-pho-su-co-incident-response-roles" title="Permanent link">¶</a></h3>
+<p>Khi xảy ra sự cố nghiêm trọng (ví dụ: gián đoạn dịch vụ, mất dữ liệu, sự cố bảo mật), việc phân vai rõ ràng giúp đội ngũ phản ứng nhanh và hiệu quả hơn.</p>
+<table>
+<thead>
+<tr>
+<th>Vai trò</th>
+<th>Mô tả nhiệm vụ chính</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Incident Commander (IC)</strong></td>
+<td>Điều phối toàn bộ quy trình ứng phó, đưa ra quyết định cuối cùng về rollback, escalations.</td>
+</tr>
+<tr>
+<td><strong>Technical Lead (TL)</strong></td>
+<td>Phân tích nguyên nhân, đưa ra hướng xử lý kỹ thuật, làm việc trực tiếp với hệ thống.</td>
+</tr>
+<tr>
+<td><strong>Communications Lead (Comms)</strong></td>
+<td>Gửi update nội bộ, thông báo tới stakeholder, khách hàng (nếu cần).</td>
+</tr>
+<tr>
+<td><strong>Scribe / Logger</strong></td>
+<td>Ghi lại timeline xử lý sự cố, action đã thực hiện – phục vụ postmortem.</td>
+</tr>
+<tr>
+<td><strong>Service Owner (nếu khác IC)</strong></td>
+<td>Cung cấp kiến thức hệ thống, chịu trách nhiệm khôi phục dịch vụ.</td>
+</tr>
+</tbody>
+</table>
+<p>🧭 Trong đội ngũ nhỏ, một người có thể kiêm nhiều vai. Tuy nhiên, IC nên luôn là người tách biệt với thao tác kỹ thuật để giữ được "tầm nhìn chiến lược".</p>
+<p>📌 Template postmortem có thể đặt trong <code>docs/postmortem-template.md</code>.</p>
+<hr/>
+<h3 id="phan-loai-su-co">🚨 Phân loại sự cố<a class="headerlink" href="#phan-loai-su-co" title="Permanent link">¶</a></h3>
+<table>
+<thead>
+<tr>
+<th>Loại</th>
+<th>Ví dụ</th>
+<th>Phản ứng</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>🔥 Production Outage</td>
+<td>Cloud Run 5xx toàn hệ thống</td>
+<td>Phát động kênh khẩn cấp</td>
+</tr>
+<tr>
+<td>⚠️ Functional Bug</td>
+<td>Notification không gửi</td>
+<td>Theo mức độ nghiêm trọng</td>
+</tr>
+<tr>
+<td>⏱ Degraded</td>
+<td>Redis timeout, DB latency cao</td>
+<td>Theo dõi, điều chỉnh autoscale</td>
+</tr>
+<tr>
+<td>🔒 Security</td>
+<td>Rò rỉ token, tấn công brute force</td>
+<td>Ngắt tạm, rotate credential</td>
+</tr>
+</tbody>
+</table>
+<hr/>
+<h3 id="checklist-phan-ung-nhanh">🧯 Checklist phản ứng nhanh<a class="headerlink" href="#checklist-phan-ung-nhanh" title="Permanent link">¶</a></h3>
+<ol>
+<li><strong>Xác nhận lỗi</strong></li>
+<li>Ghi nhận timestamp + request_id</li>
+<li>Check status Cloud Run, Redis, Pub/Sub, GCS</li>
+<li><strong>Phân loại lỗi</strong></li>
+<li>Outage / Degraded / Security</li>
+<li><strong>Kích hoạt recovery</strong></li>
+<li>Nếu lỗi rollout: Rollback ngay (Xem <a href="#7-quy-trình-cập-nhật--rollback">Mục 7</a>)</li>
+<li>Nếu Redis fail: flush cache + restart service</li>
+<li><strong>Thông báo</strong></li>
+<li>Gửi update qua Google Chat <code>#dx-ops-alert</code></li>
+<li><strong>Khôi phục tạm thời</strong></li>
+<li>Tắt 1 vài feature non-critical nếu cần</li>
+</ol>
+<hr/>
+<h3 id="log-cong-cu-ho-tro">🗂 Log &amp; công cụ hỗ trợ<a class="headerlink" href="#log-cong-cu-ho-tro" title="Permanent link">¶</a></h3>
+<ul>
+<li>Cloud Run log + trace</li>
+<li>Pub/Sub Dead Letter inspection</li>
+<li>Redis monitor command</li>
+<li>GCS object viewer (xem cấu hình/static lỗi)</li>
+</ul>
+<hr/>
+<h3 id="postmortem-template">📋 Postmortem template<a class="headerlink" href="#postmortem-template" title="Permanent link">¶</a></h3>
+<ol>
+<li><strong>Sự cố:</strong> (mô tả ngắn)</li>
+<li><strong>Thời gian:</strong> (bắt đầu – kết thúc)</li>
+<li><strong>Ảnh hưởng:</strong> (người dùng nào? dịch vụ nào?)</li>
+<li><strong>Nguyên nhân gốc:</strong> (root cause)</li>
+<li><strong>Giải pháp khắc phục:</strong> (ngắn hạn + dài hạn)</li>
+<li><strong>Ai xử lý / liên hệ:</strong> (contact)</li>
+</ol>
+<blockquote>
+<p>✅ Mọi postmortem cần lưu tại <code>docs/postmortem/</code> dưới repo <code>dx-vas</code></p>
+</blockquote>
+<hr/>
+<p>📎 Cách kiểm tra sự cố theo trace: <a href="#4-logging--trace-phân-tán">Mục 4 – Logging &amp; Trace</a> </p>
+<p>📎 Khả năng rollback: <a href="#7-quy-trình-cập-nhật--rollback">Mục 7 – Cập nhật &amp; Rollback</a></p>
+<hr/>
+<h2 id="12-backup-disaster-recovery-dr">12. Backup &amp; Disaster Recovery (DR)<a class="headerlink" href="#12-backup-disaster-recovery-dr" title="Permanent link">¶</a></h2>
+<p>Hệ thống dx-vas được thiết kế với khả năng khôi phục linh hoạt và giới hạn downtime. Mỗi thành phần quan trọng đều có chiến lược DR riêng, đảm bảo khôi phục dữ liệu và dịch vụ khi xảy ra sự cố lớn (mất DB, hạ tầng, lỗi logic nghiêm trọng...).</p>
+<hr/>
+<h3 id="rto-rpo-muc-tieu">🎯 RTO &amp; RPO mục tiêu<a class="headerlink" href="#rto-rpo-muc-tieu" title="Permanent link">¶</a></h3>
+<table>
+<thead>
+<tr>
+<th>Thành phần</th>
+<th>RTO</th>
+<th>RPO</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>PostgreSQL (Core)</td>
+<td>15 phút</td>
+<td>5 phút</td>
+</tr>
+<tr>
+<td>Redis (Cache)</td>
+<td>5 phút</td>
+<td>0 (chấp nhận mất cache)</td>
+</tr>
+<tr>
+<td>MySQL (Adapters)</td>
+<td>30 phút</td>
+<td>15 phút</td>
+</tr>
+<tr>
+<td>Pub/Sub</td>
+<td>10 phút</td>
+<td>1 phút</td>
+</tr>
+<tr>
+<td>Static (GCS)</td>
+<td>30 phút</td>
+<td>0 phút</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>RTO: Recovery Time Objective<br>
+RPO: Recovery Point Objective</br></p>
+</blockquote>
+<hr/>
+<h3 id="backup-chien-luoc">📦 Backup chiến lược<a class="headerlink" href="#backup-chien-luoc" title="Permanent link">¶</a></h3>
+<table>
+<thead>
+<tr>
+<th>Thành phần</th>
+<th>Phương pháp</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Cloud SQL (PostgreSQL, MySQL)</td>
+<td>Enable PITR + Scheduled Snapshots</td>
+</tr>
+<tr>
+<td>Redis</td>
+<td>Không backup – auto recreate từ source</td>
+</tr>
+<tr>
+<td>GCS</td>
+<td>Object versioning + lifecycle rule</td>
+</tr>
+<tr>
+<td>Pub/Sub DLT</td>
+<td>Lưu message fail trong Dead Letter Topic</td>
+</tr>
+<tr>
+<td>Interface Contracts &amp; ADRs</td>
+<td>Sync từ Git → giữ bản chính trên <code>dx-vas</code> repo</td>
+</tr>
+</tbody>
+</table>
+<hr/>
+<h3 id="kiem-thu-dr-inh-ky">🔁 Kiểm thử DR định kỳ<a class="headerlink" href="#kiem-thu-dr-inh-ky" title="Permanent link">¶</a></h3>
+<ul>
+<li>Mỗi quý thực hiện drill (giả lập sự cố)</li>
+<li>Xóa bản ghi DB staging → restore từ snapshot</li>
+<li>Simulate fail của Notification hoặc Gateway</li>
+<li>Đảm bảo khôi phục service trong khung thời gian mục tiêu</li>
+</ul>
+<hr/>
+<h3 id="luu-y-bao-mat">🔐 Lưu ý bảo mật<a class="headerlink" href="#luu-y-bao-mat" title="Permanent link">¶</a></h3>
+<ul>
+<li>Backup GCS phải bật encryption at rest</li>
+<li>Chỉ tài khoản có <code>roles/cloudsql.admin</code> mới được tạo snapshot</li>
+<li>Audit access các bản backup qua Cloud Audit Log</li>
+</ul>
+<hr/>
+<h3 id="cong-cu-kiem-tra-khoi-phuc">🧪 Công cụ kiểm tra &amp; khôi phục<a class="headerlink" href="#cong-cu-kiem-tra-khoi-phuc" title="Permanent link">¶</a></h3>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-12-1"><a href="#__codelineno-12-1" id="__codelineno-12-1" name="__codelineno-12-1"></a><span class="c1"># Liệt kê backup</span>
+</span><span id="__span-12-2"><a href="#__codelineno-12-2" id="__codelineno-12-2" name="__codelineno-12-2"></a>gcloud<span class="w"> </span>sql<span class="w"> </span>backups<span class="w"> </span>list<span class="w"> </span>--instance<span class="o">=</span>dx-user-postgres
+</span><span id="__span-12-3"><a href="#__codelineno-12-3" id="__codelineno-12-3" name="__codelineno-12-3"></a>
+</span><span id="__span-12-4"><a href="#__codelineno-12-4" id="__codelineno-12-4" name="__codelineno-12-4"></a><span class="c1"># Restore từ backup</span>
+</span><span id="__span-12-5"><a href="#__codelineno-12-5" id="__codelineno-12-5" name="__codelineno-12-5"></a>gcloud<span class="w"> </span>sql<span class="w"> </span>instances<span class="w"> </span>restore-backup<span class="w"> </span>dx-user-postgres<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-12-6"><a href="#__codelineno-12-6" id="__codelineno-12-6" name="__codelineno-12-6"></a><span class="w">  </span>--backup-id<span class="o">=</span><span class="m">1234567890</span>
+</span></code></pre></div>
+<hr/>
+<h3 id="vi-du-kich-ban-dr-mat-ket-noi-cloud-sql">🧪 Ví dụ: Kịch bản DR – Mất kết nối Cloud SQL<a class="headerlink" href="#vi-du-kich-ban-dr-mat-ket-noi-cloud-sql" title="Permanent link">¶</a></h3>
+<p><strong>Tình huống:</strong> Cloud SQL instance (PostgreSQL) cho <code>user-service</code> bị mất kết nối do lỗi khu vực (region) hoặc lỗi cấu hình.</p>
+<h4 id="cac-buoc-khoi-phuc">🛠️ Các bước khôi phục:<a class="headerlink" href="#cac-buoc-khoi-phuc" title="Permanent link">¶</a></h4>
+<ol>
+<li><strong>Xác định lỗi:</strong></li>
+<li>Kiểm tra Cloud Monitoring → Metric <code>database/connection_count</code>, <code>availability</code>.</li>
+<li>
+<p>Kiểm tra <code>gcloud sql instances describe</code> để xác nhận tình trạng.</p>
+</li>
+<li>
+<p><strong>Kích hoạt DR Plan:</strong></p>
+</li>
+<li>Truy cập Cloud SQL snapshot định kỳ (PITR hoặc bản sao).</li>
+<li>Tạo lại instance tại region khác (hoặc cùng region nếu do cấu hình).</li>
+</ol>
+<p><code>bash
+   gcloud sql instances create user-db-dr \
+     --region=asia-southeast2 \
+     --database-version=POSTGRES_14 \
+     --source-instance=user-db \
+     --restore-backup=auto</code></p>
+<ol>
+<li>
+<p><strong>Cập nhật Cloud Run ENV:</strong></p>
+</li>
+<li>
+<p>Trỏ <code>DATABASE_URL</code> của <code>user-service</code> sang instance mới.</p>
+</li>
+<li>Redeploy service:</li>
+</ol>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-13-1"><a href="#__codelineno-13-1" id="__codelineno-13-1" name="__codelineno-13-1"></a>gcloud<span class="w"> </span>run<span class="w"> </span>services<span class="w"> </span>update<span class="w"> </span>user-service<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-13-2"><a href="#__codelineno-13-2" id="__codelineno-13-2" name="__codelineno-13-2"></a><span class="w">  </span>--set-env-vars<span class="o">=</span><span class="nv">DATABASE_URL</span><span class="o">=</span>postgresql://...
+</span></code></pre></div>
+<ol>
+<li>
+<p><strong>Kiểm tra ứng dụng:</strong></p>
+</li>
+<li>
+<p>Kiểm tra trạng thái Cloud Run revision mới.</p>
+</li>
+<li>
+<p>Chạy smoke test hoặc các health endpoint.</p>
+</li>
+<li>
+<p><strong>Thông báo &amp; ghi nhận:</strong></p>
+</li>
+<li>
+<p>Gửi thông báo hệ thống đã khôi phục.</p>
+</li>
+<li>Log đầy đủ action &amp; thời gian vào sự kiện DR.</li>
+</ol>
+<p>📌 <strong>Lưu ý:</strong></p>
+<ul>
+<li>Nên chuẩn bị sẵn script DR cho từng service hoặc dịch vụ CSDL.</li>
+<li>Có thể sử dụng <strong>Terraform</strong> để định nghĩa sẵn cấu hình DR infra.</li>
+<li>Mọi sự kiện DR phải được diễn tập định kỳ.</li>
+</ul>
+<hr/>
+<p>📎 Kịch bản sự cố toàn cụm: <a href="#11-ứng-phó-sự-cố--khôi-phục">Mục 11 – Ứng phó sự cố &amp; khôi phục</a></p>
+<p>📎 Cấu trúc triển khai dịch vụ: <a href="../../architecture/system-diagrams/#9-deployment-overview-diagram--sơ-đồ-triển-khai-tổng-quan">System Diagrams</a></p>
+<hr/>
+<h2 id="13-security-audit-compliance">13. Security audit &amp; compliance<a class="headerlink" href="#13-security-audit-compliance" title="Permanent link">¶</a></h2>
+<p>Hệ thống dx-vas áp dụng cơ chế kiểm soát bảo mật chặt chẽ ngay từ kiến trúc. Đội DevOps/SRE cần duy trì các hoạt động audit định kỳ để phát hiện lỗ hổng, kiểm soát phân quyền và đảm bảo tuân thủ theo các tiêu chuẩn bảo mật nội bộ.</p>
+<hr/>
+<h3 id="kiem-tra-inh-ky">🔍 Kiểm tra định kỳ<a class="headerlink" href="#kiem-tra-inh-ky" title="Permanent link">¶</a></h3>
+<table>
+<thead>
+<tr>
+<th>Nhóm</th>
+<th>Hành động</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>IAM</td>
+<td>Rà soát service account, roles không dùng</td>
+</tr>
+<tr>
+<td>Secret</td>
+<td>Xác minh secret hết hạn, rotate đúng lịch</td>
+</tr>
+<tr>
+<td>RBAC</td>
+<td>So khớp permission → role → user</td>
+</tr>
+<tr>
+<td>Log</td>
+<td>Kiểm tra trace bất thường, login fail</td>
+</tr>
+<tr>
+<td>Infra</td>
+<td>Check port mở, endpoint public (Cloud Run, Redis)</td>
+</tr>
+</tbody>
+</table>
+<hr/>
+<h3 id="lich-audit-goi-y">📅 Lịch audit gợi ý<a class="headerlink" href="#lich-audit-goi-y" title="Permanent link">¶</a></h3>
+<table>
+<thead>
+<tr>
+<th>Tần suất</th>
+<th>Hành động</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Hàng tháng</td>
+<td>Rà IAM role, xóa service account cũ</td>
+</tr>
+<tr>
+<td>Hàng quý</td>
+<td>Rotate JWT secret, kiểm tra RBAC file</td>
+</tr>
+<tr>
+<td>6 tháng</td>
+<td>Penetration test nội bộ (black box / white box)</td>
+</tr>
+<tr>
+<td>Hàng năm</td>
+<td>Audit toàn hệ thống, backup policy, access policy</td>
+</tr>
+</tbody>
+</table>
+<hr/>
+<h3 id="cong-cu-ho-tro-audit">🛠 Công cụ hỗ trợ audit<a class="headerlink" href="#cong-cu-ho-tro-audit" title="Permanent link">¶</a></h3>
+<ul>
+<li>Google Cloud Asset Inventory (IAM, Secret, API enabled)</li>
+<li>GCP IAM Recommender</li>
+<li><code>gcloud iam roles list</code>, <code>gcloud secrets versions list</code></li>
+<li>Manual RBAC linter với file <code>permissions.yaml</code></li>
+</ul>
+<hr/>
+<h3 id="compliance-noi-bo">🔒 Compliance (nội bộ)<a class="headerlink" href="#compliance-noi-bo" title="Permanent link">¶</a></h3>
+<table>
+<thead>
+<tr>
+<th>Yêu cầu</th>
+<th>Tình trạng</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>RBAC được kiểm soát qua giao diện &amp; versioned</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>Không có secret nằm trong repo code</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>Tất cả dịch vụ qua Gateway, có log RBAC</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>Xoá user = inactive + revoke token</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>Có log &amp; alert cho hành vi bất thường</td>
+<td>✅</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>🎯 dx-vas hướng đến mô hình <strong>Security-by-Design</strong> – không xử lý bảo mật sau cùng, mà tích hợp xuyên suốt.</p>
+</blockquote>
+<hr/>
+<p>📎 Chính sách RBAC: <a href="../../architecture/rbac-deep-dive/">RBAC Deep Dive</a> </p>
+<p>📎 Chi tiết bảo mật triển khai: <a href="../../ADR/adr-004-security/"><code>adr-004-security.md</code></a> </p>
+<p>📎 Hệ thống log giám sát: <a href="#4-logging--trace-phân-tán">Mục 4 – Logging &amp; Trace</a></p>
+<hr/>
+<h2 id="14-cong-cu-dashboard-ho-tro">14. Công cụ &amp; dashboard hỗ trợ<a class="headerlink" href="#14-cong-cu-dashboard-ho-tro" title="Permanent link">¶</a></h2>
+<p>Để hỗ trợ vận hành hệ thống dx-vas ổn định và chủ động, đội DevOps cần sử dụng kết hợp nhiều công cụ giám sát, quan sát, phân tích log và kiểm tra hạ tầng.</p>
+<hr/>
+<h3 id="bo-cong-cu-chinh">🧰 Bộ công cụ chính<a class="headerlink" href="#bo-cong-cu-chinh" title="Permanent link">¶</a></h3>
+<table>
+<thead>
+<tr>
+<th>Công cụ</th>
+<th>Mục đích</th>
+<th>Ghi chú</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Google Cloud Logging</td>
+<td>Xem log toàn hệ thống</td>
+<td>Filter theo request_id, service</td>
+</tr>
+<tr>
+<td>Cloud Monitoring</td>
+<td>Theo dõi metric, alert</td>
+<td>Định ngưỡng cho Redis, DB, Pub/Sub</td>
+</tr>
+<tr>
+<td>Cloud Trace</td>
+<td>Xem trace phân tán</td>
+<td>Tìm request chậm, lỗi chuỗi</td>
+</tr>
+<tr>
+<td>Cloud SQL Insights</td>
+<td>Phân tích query chậm</td>
+<td>Hỗ trợ cả Postgres &amp; MySQL</td>
+</tr>
+<tr>
+<td>Pub/Sub Viewer</td>
+<td>Xem backlog, message retry</td>
+<td>Kiểm tra DLT</td>
+</tr>
+<tr>
+<td>Secret Manager</td>
+<td>Quản lý key/token</td>
+<td>Audit access</td>
+</tr>
+<tr>
+<td>IAM Recommender</td>
+<td>Đề xuất giảm quyền IAM</td>
+<td>Audit vai trò không cần thiết</td>
+</tr>
+<tr>
+<td>Artifact Registry</td>
+<td>Quản lý Docker image</td>
+<td>Theo dõi size, version deploy</td>
+</tr>
+</tbody>
+</table>
+<hr/>
+<h3 id="dashboard-tham-khao">📊 Dashboard tham khảo<a class="headerlink" href="#dashboard-tham-khao" title="Permanent link">¶</a></h3>
+<table>
+<thead>
+<tr>
+<th>Tên dashboard</th>
+<th>Mục tiêu</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>gateway-dashboard</code></td>
+<td>Theo dõi tỉ lệ lỗi, độ trễ Gateway</td>
+</tr>
+<tr>
+<td><code>auth-dashboard</code></td>
+<td>Login rate, OTP fail, token issue</td>
+</tr>
+<tr>
+<td><code>user-dashboard</code></td>
+<td>Truy xuất RBAC, update user</td>
+</tr>
+<tr>
+<td><code>notification-dashboard</code></td>
+<td>Gửi email/Zalo, theo dõi retry</td>
+</tr>
+<tr>
+<td><code>pubsub-dashboard</code></td>
+<td>Backlog, fail, DLT monitor</td>
+</tr>
+<tr>
+<td><code>db-performance-dashboard</code></td>
+<td>Slow query, connection pool usage</td>
+</tr>
+<tr>
+<td><code>cost-dashboard</code></td>
+<td>Tổng chi phí, cảnh báo vượt budget</td>
+</tr>
+</tbody>
+</table>
+<hr/>
+<h3 id="bang-lenh-cli-devops-thuong-dung-gcp-cloud-run-pubsub-cloud-sql">🧰 Bảng lệnh CLI DevOps thường dùng (GCP – Cloud Run, Pub/Sub, Cloud SQL)<a class="headerlink" href="#bang-lenh-cli-devops-thuong-dung-gcp-cloud-run-pubsub-cloud-sql" title="Permanent link">¶</a></h3>
+<table>
+<thead>
+<tr>
+<th>Mục đích</th>
+<th>Lệnh</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Xem revision &amp; traffic của một service</td>
+<td><code>gcloud run services describe user-service --format="value(status.traffic)"</code></td>
+</tr>
+<tr>
+<td>Rollback revision cụ thể</td>
+<td><code>gcloud run services update-traffic user-service --to-revisions=rev-abc123=100</code></td>
+</tr>
+<tr>
+<td>Kiểm tra log Cloud Run mới nhất</td>
+<td><code>gcloud logs read "resource.type=cloud_run_revision" --limit=50</code></td>
+</tr>
+<tr>
+<td>Xem thông điệp bị đẩy vào DLT</td>
+<td><code>gcloud pubsub subscriptions pull user-dlt-sub --limit=5 --auto-ack</code></td>
+</tr>
+<tr>
+<td>Scale min/max instance Cloud Run</td>
+<td><code>gcloud run services update user-service --min-instances=1 --max-instances=5</code></td>
+</tr>
+<tr>
+<td>Tạo Cloud SQL từ backup</td>
+<td><code>gcloud sql instances create user-db-dr --restore-backup=1234567890</code></td>
+</tr>
+<tr>
+<td>Truy cập shell PostgreSQL Cloud SQL</td>
+<td><code>gcloud sql connect user-db --user=postgres</code></td>
+</tr>
+<tr>
+<td>Kiểm tra trạng thái Redis</td>
+<td><code>gcloud redis instances describe vas-rbac-cache</code></td>
+</tr>
+</tbody>
+</table>
+<p>📌 Tham khảo file tổng hợp <a href="./ops-cli-cheatsheet.md">Dev Ops Cheatsheet</a> <em>dự kiến</em>.</p>
+<hr/>
+<h3 id="uong-dan-huu-ich">📎 Đường dẫn hữu ích<a class="headerlink" href="#uong-dan-huu-ich" title="Permanent link">¶</a></h3>
+<ul>
+<li><a href="https://console.cloud.google.com/run">Cloud Run logs</a></li>
+<li><a href="https://console.cloud.google.com/cloudpubsub/topic/list">Pub/Sub Viewer</a></li>
+<li><a href="https://console.cloud.google.com/sql/insights">SQL Insights</a></li>
+<li><a href="https://console.cloud.google.com/security/secret-manager">Secret Manager</a></li>
+</ul>
+<hr/>
+<p>📎 Mọi dashboard nên được lưu trữ version (JSON export) tại:<br>
+<code>dx-vas/docs/observability/dashboards/</code></br></p>
+<p>📎 Liên kết CI/CD – xem Dev Guide: <a href="../dev-guide/#8-quy-trình-test--ci-cd">Dev Guide</a></p>
+</article>
+</div>
+<script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var labels=set.querySelector(".tabbed-labels");for(var tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+</div>
+<button class="md-top md-icon" data-md-component="top" hidden="" type="button">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"></path></svg>
+  Trở lại mục lục
+</button>
+</main>
+<footer class="md-footer">
+<div class="md-footer-meta md-typeset">
+<div class="md-footer-meta__inner md-grid">
+<div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" rel="noopener" target="_blank">
+      Material for MkDocs
+    </a>
+</div>
+</div>
+</div>
+</footer>
+</div>
+<div class="md-dialog" data-md-component="dialog">
+<div class="md-dialog__inner md-typeset"></div>
+</div>
+<script id="__config" type="application/json">{"base": "../..", "features": ["navigation.tabs", "navigation.tabs.sticky", "navigation.sections", "navigation.expand", "navigation.top", "navigation.indexes", "search.suggest", "search.highlight", "content.code.annotate", "content.tabs.link"], "search": "../../assets/javascripts/workers/search.d50fe291.min.js", "tags": null, "translations": {"clipboard.copied": "\u0110\u00e3 sao ch\u00e9p", "clipboard.copy": "Sao ch\u00e9p v\u00e0o b\u1ed9 nh\u1edb t\u1ea1m", "search.result.more.one": "1 t\u1eeb kh\u00e1c trong trang", "search.result.more.other": "# t\u1eeb kh\u00e1c trong trang", "search.result.none": "Kh\u00f4ng t\u00ecm th\u1ea5y t\u00e0i li\u1ec7u li\u00ean quan", "search.result.one": "1 t\u00e0i li\u1ec7u li\u00ean quan", "search.result.other": "# t\u00e0i li\u1ec7u li\u00ean quan", "search.result.placeholder": "Nh\u1eadp \u0111\u1ec3 b\u1eaft \u0111\u1ea7u t\u00ecm ki\u1ebfm", "search.result.term.missing": "Kh\u00f4ng", "select.version": "Ch\u1ecdn phi\u00ean b\u1ea3n"}, "version": null}</script>
+<script src="../../assets/javascripts/bundle.13a4f30d.min.js"></script>
+<script type="module">import mermaid from "https://unpkg.com/mermaid@10.4.0/dist/mermaid.esm.min.mjs";
+window.mermaidConfig = {default: {
+    startOnLoad: false
+}};</script></body>
+</html>

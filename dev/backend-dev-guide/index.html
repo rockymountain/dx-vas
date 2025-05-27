@@ -1,0 +1,2945 @@
+
+<!DOCTYPE html>
+
+<html class="no-js" lang="vi">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width,initial-scale=1" name="viewport"/>
+<meta content="Tài liệu kiến trúc và phát triển cho dự án Chuyển đổi số Trường Việt Anh (dx_vas)." name="description"/>
+<meta content="DX VAS Team" name="author"/>
+<link href="https://dx.truongvietanh.edu.vn/dev/backend-dev-guide/" rel="canonical"/>
+<link href="../dev-guide/" rel="prev"/>
+<link href="../ops-guide/" rel="next"/>
+<link href="../../assets/images/favicon.ico" rel="icon"/>
+<meta content="mkdocs-1.6.1, mkdocs-material-9.6.14" name="generator"/>
+<title>Backend Dev Guide - DX VAS - Docs</title>
+<link href="../../assets/stylesheets/main.342714a4.min.css" rel="stylesheet"/>
+<link href="../../assets/stylesheets/palette.06af60db.min.css" rel="stylesheet"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&amp;display=fallback" rel="stylesheet"/>
+<style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+<script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+</head>
+<body data-md-color-accent="pink" data-md-color-primary="indigo" data-md-color-scheme="default" dir="ltr">
+<input autocomplete="off" class="md-toggle" data-md-toggle="drawer" id="__drawer" type="checkbox"/>
+<input autocomplete="off" class="md-toggle" data-md-toggle="search" id="__search" type="checkbox"/>
+<label class="md-overlay" for="__drawer"></label>
+<div data-md-component="skip">
+<a class="md-skip" href="#backend-dev-guide-dx-vas">
+          Bỏ qua
+        </a>
+</div>
+<div data-md-component="announce">
+</div>
+<header class="md-header md-header--shadow md-header--lifted" data-md-component="header">
+<nav aria-label="Đầu trang" class="md-header__inner md-grid">
+<a aria-label="DX VAS - Docs" class="md-header__button md-logo" data-md-component="logo" href="../.." title="DX VAS - Docs">
+<img alt="logo" src="../../assets/images/logo.png"/>
+</a>
+<label class="md-header__button md-icon" for="__drawer">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"></path></svg>
+</label>
+<div class="md-header__title" data-md-component="header-title">
+<div class="md-header__ellipsis">
+<div class="md-header__topic">
+<span class="md-ellipsis">
+            DX VAS - Docs
+          </span>
+</div>
+<div class="md-header__topic" data-md-component="header-topic">
+<span class="md-ellipsis">
+            
+              Backend Dev Guide
+            
+          </span>
+</div>
+</div>
+</div>
+<form class="md-header__option" data-md-component="palette">
+<input aria-label="Switch to dark mode" class="md-option" data-md-color-accent="pink" data-md-color-media="(prefers-color-scheme: light)" data-md-color-primary="indigo" data-md-color-scheme="default" id="__palette_0" name="__palette" type="radio"/>
+<label class="md-header__button md-icon" for="__palette_1" hidden="" title="Switch to dark mode">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0-7 2.39 3.42C13.65 5.15 12.84 5 12 5s-1.65.15-2.39.42zM3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29zm.02 10 1.76-3.77a7.131 7.131 0 0 0 2.38 4.14zM20.65 7l-1.77 3.79a7.02 7.02 0 0 0-2.38-4.15zm-.01 10-4.14.36c.59-.51 1.12-1.14 1.54-1.86.42-.73.69-1.5.83-2.29zM12 22l-2.41-3.44c.74.27 1.55.44 2.41.44.82 0 1.63-.17 2.37-.44z"></path></svg>
+</label>
+<input aria-label="Switch to light mode" class="md-option" data-md-color-accent="lime" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-primary="blue" data-md-color-scheme="slate" id="__palette_1" name="__palette" type="radio"/>
+<label class="md-header__button md-icon" for="__palette_0" hidden="" title="Switch to light mode">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="m17.75 4.09-2.53 1.94.91 3.06-2.63-1.81-2.63 1.81.91-3.06-2.53-1.94L12.44 4l1.06-3 1.06 3zm3.5 6.91-1.64 1.25.59 1.98-1.7-1.17-1.7 1.17.59-1.98L15.75 11l2.06-.05L18.5 9l.69 1.95zm-2.28 4.95c.83-.08 1.72 1.1 1.19 1.85-.32.45-.66.87-1.08 1.27C15.17 23 8.84 23 4.94 19.07c-3.91-3.9-3.91-10.24 0-14.14.4-.4.82-.76 1.27-1.08.75-.53 1.93.36 1.85 1.19-.27 2.86.69 5.83 2.89 8.02a9.96 9.96 0 0 0 8.02 2.89m-1.64 2.02a12.08 12.08 0 0 1-7.8-3.47c-2.17-2.19-3.33-5-3.49-7.82-2.81 3.14-2.7 7.96.31 10.98 3.02 3.01 7.84 3.12 10.98.31"></path></svg>
+</label>
+</form>
+<script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+<label class="md-header__button md-icon" for="__search">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"></path></svg>
+</label>
+<div class="md-search" data-md-component="search" role="dialog">
+<label class="md-search__overlay" for="__search"></label>
+<div class="md-search__inner" role="search">
+<form class="md-search__form" name="search">
+<input aria-label="Tìm kiếm" autocapitalize="off" autocomplete="off" autocorrect="off" class="md-search__input" data-md-component="search-query" name="query" placeholder="Tìm kiếm" required="" spellcheck="false" type="text"/>
+<label class="md-search__icon md-icon" for="__search">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"></path></svg>
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"></path></svg>
+</label>
+<nav aria-label="Tìm kiếm" class="md-search__options">
+<button aria-label="Xoá" class="md-search__icon md-icon" tabindex="-1" title="Xoá" type="reset">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"></path></svg>
+</button>
+</nav>
+<div class="md-search__suggest" data-md-component="search-suggest"></div>
+</form>
+<div class="md-search__output">
+<div class="md-search__scrollwrap" data-md-scrollfix="" tabindex="0">
+<div class="md-search-result" data-md-component="search-result">
+<div class="md-search-result__meta">
+            Initializing search
+          </div>
+<ol class="md-search-result__list" role="presentation"></ol>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="md-header__source">
+<a class="md-source" data-md-component="source" href="https://github.com/rockymountain/dx-vas.git" title="Xem mã nguồn">
+<div class="md-source__icon md-icon">
+<svg viewbox="0 0 448 512" xmlns="http://www.w3.org/2000/svg"><!--! Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81"></path></svg>
+</div>
+<div class="md-source__repository">
+    rockymountain/dx-vas
+  </div>
+</a>
+</div>
+</nav>
+<nav aria-label="Tabs" class="md-tabs" data-md-component="tabs">
+<div class="md-grid">
+<ul class="md-tabs__list">
+<li class="md-tabs__item">
+<a class="md-tabs__link" href="../..">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+</li>
+<li class="md-tabs__item">
+<a class="md-tabs__link" href="../..">
+          
+  
+  
+    
+  
+  Kiến trúc Hệ thống
+
+        </a>
+</li>
+<li class="md-tabs__item md-tabs__item--active">
+<a class="md-tabs__link" href="../dev-guide/">
+          
+  
+  
+    
+  
+  Hướng dẫn Phát triển
+
+        </a>
+</li>
+<li class="md-tabs__item">
+<a class="md-tabs__link" href="../../services/user-service/design/">
+          
+  
+  
+    
+  
+  Thiết kế Services
+
+        </a>
+</li>
+<li class="md-tabs__item">
+<a class="md-tabs__link" href="../../ADR/">
+          
+  
+  
+    
+  
+  Quyết định Kiến trúc (ADRs)
+
+        </a>
+</li>
+</ul>
+</div>
+</nav>
+</header>
+<div class="md-container" data-md-component="container">
+<main class="md-main" data-md-component="main">
+<div class="md-main__inner md-grid">
+<div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation">
+<div class="md-sidebar__scrollwrap">
+<div class="md-sidebar__inner">
+<nav aria-label="Thanh điều hướng" class="md-nav md-nav--primary md-nav--lifted" data-md-level="0">
+<label class="md-nav__title" for="__drawer">
+<a aria-label="DX VAS - Docs" class="md-nav__button md-logo" data-md-component="logo" href="../.." title="DX VAS - Docs">
+<img alt="logo" src="../../assets/images/logo.png"/>
+</a>
+    DX VAS - Docs
+  </label>
+<div class="md-nav__source">
+<a class="md-source" data-md-component="source" href="https://github.com/rockymountain/dx-vas.git" title="Xem mã nguồn">
+<div class="md-source__icon md-icon">
+<svg viewbox="0 0 448 512" xmlns="http://www.w3.org/2000/svg"><!--! Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81"></path></svg>
+</div>
+<div class="md-source__repository">
+    rockymountain/dx-vas
+  </div>
+</a>
+</div>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="../..">
+<span class="md-ellipsis">
+    Home
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item md-nav__item--nested">
+<input class="md-nav__toggle md-toggle md-toggle--indeterminate" id="__nav_2" type="checkbox"/>
+<div class="md-nav__link md-nav__container">
+<a class="md-nav__link" href="../..">
+<span class="md-ellipsis">
+    Kiến trúc Hệ thống
+    
+  </span>
+</a>
+<label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+<span class="md-nav__icon md-icon"></span>
+</label>
+</div>
+<nav aria-expanded="false" aria-labelledby="__nav_2_label" class="md-nav" data-md-level="1">
+<label class="md-nav__title" for="__nav_2">
+<span class="md-nav__icon md-icon"></span>
+            Kiến trúc Hệ thống
+          </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../architecture/system-diagrams/">
+<span class="md-ellipsis">
+    Sơ đồ Hệ thống
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../architecture/rbac-deep-dive/">
+<span class="md-ellipsis">
+    RBAC Chi tiết
+    
+  </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+<input checked="" class="md-nav__toggle md-toggle" id="__nav_3" type="checkbox"/>
+<label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+<span class="md-ellipsis">
+    Hướng dẫn Phát triển
+    
+  </span>
+<span class="md-nav__icon md-icon"></span>
+</label>
+<nav aria-expanded="true" aria-labelledby="__nav_3_label" class="md-nav" data-md-level="1">
+<label class="md-nav__title" for="__nav_3">
+<span class="md-nav__icon md-icon"></span>
+            Hướng dẫn Phát triển
+          </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="../dev-guide/">
+<span class="md-ellipsis">
+    Tổng quan Phát triển (Dev Guide)
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item md-nav__item--active">
+<input class="md-nav__toggle md-toggle" id="__toc" type="checkbox"/>
+<label class="md-nav__link md-nav__link--active" for="__toc">
+<span class="md-ellipsis">
+    Backend Dev Guide
+    
+  </span>
+<span class="md-nav__icon md-icon"></span>
+</label>
+<a class="md-nav__link md-nav__link--active" href="./">
+<span class="md-ellipsis">
+    Backend Dev Guide
+    
+  </span>
+</a>
+<nav aria-label="Mục lục" class="md-nav md-nav--secondary">
+<label class="md-nav__title" for="__toc">
+<span class="md-nav__icon md-icon"></span>
+      Mục lục
+    </label>
+<ul class="md-nav__list" data-md-component="toc" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#muc-luc">
+<span class="md-ellipsis">
+      Mục lục
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#1-pham-vi-nguyen-tac">
+<span class="md-ellipsis">
+      1. Phạm vi &amp; nguyên tắc
+    </span>
+</a>
+<nav aria-label="1. Phạm vi &amp; nguyên tắc" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#muc-tieu">
+<span class="md-ellipsis">
+      Mục tiêu
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#pham-vi-ap-dung">
+<span class="md-ellipsis">
+      Phạm vi áp dụng
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#nguyen-tac-cot-loi">
+<span class="md-ellipsis">
+      Nguyên tắc cốt lõi
+    </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#2-cau-truc-thu-muc-backend-chuan">
+<span class="md-ellipsis">
+      2. Cấu trúc thư mục backend chuẩn
+    </span>
+</a>
+<nav aria-label="2. Cấu trúc thư mục backend chuẩn" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#mot-so-quy-uoc-chung">
+<span class="md-ellipsis">
+      📌 Một số quy ước chung
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#goi-y">
+<span class="md-ellipsis">
+      📎 Gợi ý
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#quan-ly-dependency-depspy">
+<span class="md-ellipsis">
+      🔧 Quản lý Dependency (deps.py)
+    </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#3-phan-tang-logic-vai-tro">
+<span class="md-ellipsis">
+      3. Phân tầng logic &amp; vai trò
+    </span>
+</a>
+<nav aria-label="3. Phân tầng logic &amp; vai trò" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#tang-1-api-handler-appapi">
+<span class="md-ellipsis">
+      🧱 Tầng 1: API Handler (app/api/)
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#tang-2-service-layer-appservices">
+<span class="md-ellipsis">
+      ⚙️ Tầng 2: Service Layer (app/services/)
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#tang-3-repository-layer-apprepositories">
+<span class="md-ellipsis">
+      🗃️ Tầng 3: Repository Layer (app/repositories/)
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#luu-y-bo-sung">
+<span class="md-ellipsis">
+      💡 Lưu ý bổ sung
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#so-o-kien-truc-3-layer-luong-xu-ly-ien-hinh-trong-mot-backend-service">
+<span class="md-ellipsis">
+      📊 Sơ đồ kiến trúc 3-layer – luồng xử lý điển hình trong một backend service
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#goi-y-nang-cao-unit-of-work-uow">
+<span class="md-ellipsis">
+      💡 Gợi ý nâng cao – Unit of Work (UoW)
+    </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#4-at-ten-convention-code">
+<span class="md-ellipsis">
+      4. Đặt tên &amp; convention code
+    </span>
+</a>
+<nav aria-label="4. Đặt tên &amp; convention code" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#ten-file-thu-muc">
+<span class="md-ellipsis">
+      📁 Tên file &amp; thư mục
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#ten-class">
+<span class="md-ellipsis">
+      🔤 Tên class
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#at-ten-route-api-path">
+<span class="md-ellipsis">
+      🌐 Đặt tên route (API path)
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#ten-bien-ham">
+<span class="md-ellipsis">
+      💬 Tên biến &amp; hàm
+    </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#5-xu-ly-nghiep-vu-usecase-mau">
+<span class="md-ellipsis">
+      5. Xử lý nghiệp vụ &amp; usecase mẫu
+    </span>
+</a>
+<nav aria-label="5. Xử lý nghiệp vụ &amp; usecase mẫu" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#mot-usecase-mau-cap-nhat-thong-tin-hoc-sinh">
+<span class="md-ellipsis">
+      🧩 Một usecase mẫu – Cập nhật thông tin học sinh
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#ghi-nho-khi-viet-usecase">
+<span class="md-ellipsis">
+      ✅ Ghi nhớ khi viết usecase
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#luu-y-nang-cao-idempotency-cho-usecase-ong-bo">
+<span class="md-ellipsis">
+      🔁 Lưu ý nâng cao: Idempotency cho usecase đồng bộ
+    </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#6-schema-validation-pydantic">
+<span class="md-ellipsis">
+      6. Schema &amp; validation (Pydantic)
+    </span>
+</a>
+<nav aria-label="6. Schema &amp; validation (Pydantic)" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#phan-loai-schema">
+<span class="md-ellipsis">
+      📦 Phân loại schema
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#vi-du-schema-student">
+<span class="md-ellipsis">
+      ✅ Ví dụ schema – Student
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#custom-validator-vi-du">
+<span class="md-ellipsis">
+      🧪 Custom validator ví dụ
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#luu-y-khi-dung-schema">
+<span class="md-ellipsis">
+      ⚠️ Lưu ý khi dùng schema
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#tips-nang-cao">
+<span class="md-ellipsis">
+      📎 Tips nâng cao
+    </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#7-xu-ly-loi-thong-bao">
+<span class="md-ellipsis">
+      7. Xử lý lỗi &amp; thông báo
+    </span>
+</a>
+<nav aria-label="7. Xử lý lỗi &amp; thông báo" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#cau-truc-loi-chuan">
+<span class="md-ellipsis">
+      🚧 Cấu trúc lỗi chuẩn
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#phan-tang-xu-ly-loi">
+<span class="md-ellipsis">
+      💢 Phân tầng xử lý lỗi
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#base-error-dung-chung">
+<span class="md-ellipsis">
+      🧱 Base error dùng chung
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#mapping-loi-ma-http">
+<span class="md-ellipsis">
+      🔁 Mapping lỗi → mã HTTP
+    </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#8-repository-truy-xuat-du-lieu">
+<span class="md-ellipsis">
+      8. Repository &amp; truy xuất dữ liệu
+    </span>
+</a>
+<nav aria-label="8. Repository &amp; truy xuất dữ liệu" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#vai-tro-cua-repository">
+<span class="md-ellipsis">
+      📦 Vai trò của repository
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#mau-repository-studentrepo">
+<span class="md-ellipsis">
+      🧱 Mẫu repository – StudentRepo
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#luu-y">
+<span class="md-ellipsis">
+      🧯 Lưu ý
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#tao-session-db">
+<span class="md-ellipsis">
+      🛠 Tạo session DB
+    </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#9-pubsub-subscriber-idempotency">
+<span class="md-ellipsis">
+      9. Pub/Sub subscriber &amp; idempotency
+    </span>
+</a>
+<nav aria-label="9. Pub/Sub subscriber &amp; idempotency" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#cau-truc-thu-muc-goi-y">
+<span class="md-ellipsis">
+      📦 Cấu trúc thư mục gợi ý
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#viet-mot-subscriber-handler">
+<span class="md-ellipsis">
+      📥 Viết một subscriber handler
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#idempotency-cach-am-bao">
+<span class="md-ellipsis">
+      🧪 Idempotency: cách đảm bảo
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#framework-ho-tro">
+<span class="md-ellipsis">
+      🧭 Framework hỗ trợ
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#cleanup">
+<span class="md-ellipsis">
+      🧼 Cleanup
+    </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#10-test-on-vi-tich-hop">
+<span class="md-ellipsis">
+      10. Test đơn vị &amp; tích hợp
+    </span>
+</a>
+<nav aria-label="10. Test đơn vị &amp; tích hợp" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#cau-truc-thu-muc-test">
+<span class="md-ellipsis">
+      🧪 Cấu trúc thư mục test
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#unit-test-service-khong-phu-thuoc-db">
+<span class="md-ellipsis">
+      ✅ Unit test – Service không phụ thuộc DB
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#integration-test-route-db">
+<span class="md-ellipsis">
+      🔁 Integration test – Route + DB
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#pytest-fixture-goi-y-conftestpy">
+<span class="md-ellipsis">
+      🧩 Pytest fixture gợi ý (conftest.py)
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#luu-y-khi-viet-test">
+<span class="md-ellipsis">
+      💡 Lưu ý khi viết test
+    </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#11-checklist-khi-tao-pr-backend">
+<span class="md-ellipsis">
+      11. Checklist khi tạo PR backend
+    </span>
+</a>
+<nav aria-label="11. Checklist khi tạo PR backend" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#checklist-ky-thuat">
+<span class="md-ellipsis">
+      ✅ Checklist kỹ thuật
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#checklist-logic-nghiep-vu">
+<span class="md-ellipsis">
+      📎 Checklist logic nghiệp vụ
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#goi-y-review">
+<span class="md-ellipsis">
+      🔍 Gợi ý review
+    </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#12-tai-lieu-lien-quan">
+<span class="md-ellipsis">
+      12. Tài liệu liên quan
+    </span>
+</a>
+<nav aria-label="12. Tài liệu liên quan" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#tai-lieu-kien-truc-luong-he-thong">
+<span class="md-ellipsis">
+      📚 Tài liệu kiến trúc &amp; luồng hệ thống
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#dev-guide-cicd">
+<span class="md-ellipsis">
+      🧪 Dev Guide &amp; CI/CD
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#service-template-example">
+<span class="md-ellipsis">
+      🛠 Service template &amp; example
+    </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#13-logging-best-practices">
+<span class="md-ellipsis">
+      13. Logging Best Practices
+    </span>
+</a>
+<nav aria-label="13. Logging Best Practices" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#cap-o-log">
+<span class="md-ellipsis">
+      🔍 Cấp độ log
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#cau-truc-log">
+<span class="md-ellipsis">
+      📦 Cấu trúc log
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#goi-y-log-theo-tang">
+<span class="md-ellipsis">
+      🧭 Gợi ý log theo tầng
+    </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#14-security-considerations-can-nhac-bao-mat-cho-backend">
+<span class="md-ellipsis">
+      14. Security Considerations – Cân nhắc bảo mật cho Backend
+    </span>
+</a>
+<nav aria-label="14. Security Considerations – Cân nhắc bảo mật cho Backend" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#nguyen-tac-cot-loi_1">
+<span class="md-ellipsis">
+      🔐 Nguyên tắc cốt lõi
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#input-validation-sanity-check">
+<span class="md-ellipsis">
+      🧪 Input validation &amp; Sanity Check
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#quan-ly-secret-cau-hinh-an-toan">
+<span class="md-ellipsis">
+      🔐 Quản lý secret &amp; cấu hình an toàn
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#token-phan-quyen">
+<span class="md-ellipsis">
+      📦 Token &amp; phân quyền
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#owasp-api-security-cac-lo-hong-can-e-phong">
+<span class="md-ellipsis">
+      📛 OWASP API Security – Các lỗ hổng cần đề phòng
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#logging-auditing">
+<span class="md-ellipsis">
+      🧯 Logging &amp; Auditing
+    </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#15-performance-tips-toi-uu-hieu-nang-backend">
+<span class="md-ellipsis">
+      15. Performance Tips – Tối ưu hiệu năng Backend
+    </span>
+</a>
+<nav aria-label="15. Performance Tips – Tối ưu hiệu năng Backend" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#truy-van-db-hieu-qua">
+<span class="md-ellipsis">
+      📥 Truy vấn DB hiệu quả
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#caching-neu-can-thiet">
+<span class="md-ellipsis">
+      📤 Caching nếu cần thiết
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#toi-uu-luong-xu-ly">
+<span class="md-ellipsis">
+      🪄 Tối ưu luồng xử lý
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#giam-thieu-io-blocking">
+<span class="md-ellipsis">
+      🧮 Giảm thiểu I/O Blocking
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#o-luong-va-theo-doi">
+<span class="md-ellipsis">
+      🧪 Đo lường và theo dõi
+    </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../ops-guide/">
+<span class="md-ellipsis">
+    Vận hành &amp; DevOps (Ops Guide)
+    
+  </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item md-nav__item--nested">
+<input class="md-nav__toggle md-toggle md-toggle--indeterminate" id="__nav_4" type="checkbox"/>
+<label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+<span class="md-ellipsis">
+    Thiết kế Services
+    
+  </span>
+<span class="md-nav__icon md-icon"></span>
+</label>
+<nav aria-expanded="false" aria-labelledby="__nav_4_label" class="md-nav" data-md-level="1">
+<label class="md-nav__title" for="__nav_4">
+<span class="md-nav__icon md-icon"></span>
+            Thiết kế Services
+          </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item md-nav__item--nested">
+<input class="md-nav__toggle md-toggle md-toggle--indeterminate" id="__nav_4_1" type="checkbox"/>
+<label class="md-nav__link" for="__nav_4_1" id="__nav_4_1_label" tabindex="0">
+<span class="md-ellipsis">
+    User Service
+    
+  </span>
+<span class="md-nav__icon md-icon"></span>
+</label>
+<nav aria-expanded="false" aria-labelledby="__nav_4_1_label" class="md-nav" data-md-level="2">
+<label class="md-nav__title" for="__nav_4_1">
+<span class="md-nav__icon md-icon"></span>
+            User Service
+          </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../services/user-service/design/">
+<span class="md-ellipsis">
+    Tổng quan Thiết kế
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../services/user-service/interface-contract/">
+<span class="md-ellipsis">
+    Hợp đồng Giao diện
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../services/user-service/data-model/">
+<span class="md-ellipsis">
+    Mô hình Dữ liệu
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../services/user-service/openapi.yaml">
+<span class="md-ellipsis">
+    Đặc tả OpenAPI
+    
+  </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item md-nav__item--nested">
+<input class="md-nav__toggle md-toggle md-toggle--indeterminate" id="__nav_5" type="checkbox"/>
+<div class="md-nav__link md-nav__container">
+<a class="md-nav__link" href="../../ADR/">
+<span class="md-ellipsis">
+    Quyết định Kiến trúc (ADRs)
+    
+  </span>
+</a>
+</div>
+<nav aria-expanded="false" aria-labelledby="__nav_5_label" class="md-nav" data-md-level="1">
+<label class="md-nav__title" for="__nav_5">
+<span class="md-nav__icon md-icon"></span>
+            Quyết định Kiến trúc (ADRs)
+          </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+</ul>
+</nav>
+</li>
+</ul>
+</nav>
+</div>
+</div>
+</div>
+<div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc">
+<div class="md-sidebar__scrollwrap">
+<div class="md-sidebar__inner">
+<nav aria-label="Mục lục" class="md-nav md-nav--secondary">
+<label class="md-nav__title" for="__toc">
+<span class="md-nav__icon md-icon"></span>
+      Mục lục
+    </label>
+<ul class="md-nav__list" data-md-component="toc" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#muc-luc">
+<span class="md-ellipsis">
+      Mục lục
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#1-pham-vi-nguyen-tac">
+<span class="md-ellipsis">
+      1. Phạm vi &amp; nguyên tắc
+    </span>
+</a>
+<nav aria-label="1. Phạm vi &amp; nguyên tắc" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#muc-tieu">
+<span class="md-ellipsis">
+      Mục tiêu
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#pham-vi-ap-dung">
+<span class="md-ellipsis">
+      Phạm vi áp dụng
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#nguyen-tac-cot-loi">
+<span class="md-ellipsis">
+      Nguyên tắc cốt lõi
+    </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#2-cau-truc-thu-muc-backend-chuan">
+<span class="md-ellipsis">
+      2. Cấu trúc thư mục backend chuẩn
+    </span>
+</a>
+<nav aria-label="2. Cấu trúc thư mục backend chuẩn" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#mot-so-quy-uoc-chung">
+<span class="md-ellipsis">
+      📌 Một số quy ước chung
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#goi-y">
+<span class="md-ellipsis">
+      📎 Gợi ý
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#quan-ly-dependency-depspy">
+<span class="md-ellipsis">
+      🔧 Quản lý Dependency (deps.py)
+    </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#3-phan-tang-logic-vai-tro">
+<span class="md-ellipsis">
+      3. Phân tầng logic &amp; vai trò
+    </span>
+</a>
+<nav aria-label="3. Phân tầng logic &amp; vai trò" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#tang-1-api-handler-appapi">
+<span class="md-ellipsis">
+      🧱 Tầng 1: API Handler (app/api/)
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#tang-2-service-layer-appservices">
+<span class="md-ellipsis">
+      ⚙️ Tầng 2: Service Layer (app/services/)
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#tang-3-repository-layer-apprepositories">
+<span class="md-ellipsis">
+      🗃️ Tầng 3: Repository Layer (app/repositories/)
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#luu-y-bo-sung">
+<span class="md-ellipsis">
+      💡 Lưu ý bổ sung
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#so-o-kien-truc-3-layer-luong-xu-ly-ien-hinh-trong-mot-backend-service">
+<span class="md-ellipsis">
+      📊 Sơ đồ kiến trúc 3-layer – luồng xử lý điển hình trong một backend service
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#goi-y-nang-cao-unit-of-work-uow">
+<span class="md-ellipsis">
+      💡 Gợi ý nâng cao – Unit of Work (UoW)
+    </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#4-at-ten-convention-code">
+<span class="md-ellipsis">
+      4. Đặt tên &amp; convention code
+    </span>
+</a>
+<nav aria-label="4. Đặt tên &amp; convention code" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#ten-file-thu-muc">
+<span class="md-ellipsis">
+      📁 Tên file &amp; thư mục
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#ten-class">
+<span class="md-ellipsis">
+      🔤 Tên class
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#at-ten-route-api-path">
+<span class="md-ellipsis">
+      🌐 Đặt tên route (API path)
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#ten-bien-ham">
+<span class="md-ellipsis">
+      💬 Tên biến &amp; hàm
+    </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#5-xu-ly-nghiep-vu-usecase-mau">
+<span class="md-ellipsis">
+      5. Xử lý nghiệp vụ &amp; usecase mẫu
+    </span>
+</a>
+<nav aria-label="5. Xử lý nghiệp vụ &amp; usecase mẫu" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#mot-usecase-mau-cap-nhat-thong-tin-hoc-sinh">
+<span class="md-ellipsis">
+      🧩 Một usecase mẫu – Cập nhật thông tin học sinh
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#ghi-nho-khi-viet-usecase">
+<span class="md-ellipsis">
+      ✅ Ghi nhớ khi viết usecase
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#luu-y-nang-cao-idempotency-cho-usecase-ong-bo">
+<span class="md-ellipsis">
+      🔁 Lưu ý nâng cao: Idempotency cho usecase đồng bộ
+    </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#6-schema-validation-pydantic">
+<span class="md-ellipsis">
+      6. Schema &amp; validation (Pydantic)
+    </span>
+</a>
+<nav aria-label="6. Schema &amp; validation (Pydantic)" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#phan-loai-schema">
+<span class="md-ellipsis">
+      📦 Phân loại schema
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#vi-du-schema-student">
+<span class="md-ellipsis">
+      ✅ Ví dụ schema – Student
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#custom-validator-vi-du">
+<span class="md-ellipsis">
+      🧪 Custom validator ví dụ
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#luu-y-khi-dung-schema">
+<span class="md-ellipsis">
+      ⚠️ Lưu ý khi dùng schema
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#tips-nang-cao">
+<span class="md-ellipsis">
+      📎 Tips nâng cao
+    </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#7-xu-ly-loi-thong-bao">
+<span class="md-ellipsis">
+      7. Xử lý lỗi &amp; thông báo
+    </span>
+</a>
+<nav aria-label="7. Xử lý lỗi &amp; thông báo" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#cau-truc-loi-chuan">
+<span class="md-ellipsis">
+      🚧 Cấu trúc lỗi chuẩn
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#phan-tang-xu-ly-loi">
+<span class="md-ellipsis">
+      💢 Phân tầng xử lý lỗi
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#base-error-dung-chung">
+<span class="md-ellipsis">
+      🧱 Base error dùng chung
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#mapping-loi-ma-http">
+<span class="md-ellipsis">
+      🔁 Mapping lỗi → mã HTTP
+    </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#8-repository-truy-xuat-du-lieu">
+<span class="md-ellipsis">
+      8. Repository &amp; truy xuất dữ liệu
+    </span>
+</a>
+<nav aria-label="8. Repository &amp; truy xuất dữ liệu" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#vai-tro-cua-repository">
+<span class="md-ellipsis">
+      📦 Vai trò của repository
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#mau-repository-studentrepo">
+<span class="md-ellipsis">
+      🧱 Mẫu repository – StudentRepo
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#luu-y">
+<span class="md-ellipsis">
+      🧯 Lưu ý
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#tao-session-db">
+<span class="md-ellipsis">
+      🛠 Tạo session DB
+    </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#9-pubsub-subscriber-idempotency">
+<span class="md-ellipsis">
+      9. Pub/Sub subscriber &amp; idempotency
+    </span>
+</a>
+<nav aria-label="9. Pub/Sub subscriber &amp; idempotency" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#cau-truc-thu-muc-goi-y">
+<span class="md-ellipsis">
+      📦 Cấu trúc thư mục gợi ý
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#viet-mot-subscriber-handler">
+<span class="md-ellipsis">
+      📥 Viết một subscriber handler
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#idempotency-cach-am-bao">
+<span class="md-ellipsis">
+      🧪 Idempotency: cách đảm bảo
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#framework-ho-tro">
+<span class="md-ellipsis">
+      🧭 Framework hỗ trợ
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#cleanup">
+<span class="md-ellipsis">
+      🧼 Cleanup
+    </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#10-test-on-vi-tich-hop">
+<span class="md-ellipsis">
+      10. Test đơn vị &amp; tích hợp
+    </span>
+</a>
+<nav aria-label="10. Test đơn vị &amp; tích hợp" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#cau-truc-thu-muc-test">
+<span class="md-ellipsis">
+      🧪 Cấu trúc thư mục test
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#unit-test-service-khong-phu-thuoc-db">
+<span class="md-ellipsis">
+      ✅ Unit test – Service không phụ thuộc DB
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#integration-test-route-db">
+<span class="md-ellipsis">
+      🔁 Integration test – Route + DB
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#pytest-fixture-goi-y-conftestpy">
+<span class="md-ellipsis">
+      🧩 Pytest fixture gợi ý (conftest.py)
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#luu-y-khi-viet-test">
+<span class="md-ellipsis">
+      💡 Lưu ý khi viết test
+    </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#11-checklist-khi-tao-pr-backend">
+<span class="md-ellipsis">
+      11. Checklist khi tạo PR backend
+    </span>
+</a>
+<nav aria-label="11. Checklist khi tạo PR backend" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#checklist-ky-thuat">
+<span class="md-ellipsis">
+      ✅ Checklist kỹ thuật
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#checklist-logic-nghiep-vu">
+<span class="md-ellipsis">
+      📎 Checklist logic nghiệp vụ
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#goi-y-review">
+<span class="md-ellipsis">
+      🔍 Gợi ý review
+    </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#12-tai-lieu-lien-quan">
+<span class="md-ellipsis">
+      12. Tài liệu liên quan
+    </span>
+</a>
+<nav aria-label="12. Tài liệu liên quan" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#tai-lieu-kien-truc-luong-he-thong">
+<span class="md-ellipsis">
+      📚 Tài liệu kiến trúc &amp; luồng hệ thống
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#dev-guide-cicd">
+<span class="md-ellipsis">
+      🧪 Dev Guide &amp; CI/CD
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#service-template-example">
+<span class="md-ellipsis">
+      🛠 Service template &amp; example
+    </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#13-logging-best-practices">
+<span class="md-ellipsis">
+      13. Logging Best Practices
+    </span>
+</a>
+<nav aria-label="13. Logging Best Practices" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#cap-o-log">
+<span class="md-ellipsis">
+      🔍 Cấp độ log
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#cau-truc-log">
+<span class="md-ellipsis">
+      📦 Cấu trúc log
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#goi-y-log-theo-tang">
+<span class="md-ellipsis">
+      🧭 Gợi ý log theo tầng
+    </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#14-security-considerations-can-nhac-bao-mat-cho-backend">
+<span class="md-ellipsis">
+      14. Security Considerations – Cân nhắc bảo mật cho Backend
+    </span>
+</a>
+<nav aria-label="14. Security Considerations – Cân nhắc bảo mật cho Backend" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#nguyen-tac-cot-loi_1">
+<span class="md-ellipsis">
+      🔐 Nguyên tắc cốt lõi
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#input-validation-sanity-check">
+<span class="md-ellipsis">
+      🧪 Input validation &amp; Sanity Check
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#quan-ly-secret-cau-hinh-an-toan">
+<span class="md-ellipsis">
+      🔐 Quản lý secret &amp; cấu hình an toàn
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#token-phan-quyen">
+<span class="md-ellipsis">
+      📦 Token &amp; phân quyền
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#owasp-api-security-cac-lo-hong-can-e-phong">
+<span class="md-ellipsis">
+      📛 OWASP API Security – Các lỗ hổng cần đề phòng
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#logging-auditing">
+<span class="md-ellipsis">
+      🧯 Logging &amp; Auditing
+    </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#15-performance-tips-toi-uu-hieu-nang-backend">
+<span class="md-ellipsis">
+      15. Performance Tips – Tối ưu hiệu năng Backend
+    </span>
+</a>
+<nav aria-label="15. Performance Tips – Tối ưu hiệu năng Backend" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#truy-van-db-hieu-qua">
+<span class="md-ellipsis">
+      📥 Truy vấn DB hiệu quả
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#caching-neu-can-thiet">
+<span class="md-ellipsis">
+      📤 Caching nếu cần thiết
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#toi-uu-luong-xu-ly">
+<span class="md-ellipsis">
+      🪄 Tối ưu luồng xử lý
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#giam-thieu-io-blocking">
+<span class="md-ellipsis">
+      🧮 Giảm thiểu I/O Blocking
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#o-luong-va-theo-doi">
+<span class="md-ellipsis">
+      🧪 Đo lường và theo dõi
+    </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+</ul>
+</nav>
+</div>
+</div>
+</div>
+<div class="md-content" data-md-component="content">
+<article class="md-content__inner md-typeset">
+<h1 id="backend-dev-guide-dx-vas">🛠️ Backend Dev Guide – dx-vas<a class="headerlink" href="#backend-dev-guide-dx-vas" title="Permanent link">¶</a></h1>
+<p>Tài liệu này dành cho lập trình viên backend trong hệ thống dx-vas. Mục tiêu là cung cấp quy chuẩn và hướng dẫn chi tiết về cách phát triển service backend: cấu trúc thư mục, phân tầng logic, xử lý nghiệp vụ, viết test, và thực thi các tiêu chuẩn chất lượng code.</p>
+<hr/>
+<h2 id="muc-luc">Mục lục<a class="headerlink" href="#muc-luc" title="Permanent link">¶</a></h2>
+<ol>
+<li><a href="#1-phạm-vi--nguyên-tắc">Phạm vi &amp; nguyên tắc</a></li>
+<li><a href="#2-cấu-trúc-thư-mục-backend-chuẩn">Cấu trúc thư mục backend chuẩn</a></li>
+<li><a href="#3-phân-tầng-logic--vai-trò">Phân tầng logic &amp; vai trò</a></li>
+<li><a href="#4-đặt-tên--convention-code">Đặt tên &amp; convention code</a></li>
+<li><a href="#5-xử-lý-nghiệp-vụ--usecase-mẫu">Xử lý nghiệp vụ &amp; usecase mẫu</a></li>
+<li><a href="#6-schema--validation-pydantic">Schema &amp; validation (Pydantic)</a></li>
+<li><a href="#7-xử-lý-lỗi--thông-báo">Xử lý lỗi &amp; thông báo</a></li>
+<li><a href="#8-repository--truy-xuất-dữ-liệu">Repository &amp; truy xuất dữ liệu</a></li>
+<li><a href="#9-pubsub-subscriber--idempotency">Pub/Sub subscriber &amp; idempotency</a></li>
+<li><a href="#10-test-đơn-vị--tích-hợp">Test đơn vị &amp; tích hợp</a></li>
+<li><a href="#11-checklist-khi-tạo-pr-backend">Checklist khi tạo PR backend</a></li>
+<li><a href="#12-tài-liệu-liên-quan">Tài liệu liên quan</a></li>
+<li><a href="#13-logging-best-practices">Logging Best Practices</a></li>
+<li><a href="#14-security-considerations--cân-nhắc-bảo-mật-cho-backend">Security Considerations – Cân nhắc bảo mật cho Backend</a></li>
+<li><a href="#15-performance-tips--tối-ưu-hiệu-năng-backend">Performance Tips – Tối ưu hiệu năng Backend</a></li>
+</ol>
+<hr/>
+<h2 id="1-pham-vi-nguyen-tac">1. Phạm vi &amp; nguyên tắc<a class="headerlink" href="#1-pham-vi-nguyen-tac" title="Permanent link">¶</a></h2>
+<p>Tài liệu này dành riêng cho các thành viên phát triển backend trong hệ thống dx-vas – nơi mọi service backend được viết theo kiến trúc microservice, mỗi service là 1 repo riêng biệt (multi-repo), triển khai qua Cloud Run.</p>
+<h3 id="muc-tieu">Mục tiêu<a class="headerlink" href="#muc-tieu" title="Permanent link">¶</a></h3>
+<p>Hướng dẫn lập trình viên backend phát triển service trong hệ thống dx_vas một cách nhất quán, bảo mật, dễ mở rộng và dễ bảo trì.</p>
+<h3 id="pham-vi-ap-dung">Phạm vi áp dụng<a class="headerlink" href="#pham-vi-ap-dung" title="Permanent link">¶</a></h3>
+<ul>
+<li>Tất cả các backend service viết bằng Python 3.11+ (FastAPI + SQLAlchemy + Pydantic)</li>
+<li>Cấu trúc dựa trên mô hình microservice (multi-repo)</li>
+</ul>
+<h3 id="nguyen-tac-cot-loi">Nguyên tắc cốt lõi<a class="headerlink" href="#nguyen-tac-cot-loi" title="Permanent link">¶</a></h3>
+<ul>
+<li>Separation of concerns: tách biệt rõ từng tầng (Handler – Service – Repo)</li>
+<li>Đảm bảo <strong>idempotency</strong> và <strong>transactional consistency</strong> cho các nghiệp vụ</li>
+<li>Response chuẩn hóa theo envelope (meta + data / error)</li>
+<li>Service không raise HTTPException | chỉ raise DomainError</li>
+<li>Schema rõ ràng: phân biệt DTO (schema), model (ORM), entity (nếu có)</li>
+<li>Phân quyền theo RBAC động – backend chỉ nhận <code>X-Permissions</code></li>
+<li><strong>Security by Design</strong>: mọi input đều phải validate – kể cả event nội bộ</li>
+<li><strong>Context</strong>: phân biệt rõ DTO, ORM model, user context (vai trò người dùng, điều kiện RBAC), và request context (trace_id, source_ip...)</li>
+</ul>
+<p>📌 Lưu ý: Service không phụ thuộc gateway – có thể test độc lập</p>
+<p>📎 Tài liệu này không lặp lại CI/CD hay cấu trúc repo (đã có ở Dev Guide), mà tập trung vào:
+- Usecase backend (handlers, service, repo)
+- Convention phân tầng
+- Test và best practice</p>
+<hr/>
+<h2 id="2-cau-truc-thu-muc-backend-chuan">2. Cấu trúc thư mục backend chuẩn<a class="headerlink" href="#2-cau-truc-thu-muc-backend-chuan" title="Permanent link">¶</a></h2>
+<p>Tất cả các service backend trong dx-vas nên tuân theo cấu trúc thư mục chuẩn dưới đây để đảm bảo tính nhất quán và dễ bảo trì:</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-0-1"><a href="#__codelineno-0-1" id="__codelineno-0-1" name="__codelineno-0-1"></a>app/
+</span><span id="__span-0-2"><a href="#__codelineno-0-2" id="__codelineno-0-2" name="__codelineno-0-2"></a>├── api/              # Router, route handler (FastAPI)
+</span><span id="__span-0-3"><a href="#__codelineno-0-3" id="__codelineno-0-3" name="__codelineno-0-3"></a>│   └── v1/
+</span><span id="__span-0-4"><a href="#__codelineno-0-4" id="__codelineno-0-4" name="__codelineno-0-4"></a>│       └── user.py   # Endpoint định nghĩa HTTP
+</span><span id="__span-0-5"><a href="#__codelineno-0-5" id="__codelineno-0-5" name="__codelineno-0-5"></a>├── schemas/          # Pydantic schema (request, response)
+</span><span id="__span-0-6"><a href="#__codelineno-0-6" id="__codelineno-0-6" name="__codelineno-0-6"></a>│   └── user.py
+</span><span id="__span-0-7"><a href="#__codelineno-0-7" id="__codelineno-0-7" name="__codelineno-0-7"></a>├── services/         # Business logic (Usecase Layer)
+</span><span id="__span-0-8"><a href="#__codelineno-0-8" id="__codelineno-0-8" name="__codelineno-0-8"></a>│   └── user\_service.py
+</span><span id="__span-0-9"><a href="#__codelineno-0-9" id="__codelineno-0-9" name="__codelineno-0-9"></a>├── repositories/     # Truy cập DB, ORM / SQL
+</span><span id="__span-0-10"><a href="#__codelineno-0-10" id="__codelineno-0-10" name="__codelineno-0-10"></a>│   └── user\_repo.py
+</span><span id="__span-0-11"><a href="#__codelineno-0-11" id="__codelineno-0-11" name="__codelineno-0-11"></a>├── models/           # SQLAlchemy model (DB mapping)
+</span><span id="__span-0-12"><a href="#__codelineno-0-12" id="__codelineno-0-12" name="__codelineno-0-12"></a>│   └── user.py
+</span><span id="__span-0-13"><a href="#__codelineno-0-13" id="__codelineno-0-13" name="__codelineno-0-13"></a>├── core/             # Cấu hình, DI, security
+</span><span id="__span-0-14"><a href="#__codelineno-0-14" id="__codelineno-0-14" name="__codelineno-0-14"></a>│   ├── config.py
+</span><span id="__span-0-15"><a href="#__codelineno-0-15" id="__codelineno-0-15" name="__codelineno-0-15"></a>│   └── security.py
+</span><span id="__span-0-16"><a href="#__codelineno-0-16" id="__codelineno-0-16" name="__codelineno-0-16"></a>├── events/           # Xử lý Pub/Sub
+</span><span id="__span-0-17"><a href="#__codelineno-0-17" id="__codelineno-0-17" name="__codelineno-0-17"></a>│   ├── subscriber/   # Nhận sự kiện, xử lý
+</span><span id="__span-0-18"><a href="#__codelineno-0-18" id="__codelineno-0-18" name="__codelineno-0-18"></a>│   └── publisher/    # Gửi sự kiện đi
+</span><span id="__span-0-19"><a href="#__codelineno-0-19" id="__codelineno-0-19" name="__codelineno-0-19"></a>├── deps.py           # Dependency Injection (DB, current\_user...)
+</span><span id="__span-0-20"><a href="#__codelineno-0-20" id="__codelineno-0-20" name="__codelineno-0-20"></a>└── main.py           # Entry point FastAPI
+</span></code></pre></div>
+<h3 id="mot-so-quy-uoc-chung">📌 Một số quy ước chung<a class="headerlink" href="#mot-so-quy-uoc-chung" title="Permanent link">¶</a></h3>
+<ul>
+<li><code>services/</code> chỉ chứa logic nghiệp vụ, không gọi trực tiếp DB hay HTTP</li>
+<li><code>repositories/</code> là lớp duy nhất tương tác trực tiếp với DB</li>
+<li><code>schemas/</code> chỉ dùng cho request/response – không dùng làm entity hoặc DB model</li>
+<li><code>events/</code> có thể chia nhỏ thành <code>subscriber/</code>, <code>publisher/</code> nếu cần</li>
+</ul>
+<h3 id="goi-y">📎 Gợi ý<a class="headerlink" href="#goi-y" title="Permanent link">¶</a></h3>
+<ul>
+<li>Nếu service có phần xử lý RBAC riêng → có thể thêm <code>rbac/</code></li>
+<li>Nếu cần chia nhỏ service lớn (VD: SIS Adapter) → chia thành module theo domain (<code>student/</code>, <code>classroom/</code>, <code>fee/</code>)</li>
+</ul>
+<h3 id="quan-ly-dependency-depspy">🔧 Quản lý Dependency (deps.py)<a class="headerlink" href="#quan-ly-dependency-depspy" title="Permanent link">¶</a></h3>
+<p>Tập tin <code>deps.py</code> là nơi định nghĩa các <strong>provider function</strong> để inject dependency như <code>db_session</code>, <code>current_user</code>, hoặc <code>service instance</code> vào các route.</p>
+<p>Ví dụ:</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-1-1"><a href="#__codelineno-1-1" id="__codelineno-1-1" name="__codelineno-1-1"></a><span class="k">def</span><span class="w"> </span><span class="nf">get_db</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">:</span>
+</span><span id="__span-1-2"><a href="#__codelineno-1-2" id="__codelineno-1-2" name="__codelineno-1-2"></a>    <span class="n">session</span> <span class="o">=</span> <span class="n">SessionLocal</span><span class="p">()</span>
+</span><span id="__span-1-3"><a href="#__codelineno-1-3" id="__codelineno-1-3" name="__codelineno-1-3"></a>    <span class="k">try</span><span class="p">:</span>
+</span><span id="__span-1-4"><a href="#__codelineno-1-4" id="__codelineno-1-4" name="__codelineno-1-4"></a>        <span class="k">yield</span> <span class="n">session</span>
+</span><span id="__span-1-5"><a href="#__codelineno-1-5" id="__codelineno-1-5" name="__codelineno-1-5"></a>    <span class="k">finally</span><span class="p">:</span>
+</span><span id="__span-1-6"><a href="#__codelineno-1-6" id="__codelineno-1-6" name="__codelineno-1-6"></a>        <span class="n">session</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</span><span id="__span-1-7"><a href="#__codelineno-1-7" id="__codelineno-1-7" name="__codelineno-1-7"></a>
+</span><span id="__span-1-8"><a href="#__codelineno-1-8" id="__codelineno-1-8" name="__codelineno-1-8"></a><span class="k">def</span><span class="w"> </span><span class="nf">get_user_service</span><span class="p">(</span><span class="n">db</span><span class="p">:</span> <span class="n">Session</span> <span class="o">=</span> <span class="n">Depends</span><span class="p">(</span><span class="n">get_db</span><span class="p">))</span> <span class="o">-&gt;</span> <span class="n">UserService</span><span class="p">:</span>
+</span><span id="__span-1-9"><a href="#__codelineno-1-9" id="__codelineno-1-9" name="__codelineno-1-9"></a>    <span class="k">return</span> <span class="n">UserService</span><span class="p">(</span><span class="n">UserRepo</span><span class="p">(</span><span class="n">db</span><span class="p">))</span>
+</span></code></pre></div>
+<blockquote>
+<p>📎 Tách riêng các provider vào deps.py giúp dễ tái sử dụng, test và thay thế (mock).</p>
+</blockquote>
+<hr/>
+<h2 id="3-phan-tang-logic-vai-tro">3. Phân tầng logic &amp; vai trò<a class="headerlink" href="#3-phan-tang-logic-vai-tro" title="Permanent link">¶</a></h2>
+<p>dx-vas áp dụng mô hình <strong>3-layer architecture</strong> cho backend, nhằm tách biệt rõ ràng giữa:</p>
+<ol>
+<li><strong>Presentation Layer (API Handler)</strong> – tiếp nhận request từ client</li>
+<li><strong>Service Layer (Usecase)</strong> – xử lý logic nghiệp vụ</li>
+<li><strong>Data Layer (Repository)</strong> – truy xuất dữ liệu từ DB hoặc bên thứ ba</li>
+</ol>
+<hr/>
+<h3 id="tang-1-api-handler-appapi">🧱 Tầng 1: API Handler (<code>app/api/</code>)<a class="headerlink" href="#tang-1-api-handler-appapi" title="Permanent link">¶</a></h3>
+<ul>
+<li>Nơi định nghĩa các route, sử dụng FastAPI router</li>
+<li>Gọi service layer, validate input, trả response</li>
+<li>Không chứa logic nghiệp vụ hoặc xử lý dữ liệu phức tạp</li>
+</ul>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-2-1"><a href="#__codelineno-2-1" id="__codelineno-2-1" name="__codelineno-2-1"></a><span class="nd">@router</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>\<span class="s2">"/users/</span><span class="si">{id}</span><span class="se">\"</span><span class="s2">, response_model=UserOut)</span>
+</span><span id="__span-2-2"><a href="#__codelineno-2-2" id="__codelineno-2-2" name="__codelineno-2-2"></a><span class="k">def</span><span class="w"> </span><span class="nf">get_user</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="n">UUID</span><span class="p">,</span> <span class="n">user_svc</span><span class="p">:</span> <span class="n">UserService</span> <span class="o">=</span> <span class="n">Depends</span><span class="p">(</span><span class="n">get_user_service</span><span class="p">)):</span>
+</span><span id="__span-2-3"><a href="#__codelineno-2-3" id="__codelineno-2-3" name="__codelineno-2-3"></a>    <span class="k">return</span> <span class="n">user_svc</span><span class="o">.</span><span class="n">get_user</span><span class="p">(</span><span class="nb">id</span><span class="p">)</span>
+</span></code></pre></div>
+<h4 id="ghi-chu-ve-dependency">📎 Ghi chú về Dependency<a class="headerlink" href="#ghi-chu-ve-dependency" title="Permanent link">¶</a></h4>
+<p>Biến <code>user_svc: UserService = Depends(get_user_service)</code> sử dụng Dependency Injection (DI) của FastAPI. Hàm <code>get_user_service</code> thường được định nghĩa như sau:</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-3-1"><a href="#__codelineno-3-1" id="__codelineno-3-1" name="__codelineno-3-1"></a><span class="c1"># deps.py</span>
+</span><span id="__span-3-2"><a href="#__codelineno-3-2" id="__codelineno-3-2" name="__codelineno-3-2"></a><span class="k">def</span><span class="w"> </span><span class="nf">get_user_service</span><span class="p">(</span><span class="n">db</span><span class="p">:</span> <span class="n">Session</span> <span class="o">=</span> <span class="n">Depends</span><span class="p">(</span><span class="n">get_db</span><span class="p">))</span> <span class="o">-&gt;</span> <span class="n">UserService</span><span class="p">:</span>
+</span><span id="__span-3-3"><a href="#__codelineno-3-3" id="__codelineno-3-3" name="__codelineno-3-3"></a>    <span class="n">repo</span> <span class="o">=</span> <span class="n">UserRepo</span><span class="p">(</span><span class="n">db</span><span class="p">)</span>
+</span><span id="__span-3-4"><a href="#__codelineno-3-4" id="__codelineno-3-4" name="__codelineno-3-4"></a>    <span class="k">return</span> <span class="n">UserService</span><span class="p">(</span><span class="n">repo</span><span class="p">)</span>
+</span></code></pre></div>
+<blockquote>
+<p>✅ Điều này giúp tách rõ logic khởi tạo và inject các thành phần như session, repository, và service – hỗ trợ test và maintain dễ dàng.</p>
+</blockquote>
+<hr/>
+<h3 id="tang-2-service-layer-appservices">⚙️ Tầng 2: Service Layer (<code>app/services/</code>)<a class="headerlink" href="#tang-2-service-layer-appservices" title="Permanent link">¶</a></h3>
+<ul>
+<li>Nơi xử lý toàn bộ logic nghiệp vụ: validate rule, xử lý business exception, gọi repository</li>
+<li>Được test riêng bằng unit test</li>
+<li>Không gọi trực tiếp HTTP, DB, FastAPI context</li>
+</ul>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-4-1"><a href="#__codelineno-4-1" id="__codelineno-4-1" name="__codelineno-4-1"></a><span class="k">class</span><span class="w"> </span><span class="nc">UserService</span><span class="p">:</span>
+</span><span id="__span-4-2"><a href="#__codelineno-4-2" id="__codelineno-4-2" name="__codelineno-4-2"></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user_repo</span><span class="p">:</span> <span class="n">UserRepo</span><span class="p">):</span>
+</span><span id="__span-4-3"><a href="#__codelineno-4-3" id="__codelineno-4-3" name="__codelineno-4-3"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">repo</span> <span class="o">=</span> <span class="n">user_repo</span>
+</span><span id="__span-4-4"><a href="#__codelineno-4-4" id="__codelineno-4-4" name="__codelineno-4-4"></a>
+</span><span id="__span-4-5"><a href="#__codelineno-4-5" id="__codelineno-4-5" name="__codelineno-4-5"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_user</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">id</span><span class="p">:</span> <span class="n">UUID</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">UserOut</span><span class="p">:</span>
+</span><span id="__span-4-6"><a href="#__codelineno-4-6" id="__codelineno-4-6" name="__codelineno-4-6"></a>        <span class="n">user</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">repo</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="nb">id</span><span class="p">)</span>
+</span><span id="__span-4-7"><a href="#__codelineno-4-7" id="__codelineno-4-7" name="__codelineno-4-7"></a>        <span class="k">if</span> <span class="ow">not</span> <span class="n">user</span><span class="p">:</span>
+</span><span id="__span-4-8"><a href="#__codelineno-4-8" id="__codelineno-4-8" name="__codelineno-4-8"></a>            <span class="k">raise</span> <span class="n">UserNotFound</span><span class="p">()</span>
+</span><span id="__span-4-9"><a href="#__codelineno-4-9" id="__codelineno-4-9" name="__codelineno-4-9"></a>        <span class="k">return</span> <span class="n">user</span>
+</span></code></pre></div>
+<hr/>
+<h3 id="tang-3-repository-layer-apprepositories">🗃️ Tầng 3: Repository Layer (<code>app/repositories/</code>)<a class="headerlink" href="#tang-3-repository-layer-apprepositories" title="Permanent link">¶</a></h3>
+<ul>
+<li>Tương tác với DB qua SQLAlchemy / SQLModel</li>
+<li>Là nơi duy nhất được gọi DB query trực tiếp</li>
+<li>Có thể chia nhỏ theo entity</li>
+</ul>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-5-1"><a href="#__codelineno-5-1" id="__codelineno-5-1" name="__codelineno-5-1"></a><span class="k">class</span><span class="w"> </span><span class="nc">UserRepo</span><span class="p">:</span>
+</span><span id="__span-5-2"><a href="#__codelineno-5-2" id="__codelineno-5-2" name="__codelineno-5-2"></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">session</span><span class="p">:</span> <span class="n">Session</span><span class="p">):</span>
+</span><span id="__span-5-3"><a href="#__codelineno-5-3" id="__codelineno-5-3" name="__codelineno-5-3"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">session</span> <span class="o">=</span> <span class="n">session</span>
+</span><span id="__span-5-4"><a href="#__codelineno-5-4" id="__codelineno-5-4" name="__codelineno-5-4"></a>
+</span><span id="__span-5-5"><a href="#__codelineno-5-5" id="__codelineno-5-5" name="__codelineno-5-5"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">id</span><span class="p">:</span> <span class="n">UUID</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">User</span><span class="p">]:</span>
+</span><span id="__span-5-6"><a href="#__codelineno-5-6" id="__codelineno-5-6" name="__codelineno-5-6"></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">User</span><span class="p">)</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">User</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="nb">id</span><span class="p">)</span><span class="o">.</span><span class="n">first</span><span class="p">()</span>
+</span></code></pre></div>
+<hr/>
+<h3 id="luu-y-bo-sung">💡 Lưu ý bổ sung<a class="headerlink" href="#luu-y-bo-sung" title="Permanent link">¶</a></h3>
+<table>
+<thead>
+<tr>
+<th>Thành phần</th>
+<th>Được phép gọi</th>
+<th>Không được gọi</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Handler</td>
+<td>Service, Schema</td>
+<td>Repo, Model</td>
+</tr>
+<tr>
+<td>Service</td>
+<td>Repo, Schema</td>
+<td>Handler, DB</td>
+</tr>
+<tr>
+<td>Repo</td>
+<td>Model</td>
+<td>Schema, Service</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>✅ Mô hình này giúp dễ test, dễ refactor, và dễ scale từng tầng khi cần.</p>
+<p>📎 Service Layer nên trả về DTO (Pydantic Schema), không trả trực tiếp SQLAlchemy model.  </p>
+<p>Điều này giúp API Handler tách biệt khỏi ORM logic và tăng khả năng test.</p>
+<p>📌 Nếu usecase nghiệp vụ yêu cầu nhiều bước (update + audit + gửi event), hãy cân nhắc tổ chức thành context hoặc pattern Unit of Work để đảm bảo rollback đồng bộ nếu có lỗi.</p>
+</blockquote>
+<hr/>
+<h3 id="so-o-kien-truc-3-layer-luong-xu-ly-ien-hinh-trong-mot-backend-service">📊 Sơ đồ kiến trúc 3-layer – luồng xử lý điển hình trong một backend service<a class="headerlink" href="#so-o-kien-truc-3-layer-luong-xu-ly-ien-hinh-trong-mot-backend-service" title="Permanent link">¶</a></h3>
+<pre class="mermaid"><code>flowchart LR
+  subgraph Client Request
+    UI[API Client / Gateway]
+  end
+
+  subgraph FastAPI App
+    UI --&gt; Handler[API Handler - Router]
+    Handler --&gt; Service[Service Layer]
+    Service --&gt; Repo[Repository Layer]
+    Repo --&gt; DB[Database]
+  end
+
+  subgraph External
+    Service --&gt; PubSub[Pub/Sub]
+    Service --&gt; Redis[Cache]
+    Service --&gt; NotiAPI[Notification Service]
+  end
+
+  classDef main fill:#e8f0fe,stroke:#4285f4,stroke-width:1px;
+  class Handler,Service,Repo main
+</code></pre>
+<p>📌 Sơ đồ mô tả rõ flow xử lý từ API Gateway → Handler → Service → Repo → DB
+Các call phụ như Pub/Sub, Cache, hoặc Notification thường xuất phát từ Service Layer.</p>
+<h3 id="goi-y-nang-cao-unit-of-work-uow">💡 Gợi ý nâng cao – Unit of Work (UoW)<a class="headerlink" href="#goi-y-nang-cao-unit-of-work-uow" title="Permanent link">¶</a></h3>
+<p>Khi usecase bao gồm nhiều bước quan trọng (VD: cập nhật học sinh, ghi audit, gửi thông báo), nên gói các hành động này trong một context hoặc pattern "Unit of Work" để đảm bảo rollback đồng bộ nếu có lỗi:</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-6-1"><a href="#__codelineno-6-1" id="__codelineno-6-1" name="__codelineno-6-1"></a><span class="k">class</span><span class="w"> </span><span class="nc">StudentUoW</span><span class="p">:</span>
+</span><span id="__span-6-2"><a href="#__codelineno-6-2" id="__codelineno-6-2" name="__codelineno-6-2"></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">db</span><span class="p">:</span> <span class="n">Session</span><span class="p">):</span>
+</span><span id="__span-6-3"><a href="#__codelineno-6-3" id="__codelineno-6-3" name="__codelineno-6-3"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">db</span> <span class="o">=</span> <span class="n">db</span>
+</span><span id="__span-6-4"><a href="#__codelineno-6-4" id="__codelineno-6-4" name="__codelineno-6-4"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">student_repo</span> <span class="o">=</span> <span class="n">StudentRepo</span><span class="p">(</span><span class="n">db</span><span class="p">)</span>
+</span><span id="__span-6-5"><a href="#__codelineno-6-5" id="__codelineno-6-5" name="__codelineno-6-5"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">audit_repo</span> <span class="o">=</span> <span class="n">AuditRepo</span><span class="p">(</span><span class="n">db</span><span class="p">)</span>
+</span><span id="__span-6-6"><a href="#__codelineno-6-6" id="__codelineno-6-6" name="__codelineno-6-6"></a>
+</span><span id="__span-6-7"><a href="#__codelineno-6-7" id="__codelineno-6-7" name="__codelineno-6-7"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">commit</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span id="__span-6-8"><a href="#__codelineno-6-8" id="__codelineno-6-8" name="__codelineno-6-8"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+</span><span id="__span-6-9"><a href="#__codelineno-6-9" id="__codelineno-6-9" name="__codelineno-6-9"></a>
+</span><span id="__span-6-10"><a href="#__codelineno-6-10" id="__codelineno-6-10" name="__codelineno-6-10"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">rollback</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span id="__span-6-11"><a href="#__codelineno-6-11" id="__codelineno-6-11" name="__codelineno-6-11"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">rollback</span><span class="p">()</span>
+</span><span id="__span-6-12"><a href="#__codelineno-6-12" id="__codelineno-6-12" name="__codelineno-6-12"></a>
+</span><span id="__span-6-13"><a href="#__codelineno-6-13" id="__codelineno-6-13" name="__codelineno-6-13"></a><span class="c1"># Trong service</span>
+</span><span id="__span-6-14"><a href="#__codelineno-6-14" id="__codelineno-6-14" name="__codelineno-6-14"></a><span class="k">def</span><span class="w"> </span><span class="nf">update_student_and_audit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">payload</span><span class="p">:</span> <span class="n">StudentUpdateIn</span><span class="p">,</span> <span class="n">uow</span><span class="p">:</span> <span class="n">StudentUoW</span><span class="p">):</span>
+</span><span id="__span-6-15"><a href="#__codelineno-6-15" id="__codelineno-6-15" name="__codelineno-6-15"></a>    <span class="n">student</span> <span class="o">=</span> <span class="n">uow</span><span class="o">.</span><span class="n">student_repo</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">payload</span><span class="p">)</span>
+</span><span id="__span-6-16"><a href="#__codelineno-6-16" id="__codelineno-6-16" name="__codelineno-6-16"></a>    <span class="n">uow</span><span class="o">.</span><span class="n">audit_repo</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="s2">"Cập nhật HS"</span><span class="p">,</span> <span class="n">student</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+</span><span id="__span-6-17"><a href="#__codelineno-6-17" id="__codelineno-6-17" name="__codelineno-6-17"></a>    <span class="n">uow</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+</span></code></pre></div>
+<p>📌 UoW pattern giúp gom logic nghiệp vụ đa bước vào một transaction duy nhất, và giảm rủi ro bỏ sót commit hoặc rollback.</p>
+<hr/>
+<h2 id="4-at-ten-convention-code">4. Đặt tên &amp; convention code<a class="headerlink" href="#4-at-ten-convention-code" title="Permanent link">¶</a></h2>
+<p>Việc đặt tên rõ ràng, nhất quán giúp code dễ đọc, dễ review và dễ bảo trì. dx-vas sử dụng convention theo kiểu <strong>snake_case cho file/biến</strong>, <strong>CamelCase cho class</strong>, và <strong>lowercase-with-dash cho route</strong>.</p>
+<hr/>
+<h3 id="ten-file-thu-muc">📁 Tên file &amp; thư mục<a class="headerlink" href="#ten-file-thu-muc" title="Permanent link">¶</a></h3>
+<table>
+<thead>
+<tr>
+<th>Loại</th>
+<th>Quy tắc</th>
+<th>Ví dụ</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Thư mục module</td>
+<td>snake_case</td>
+<td><code>user_service/</code>, <code>classroom/</code></td>
+</tr>
+<tr>
+<td>File schema</td>
+<td>snake_case</td>
+<td><code>user.py</code>, <code>role.py</code></td>
+</tr>
+<tr>
+<td>File repo/service</td>
+<td>snake_case</td>
+<td><code>user_repo.py</code>, <code>user_service.py</code></td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>📎 Nếu microservice có nhiều domain (VD: SIS Adapter) → nên chia theo module con:<br/>
+<code>app/student/schemas/</code>, <code>app/student/services/</code>, <code>app/student/repositories/</code><br/>
+Khi đó, mỗi module sẽ có thư mục <code>services/</code>, <code>schemas/</code> riêng thay vì dùng thư mục cấp cao.</p>
+</blockquote>
+<hr/>
+<h3 id="ten-class">🔤 Tên class<a class="headerlink" href="#ten-class" title="Permanent link">¶</a></h3>
+<table>
+<thead>
+<tr>
+<th>Loại</th>
+<th>Quy tắc</th>
+<th>Ví dụ</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Pydantic schema</td>
+<td>CamelCase</td>
+<td><code>UserCreate</code>, <code>RoleOut</code></td>
+</tr>
+<tr>
+<td>Service</td>
+<td>CamelCase</td>
+<td><code>UserService</code>, <code>PermissionService</code></td>
+</tr>
+<tr>
+<td>SQLAlchemy model</td>
+<td>CamelCase</td>
+<td><code>User</code>, <code>Classroom</code></td>
+</tr>
+<tr>
+<td>Exception</td>
+<td>CamelCase + <code>Error</code></td>
+<td><code>UserNotFoundError</code></td>
+</tr>
+</tbody>
+</table>
+<hr/>
+<h3 id="at-ten-route-api-path">🌐 Đặt tên route (API path)<a class="headerlink" href="#at-ten-route-api-path" title="Permanent link">¶</a></h3>
+<ul>
+<li>Lowercase, nối bằng <code>-</code>, dùng danh từ</li>
+<li>Phiên bản hóa bằng prefix <code>/v1</code></li>
+<li>Hành động thể hiện qua method: GET/POST/PATCH/DELETE</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>Mục tiêu</th>
+<th>Method</th>
+<th>Route</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Lấy user</td>
+<td>GET</td>
+<td><code>/v1/users/{id}</code></td>
+</tr>
+<tr>
+<td>Tạo mới user</td>
+<td>POST</td>
+<td><code>/v1/users</code></td>
+</tr>
+<tr>
+<td>Cập nhật user</td>
+<td>PATCH</td>
+<td><code>/v1/users/{id}</code></td>
+</tr>
+<tr>
+<td>Xoá user</td>
+<td>DELETE</td>
+<td><code>/v1/users/{id}</code></td>
+</tr>
+</tbody>
+</table>
+<hr/>
+<h3 id="ten-bien-ham">💬 Tên biến &amp; hàm<a class="headerlink" href="#ten-bien-ham" title="Permanent link">¶</a></h3>
+<ul>
+<li>snake_case cho biến, hàm, argument</li>
+<li>Tên nên rõ ràng, không viết tắt khó hiểu</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>Không nên</th>
+<th>Nên dùng</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>u</code>, <code>res</code></td>
+<td><code>user</code>, <code>response</code></td>
+</tr>
+<tr>
+<td><code>get()</code></td>
+<td><code>get_user_by_id()</code></td>
+</tr>
+<tr>
+<td><code>svc</code></td>
+<td><code>user_service</code></td>
+</tr>
+</tbody>
+</table>
+<hr/>
+<p>📎 Tham khảo convention PEP8 + Black formatting (auto format được trong CI/CD).</p>
+<hr/>
+<h2 id="5-xu-ly-nghiep-vu-usecase-mau">5. Xử lý nghiệp vụ &amp; usecase mẫu<a class="headerlink" href="#5-xu-ly-nghiep-vu-usecase-mau" title="Permanent link">¶</a></h2>
+<p>Tầng Service (Usecase Layer) là nơi xử lý logic nghiệp vụ chính trong mỗi service. Các class ở tầng này cần độc lập với framework (FastAPI, SQLAlchemy...) và có thể được test đơn lẻ.</p>
+<hr/>
+<h3 id="mot-usecase-mau-cap-nhat-thong-tin-hoc-sinh">🧩 Một usecase mẫu – Cập nhật thông tin học sinh<a class="headerlink" href="#mot-usecase-mau-cap-nhat-thong-tin-hoc-sinh" title="Permanent link">¶</a></h3>
+<p>Giả sử route PATCH <code>/students/{id}</code> nhận thông tin cập nhật và gọi đến tầng Service như sau:</p>
+<h4 id="1-schema-au-vao-schemasstudentpy">1. Schema đầu vào (<code>schemas/student.py</code>)<a class="headerlink" href="#1-schema-au-vao-schemasstudentpy" title="Permanent link">¶</a></h4>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-7-1"><a href="#__codelineno-7-1" id="__codelineno-7-1" name="__codelineno-7-1"></a><span class="k">class</span><span class="w"> </span><span class="nc">StudentUpdate</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+</span><span id="__span-7-2"><a href="#__codelineno-7-2" id="__codelineno-7-2" name="__codelineno-7-2"></a>    <span class="n">name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
+</span><span id="__span-7-3"><a href="#__codelineno-7-3" id="__codelineno-7-3" name="__codelineno-7-3"></a>    <span class="n">birthday</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">date</span><span class="p">]</span>
+</span></code></pre></div>
+<h4 id="2-api-handler-apiv1studentpy">2. API Handler (<code>api/v1/student.py</code>)<a class="headerlink" href="#2-api-handler-apiv1studentpy" title="Permanent link">¶</a></h4>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-8-1"><a href="#__codelineno-8-1" id="__codelineno-8-1" name="__codelineno-8-1"></a><span class="nd">@router</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span>\<span class="s2">"/students/</span><span class="si">{id}</span><span class="se">\"</span><span class="s2">, response_model=StudentOut)</span>
+</span><span id="__span-8-2"><a href="#__codelineno-8-2" id="__codelineno-8-2" name="__codelineno-8-2"></a><span class="k">def</span><span class="w"> </span><span class="nf">update_student</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="n">UUID</span><span class="p">,</span> <span class="n">payload</span><span class="p">:</span> <span class="n">StudentUpdate</span><span class="p">,</span> <span class="n">svc</span><span class="p">:</span> <span class="n">StudentService</span> <span class="o">=</span> <span class="n">Depends</span><span class="p">(</span><span class="n">get_service</span><span class="p">)):</span>
+</span><span id="__span-8-3"><a href="#__codelineno-8-3" id="__codelineno-8-3" name="__codelineno-8-3"></a>    <span class="k">return</span> <span class="n">svc</span><span class="o">.</span><span class="n">update_student</span><span class="p">(</span><span class="nb">id</span><span class="p">,</span> <span class="n">payload</span><span class="p">)</span>
+</span></code></pre></div>
+<h4 id="3-service-servicesstudent_servicepy">3. Service (<code>services/student_service.py</code>)<a class="headerlink" href="#3-service-servicesstudent_servicepy" title="Permanent link">¶</a></h4>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-9-1"><a href="#__codelineno-9-1" id="__codelineno-9-1" name="__codelineno-9-1"></a><span class="k">class</span><span class="w"> </span><span class="nc">StudentService</span><span class="p">:</span>
+</span><span id="__span-9-2"><a href="#__codelineno-9-2" id="__codelineno-9-2" name="__codelineno-9-2"></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">repo</span><span class="p">:</span> <span class="n">StudentRepo</span><span class="p">):</span>
+</span><span id="__span-9-3"><a href="#__codelineno-9-3" id="__codelineno-9-3" name="__codelineno-9-3"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">repo</span> <span class="o">=</span> <span class="n">repo</span>
+</span><span id="__span-9-4"><a href="#__codelineno-9-4" id="__codelineno-9-4" name="__codelineno-9-4"></a>
+</span><span id="__span-9-5"><a href="#__codelineno-9-5" id="__codelineno-9-5" name="__codelineno-9-5"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">update_student</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">id</span><span class="p">:</span> <span class="n">UUID</span><span class="p">,</span> <span class="n">payload</span><span class="p">:</span> <span class="n">StudentUpdate</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">StudentOut</span><span class="p">:</span>
+</span><span id="__span-9-6"><a href="#__codelineno-9-6" id="__codelineno-9-6" name="__codelineno-9-6"></a>        <span class="n">student</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">repo</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="nb">id</span><span class="p">)</span>
+</span><span id="__span-9-7"><a href="#__codelineno-9-7" id="__codelineno-9-7" name="__codelineno-9-7"></a>        <span class="k">if</span> <span class="ow">not</span> <span class="n">student</span><span class="p">:</span>
+</span><span id="__span-9-8"><a href="#__codelineno-9-8" id="__codelineno-9-8" name="__codelineno-9-8"></a>            <span class="k">raise</span> <span class="n">StudentNotFoundError</span><span class="p">()</span>
+</span><span id="__span-9-9"><a href="#__codelineno-9-9" id="__codelineno-9-9" name="__codelineno-9-9"></a>        <span class="n">student</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">payload</span><span class="o">.</span><span class="n">name</span> <span class="ow">or</span> <span class="n">student</span><span class="o">.</span><span class="n">name</span>
+</span><span id="__span-9-10"><a href="#__codelineno-9-10" id="__codelineno-9-10" name="__codelineno-9-10"></a>        <span class="n">student</span><span class="o">.</span><span class="n">birthday</span> <span class="o">=</span> <span class="n">payload</span><span class="o">.</span><span class="n">birthday</span> <span class="ow">or</span> <span class="n">student</span><span class="o">.</span><span class="n">birthday</span>
+</span><span id="__span-9-11"><a href="#__codelineno-9-11" id="__codelineno-9-11" name="__codelineno-9-11"></a>        <span class="n">updated</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">repo</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">student</span><span class="p">)</span>
+</span><span id="__span-9-12"><a href="#__codelineno-9-12" id="__codelineno-9-12" name="__codelineno-9-12"></a>        <span class="k">return</span> <span class="n">StudentOut</span><span class="o">.</span><span class="n">from_orm</span><span class="p">(</span><span class="n">updated</span><span class="p">)</span>
+</span></code></pre></div>
+<h4 id="4-repository-repositoriesstudent_repopy">4. Repository (<code>repositories/student_repo.py</code>)<a class="headerlink" href="#4-repository-repositoriesstudent_repopy" title="Permanent link">¶</a></h4>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-10-1"><a href="#__codelineno-10-1" id="__codelineno-10-1" name="__codelineno-10-1"></a><span class="c1"># repositories/student_repo.py</span>
+</span><span id="__span-10-2"><a href="#__codelineno-10-2" id="__codelineno-10-2" name="__codelineno-10-2"></a>
+</span><span id="__span-10-3"><a href="#__codelineno-10-3" id="__codelineno-10-3" name="__codelineno-10-3"></a><span class="k">class</span><span class="w"> </span><span class="nc">StudentRepo</span><span class="p">:</span>
+</span><span id="__span-10-4"><a href="#__codelineno-10-4" id="__codelineno-10-4" name="__codelineno-10-4"></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">session</span><span class="p">:</span> <span class="n">Session</span><span class="p">):</span>
+</span><span id="__span-10-5"><a href="#__codelineno-10-5" id="__codelineno-10-5" name="__codelineno-10-5"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">session</span> <span class="o">=</span> <span class="n">session</span>
+</span><span id="__span-10-6"><a href="#__codelineno-10-6" id="__codelineno-10-6" name="__codelineno-10-6"></a>
+</span><span id="__span-10-7"><a href="#__codelineno-10-7" id="__codelineno-10-7" name="__codelineno-10-7"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">id</span><span class="p">:</span> <span class="n">UUID</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Student</span><span class="p">]:</span>
+</span><span id="__span-10-8"><a href="#__codelineno-10-8" id="__codelineno-10-8" name="__codelineno-10-8"></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">Student</span><span class="p">)</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">Student</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="nb">id</span><span class="p">)</span><span class="o">.</span><span class="n">first</span><span class="p">()</span>
+</span><span id="__span-10-9"><a href="#__codelineno-10-9" id="__codelineno-10-9" name="__codelineno-10-9"></a>
+</span><span id="__span-10-10"><a href="#__codelineno-10-10" id="__codelineno-10-10" name="__codelineno-10-10"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">student</span><span class="p">:</span> <span class="n">Student</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Student</span><span class="p">:</span>
+</span><span id="__span-10-11"><a href="#__codelineno-10-11" id="__codelineno-10-11" name="__codelineno-10-11"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">student</span><span class="p">)</span>
+</span><span id="__span-10-12"><a href="#__codelineno-10-12" id="__codelineno-10-12" name="__codelineno-10-12"></a>        <span class="k">return</span> <span class="n">student</span>
+</span></code></pre></div>
+<p>📎 Repo chỉ nên thực hiện add() hoặc update() và không gọi commit() – việc commit/rollback sẽ được xử lý bởi get_db() hoặc unit-of-work ở tầng trên.</p>
+<hr/>
+<h3 id="ghi-nho-khi-viet-usecase">✅ Ghi nhớ khi viết usecase<a class="headerlink" href="#ghi-nho-khi-viet-usecase" title="Permanent link">¶</a></h3>
+<table>
+<thead>
+<tr>
+<th>Yêu cầu</th>
+<th>Giải thích</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Không gọi trực tiếp DB trong service</td>
+<td>Luôn qua repository</td>
+</tr>
+<tr>
+<td>Không xử lý response trong service</td>
+<td>Service trả object/data, không <code>JSONResponse</code></td>
+</tr>
+<tr>
+<td>Không raise HTTPException trong service</td>
+<td>Chỉ raise <code>domain error</code>, handler sẽ map sang HTTP code</td>
+</tr>
+<tr>
+<td>Logic rẽ nhánh nên rõ ràng</td>
+<td>Tránh if/else lồng quá sâu</td>
+</tr>
+</tbody>
+</table>
+<hr/>
+<h3 id="luu-y-nang-cao-idempotency-cho-usecase-ong-bo">🔁 Lưu ý nâng cao: Idempotency cho usecase đồng bộ<a class="headerlink" href="#luu-y-nang-cao-idempotency-cho-usecase-ong-bo" title="Permanent link">¶</a></h3>
+<p>Với các API <code>POST</code>, <code>PATCH</code> quan trọng (VD: tạo hợp đồng, gửi đơn), nên cân nhắc cho phép client gửi <code>Idempotency-Key</code> để tránh xử lý trùng nếu retry. Service layer nên kiểm tra key này trước khi tiếp tục.</p>
+<p>📌 Nếu hệ thống không dùng Idempotency-Key, có thể dựa vào unique constraint (VD: email học sinh) để đảm bảo gọi nhiều lần không gây lỗi hoặc xử lý trùng.</p>
+<p>📎 Tham khảo mẫu toàn diện tại: <a href="https://github.com/vas-org/dx-user-service"><code>dx-user-service</code></a></p>
+<hr/>
+<h2 id="6-schema-validation-pydantic">6. Schema &amp; validation (Pydantic)<a class="headerlink" href="#6-schema-validation-pydantic" title="Permanent link">¶</a></h2>
+<p>Tất cả request/response đầu vào ra của API trong dx-vas đều sử dụng <strong>Pydantic schema</strong> để đảm bảo type safety, validate dữ liệu và sinh tài liệu OpenAPI.</p>
+<hr/>
+<h3 id="phan-loai-schema">📦 Phân loại schema<a class="headerlink" href="#phan-loai-schema" title="Permanent link">¶</a></h3>
+<table>
+<thead>
+<tr>
+<th>Mục đích</th>
+<th>Đặt tên</th>
+<th>Ví dụ</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Input từ request</td>
+<td><code>*Create</code>, <code>*Update</code>, <code>*In</code></td>
+<td><code>UserCreate</code>, <code>StudentUpdate</code></td>
+</tr>
+<tr>
+<td>Output trả về</td>
+<td><code>*Out</code>, <code>*Response</code></td>
+<td><code>UserOut</code>, <code>ScoreResponse</code></td>
+</tr>
+<tr>
+<td>DB schema (tuỳ chọn)</td>
+<td><code>*DB</code></td>
+<td><code>UserDB</code></td>
+</tr>
+<tr>
+<td>Schema nội bộ</td>
+<td><code>*Payload</code>, <code>*Data</code></td>
+<td><code>NotificationPayload</code></td>
+</tr>
+</tbody>
+</table>
+<hr/>
+<h3 id="vi-du-schema-student">✅ Ví dụ schema – Student<a class="headerlink" href="#vi-du-schema-student" title="Permanent link">¶</a></h3>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-11-1"><a href="#__codelineno-11-1" id="__codelineno-11-1" name="__codelineno-11-1"></a><span class="k">class</span><span class="w"> </span><span class="nc">StudentCreate</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+</span><span id="__span-11-2"><a href="#__codelineno-11-2" id="__codelineno-11-2" name="__codelineno-11-2"></a>    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="o">...</span><span class="p">,</span> <span class="n">min_length</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+</span><span id="__span-11-3"><a href="#__codelineno-11-3" id="__codelineno-11-3" name="__codelineno-11-3"></a>    <span class="n">birthday</span><span class="p">:</span> <span class="n">date</span>
+</span><span id="__span-11-4"><a href="#__codelineno-11-4" id="__codelineno-11-4" name="__codelineno-11-4"></a>    <span class="n">class_id</span><span class="p">:</span> <span class="n">UUID</span>
+</span><span id="__span-11-5"><a href="#__codelineno-11-5" id="__codelineno-11-5" name="__codelineno-11-5"></a>
+</span><span id="__span-11-6"><a href="#__codelineno-11-6" id="__codelineno-11-6" name="__codelineno-11-6"></a><span class="k">class</span><span class="w"> </span><span class="nc">StudentOut</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+</span><span id="__span-11-7"><a href="#__codelineno-11-7" id="__codelineno-11-7" name="__codelineno-11-7"></a>    <span class="nb">id</span><span class="p">:</span> <span class="n">UUID</span>
+</span><span id="__span-11-8"><a href="#__codelineno-11-8" id="__codelineno-11-8" name="__codelineno-11-8"></a>    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
+</span><span id="__span-11-9"><a href="#__codelineno-11-9" id="__codelineno-11-9" name="__codelineno-11-9"></a>    <span class="n">birthday</span><span class="p">:</span> <span class="n">date</span>
+</span><span id="__span-11-10"><a href="#__codelineno-11-10" id="__codelineno-11-10" name="__codelineno-11-10"></a>    <span class="n">class_name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
+</span></code></pre></div>
+<hr/>
+<h3 id="custom-validator-vi-du">🧪 Custom validator ví dụ<a class="headerlink" href="#custom-validator-vi-du" title="Permanent link">¶</a></h3>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-12-1"><a href="#__codelineno-12-1" id="__codelineno-12-1" name="__codelineno-12-1"></a><span class="k">class</span><span class="w"> </span><span class="nc">StudentCreate</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+</span><span id="__span-12-2"><a href="#__codelineno-12-2" id="__codelineno-12-2" name="__codelineno-12-2"></a>    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
+</span><span id="__span-12-3"><a href="#__codelineno-12-3" id="__codelineno-12-3" name="__codelineno-12-3"></a>    <span class="n">birthday</span><span class="p">:</span> <span class="n">date</span>
+</span><span id="__span-12-4"><a href="#__codelineno-12-4" id="__codelineno-12-4" name="__codelineno-12-4"></a>
+</span><span id="__span-12-5"><a href="#__codelineno-12-5" id="__codelineno-12-5" name="__codelineno-12-5"></a>    <span class="nd">@validator</span><span class="p">(</span><span class="s2">"name"</span><span class="p">)</span>
+</span><span id="__span-12-6"><a href="#__codelineno-12-6" id="__codelineno-12-6" name="__codelineno-12-6"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">validate_name</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+</span><span id="__span-12-7"><a href="#__codelineno-12-7" id="__codelineno-12-7" name="__codelineno-12-7"></a>        <span class="k">if</span> <span class="ow">not</span> <span class="n">value</span><span class="o">.</span><span class="n">isalpha</span><span class="p">():</span>
+</span><span id="__span-12-8"><a href="#__codelineno-12-8" id="__codelineno-12-8" name="__codelineno-12-8"></a>            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"Tên chỉ được chứa chữ cái"</span><span class="p">)</span>
+</span><span id="__span-12-9"><a href="#__codelineno-12-9" id="__codelineno-12-9" name="__codelineno-12-9"></a>        <span class="k">return</span> <span class="n">value</span>
+</span></code></pre></div>
+<p>📎 Dùng @validator khi cần kiểm tra hoặc chuẩn hóa dữ liệu đầu vào – rất hữu ích cho rule nghiệp vụ như kiểm tra định dạng mã học sinh, tên không chứa số, v.v.</p>
+<hr/>
+<h3 id="luu-y-khi-dung-schema">⚠️ Lưu ý khi dùng schema<a class="headerlink" href="#luu-y-khi-dung-schema" title="Permanent link">¶</a></h3>
+<ul>
+<li>Dùng <code>Field(...)</code> để validate field rõ ràng</li>
+<li>Không đặt default = None nếu field bắt buộc</li>
+<li>Không dùng schema output làm model DB hoặc input</li>
+<li>Tránh schema quá sâu/lồng nhau phức tạp – nên tách nhỏ</li>
+<li>Nếu <code>orm_mode = True</code> → schema dùng được <code>.from_orm(obj)</code></li>
+</ul>
+<hr/>
+<h3 id="tips-nang-cao">📎 Tips nâng cao<a class="headerlink" href="#tips-nang-cao" title="Permanent link">¶</a></h3>
+<ul>
+<li>Có thể kế thừa schema:</li>
+</ul>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-13-1"><a href="#__codelineno-13-1" id="__codelineno-13-1" name="__codelineno-13-1"></a><span class="k">class</span><span class="w"> </span><span class="nc">StudentBase</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+</span><span id="__span-13-2"><a href="#__codelineno-13-2" id="__codelineno-13-2" name="__codelineno-13-2"></a>    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
+</span><span id="__span-13-3"><a href="#__codelineno-13-3" id="__codelineno-13-3" name="__codelineno-13-3"></a>    <span class="n">birthday</span><span class="p">:</span> <span class="n">date</span>
+</span><span id="__span-13-4"><a href="#__codelineno-13-4" id="__codelineno-13-4" name="__codelineno-13-4"></a>
+</span><span id="__span-13-5"><a href="#__codelineno-13-5" id="__codelineno-13-5" name="__codelineno-13-5"></a><span class="k">class</span><span class="w"> </span><span class="nc">StudentCreate</span><span class="p">(</span><span class="n">StudentBase</span><span class="p">):</span>
+</span><span id="__span-13-6"><a href="#__codelineno-13-6" id="__codelineno-13-6" name="__codelineno-13-6"></a>    <span class="n">class_id</span><span class="p">:</span> <span class="n">UUID</span>
+</span></code></pre></div>
+<ul>
+<li>Tách riêng <code>PaginationMeta</code>, <code>ErrorEnvelope</code>... dùng chung toàn hệ thống tại <code>schemas/common.py</code></li>
+</ul>
+<blockquote>
+<p>📎 Nếu hệ thống dùng camelCase trong JSON response:
+<div class="language-python highlight"><pre><span></span><code><span id="__span-14-1"><a href="#__codelineno-14-1" id="__codelineno-14-1" name="__codelineno-14-1"></a><span class="k">class</span><span class="w"> </span><span class="nc">Config</span><span class="p">:</span>
+</span><span id="__span-14-2"><a href="#__codelineno-14-2" id="__codelineno-14-2" name="__codelineno-14-2"></a>    <span class="n">alias_generator</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">s</span><span class="p">:</span> <span class="s1">''</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+</span><span id="__span-14-3"><a href="#__codelineno-14-3" id="__codelineno-14-3" name="__codelineno-14-3"></a>        <span class="n">word</span><span class="o">.</span><span class="n">capitalize</span><span class="p">()</span> <span class="k">if</span> <span class="n">i</span> <span class="k">else</span> <span class="n">word</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">word</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">'_'</span><span class="p">))</span>
+</span><span id="__span-14-4"><a href="#__codelineno-14-4" id="__codelineno-14-4" name="__codelineno-14-4"></a>    <span class="p">)</span>
+</span><span id="__span-14-5"><a href="#__codelineno-14-5" id="__codelineno-14-5" name="__codelineno-14-5"></a>    <span class="n">allow_population_by_field_name</span> <span class="o">=</span> <span class="kc">True</span>
+</span></code></pre></div></p>
+</blockquote>
+<hr/>
+<p>📎 Schema chuẩn của toàn hệ thống được định nghĩa tại:
+<a href="https://github.com/vas-org/dx-service-template"><code>dx-service-template/schemas/common.py</code></a></p>
+<hr/>
+<h2 id="7-xu-ly-loi-thong-bao">7. Xử lý lỗi &amp; thông báo<a class="headerlink" href="#7-xu-ly-loi-thong-bao" title="Permanent link">¶</a></h2>
+<p>dx-vas chuẩn hoá cơ chế xử lý lỗi để API consistent, dễ debug và dễ theo dõi log. Mỗi service đều trả về lỗi theo dạng <code>ErrorEnvelope</code> chuẩn và sử dụng exception theo từng tầng.</p>
+<hr/>
+<h3 id="cau-truc-loi-chuan">🚧 Cấu trúc lỗi chuẩn<a class="headerlink" href="#cau-truc-loi-chuan" title="Permanent link">¶</a></h3>
+<div class="language-json highlight"><pre><span></span><code><span id="__span-15-1"><a href="#__codelineno-15-1" id="__codelineno-15-1" name="__codelineno-15-1"></a><span class="p">{</span>
+</span><span id="__span-15-2"><a href="#__codelineno-15-2" id="__codelineno-15-2" name="__codelineno-15-2"></a><span class="w">  </span><span class="nt">"error"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-15-3"><a href="#__codelineno-15-3" id="__codelineno-15-3" name="__codelineno-15-3"></a><span class="w">    </span><span class="nt">"code"</span><span class="p">:</span><span class="w"> </span><span class="s2">"USER_NOT_FOUND"</span><span class="p">,</span>
+</span><span id="__span-15-4"><a href="#__codelineno-15-4" id="__codelineno-15-4" name="__codelineno-15-4"></a><span class="w">    </span><span class="nt">"message"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Người dùng không tồn tại"</span><span class="p">,</span>
+</span><span id="__span-15-5"><a href="#__codelineno-15-5" id="__codelineno-15-5" name="__codelineno-15-5"></a><span class="w">    </span><span class="nt">"details"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span>
+</span><span id="__span-15-6"><a href="#__codelineno-15-6" id="__codelineno-15-6" name="__codelineno-15-6"></a><span class="w">  </span><span class="p">},</span>
+</span><span id="__span-15-7"><a href="#__codelineno-15-7" id="__codelineno-15-7" name="__codelineno-15-7"></a><span class="w">  </span><span class="nt">"meta"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-15-8"><a href="#__codelineno-15-8" id="__codelineno-15-8" name="__codelineno-15-8"></a><span class="w">    </span><span class="nt">"request_id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"abc-xyz-123"</span><span class="p">,</span>
+</span><span id="__span-15-9"><a href="#__codelineno-15-9" id="__codelineno-15-9" name="__codelineno-15-9"></a><span class="w">    </span><span class="nt">"timestamp"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2025-06-01T12:00:00Z"</span>
+</span><span id="__span-15-10"><a href="#__codelineno-15-10" id="__codelineno-15-10" name="__codelineno-15-10"></a><span class="w">  </span><span class="p">}</span>
+</span><span id="__span-15-11"><a href="#__codelineno-15-11" id="__codelineno-15-11" name="__codelineno-15-11"></a><span class="p">}</span>
+</span></code></pre></div>
+<hr/>
+<h3 id="phan-tang-xu-ly-loi">💢 Phân tầng xử lý lỗi<a class="headerlink" href="#phan-tang-xu-ly-loi" title="Permanent link">¶</a></h3>
+<table>
+<thead>
+<tr>
+<th>Tầng</th>
+<th>Loại exception</th>
+<th>Ví dụ</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>API (router)</td>
+<td>HTTPException, 422</td>
+<td>FastAPI sẽ auto catch</td>
+</tr>
+<tr>
+<td>Service</td>
+<td>DomainError</td>
+<td><code>UserNotFoundError</code>, <code>InvalidScoreError</code></td>
+</tr>
+<tr>
+<td>Repo</td>
+<td>Optional + catch DB error</td>
+<td><code>SQLAlchemyError</code>, rollback</td>
+</tr>
+</tbody>
+</table>
+<hr/>
+<h3 id="base-error-dung-chung">🧱 Base error dùng chung<a class="headerlink" href="#base-error-dung-chung" title="Permanent link">¶</a></h3>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-16-1"><a href="#__codelineno-16-1" id="__codelineno-16-1" name="__codelineno-16-1"></a><span class="k">class</span><span class="w"> </span><span class="nc">DomainError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+</span><span id="__span-16-2"><a href="#__codelineno-16-2" id="__codelineno-16-2" name="__codelineno-16-2"></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">code</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">message</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">status_code</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">400</span><span class="p">):</span>
+</span><span id="__span-16-3"><a href="#__codelineno-16-3" id="__codelineno-16-3" name="__codelineno-16-3"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">code</span> <span class="o">=</span> <span class="n">code</span>
+</span><span id="__span-16-4"><a href="#__codelineno-16-4" id="__codelineno-16-4" name="__codelineno-16-4"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">message</span> <span class="o">=</span> <span class="n">message</span>
+</span><span id="__span-16-5"><a href="#__codelineno-16-5" id="__codelineno-16-5" name="__codelineno-16-5"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">status_code</span> <span class="o">=</span> <span class="n">status_code</span>
+</span><span id="__span-16-6"><a href="#__codelineno-16-6" id="__codelineno-16-6" name="__codelineno-16-6"></a>
+</span><span id="__span-16-7"><a href="#__codelineno-16-7" id="__codelineno-16-7" name="__codelineno-16-7"></a>    <span class="n">code</span> <span class="o">=</span> \<span class="s2">"UNSPECIFIED_ERROR</span><span class="se">\"</span>
+</span><span id="__span-16-8"><a href="#__codelineno-16-8" id="__codelineno-16-8" name="__codelineno-16-8"></a>    <span class="n">message</span> <span class="o">=</span> \<span class="s2">"Có lỗi xảy ra</span><span class="se">\"</span>
+</span><span id="__span-16-9"><a href="#__codelineno-16-9" id="__codelineno-16-9" name="__codelineno-16-9"></a>
+</span><span id="__span-16-10"><a href="#__codelineno-16-10" id="__codelineno-16-10" name="__codelineno-16-10"></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">detail</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+</span><span id="__span-16-11"><a href="#__codelineno-16-11" id="__codelineno-16-11" name="__codelineno-16-11"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">detail</span> <span class="o">=</span> <span class="n">detail</span>
+</span><span id="__span-16-12"><a href="#__codelineno-16-12" id="__codelineno-16-12" name="__codelineno-16-12"></a>
+</span><span id="__span-16-13"><a href="#__codelineno-16-13" id="__codelineno-16-13" name="__codelineno-16-13"></a><span class="k">class</span><span class="w"> </span><span class="nc">UserNotFoundError</span><span class="p">(</span><span class="n">DomainError</span><span class="p">):</span>
+</span><span id="__span-16-14"><a href="#__codelineno-16-14" id="__codelineno-16-14" name="__codelineno-16-14"></a>    <span class="n">code</span> <span class="o">=</span> \<span class="s2">"USER_NOT_FOUND</span><span class="se">\"</span>
+</span><span id="__span-16-15"><a href="#__codelineno-16-15" id="__codelineno-16-15" name="__codelineno-16-15"></a>    <span class="n">message</span> <span class="o">=</span> \<span class="s2">"Người dùng không tồn tại</span><span class="se">\"</span>
+</span></code></pre></div>
+<p>Trong route handler:</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-17-1"><a href="#__codelineno-17-1" id="__codelineno-17-1" name="__codelineno-17-1"></a><span class="k">try</span><span class="p">:</span>
+</span><span id="__span-17-2"><a href="#__codelineno-17-2" id="__codelineno-17-2" name="__codelineno-17-2"></a>    <span class="n">user</span> <span class="o">=</span> <span class="n">svc</span><span class="o">.</span><span class="n">get_user</span><span class="p">(</span><span class="nb">id</span><span class="p">)</span>
+</span><span id="__span-17-3"><a href="#__codelineno-17-3" id="__codelineno-17-3" name="__codelineno-17-3"></a><span class="k">except</span> <span class="n">DomainError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+</span><span id="__span-17-4"><a href="#__codelineno-17-4" id="__codelineno-17-4" name="__codelineno-17-4"></a>    <span class="k">raise</span> <span class="n">HTTPException</span><span class="p">(</span><span class="n">status_code</span><span class="o">=</span><span class="mi">404</span><span class="p">,</span> <span class="n">detail</span><span class="o">=</span><span class="p">{</span>
+</span><span id="__span-17-5"><a href="#__codelineno-17-5" id="__codelineno-17-5" name="__codelineno-17-5"></a>        \<span class="s2">"code</span><span class="se">\"</span><span class="s2">: e.code,</span>
+</span><span id="__span-17-6"><a href="#__codelineno-17-6" id="__codelineno-17-6" name="__codelineno-17-6"></a>        \<span class="s2">"message</span><span class="se">\"</span><span class="s2">: e.message,</span>
+</span><span id="__span-17-7"><a href="#__codelineno-17-7" id="__codelineno-17-7" name="__codelineno-17-7"></a>        \<span class="s2">"details</span><span class="se">\"</span><span class="s2">: e.detail</span>
+</span><span id="__span-17-8"><a href="#__codelineno-17-8" id="__codelineno-17-8" name="__codelineno-17-8"></a>    <span class="p">})</span>
+</span></code></pre></div>
+<hr/>
+<h3 id="mapping-loi-ma-http">🔁 Mapping lỗi → mã HTTP<a class="headerlink" href="#mapping-loi-ma-http" title="Permanent link">¶</a></h3>
+<table>
+<thead>
+<tr>
+<th>Domain Error</th>
+<th>HTTP code</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>NotFoundError</code></td>
+<td>404</td>
+</tr>
+<tr>
+<td><code>ValidationError</code></td>
+<td>400</td>
+</tr>
+<tr>
+<td><code>PermissionDenied</code></td>
+<td>403</td>
+</tr>
+<tr>
+<td><code>Conflict</code></td>
+<td>409</td>
+</tr>
+<tr>
+<td><code>InternalError</code></td>
+<td>500</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>✅ Service không được raise <code>HTTPException</code>, mà chỉ raise domain-level error
+📌 Có thể định nghĩa một global exception handler trong FastAPI để tự động map <code>DomainError</code> sang HTTPException với <code>ErrorEnvelope</code>, giúp code tại route gọn hơn:</p>
+</blockquote>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-18-1"><a href="#__codelineno-18-1" id="__codelineno-18-1" name="__codelineno-18-1"></a><span class="nd">@app</span><span class="o">.</span><span class="n">exception_handler</span><span class="p">(</span><span class="n">DomainError</span><span class="p">)</span>
+</span><span id="__span-18-2"><a href="#__codelineno-18-2" id="__codelineno-18-2" name="__codelineno-18-2"></a><span class="k">def</span><span class="w"> </span><span class="nf">handle_domain_error</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">,</span> <span class="n">exc</span><span class="p">:</span> <span class="n">DomainError</span><span class="p">):</span>
+</span><span id="__span-18-3"><a href="#__codelineno-18-3" id="__codelineno-18-3" name="__codelineno-18-3"></a>    <span class="k">return</span> <span class="n">JSONResponse</span><span class="p">(</span>
+</span><span id="__span-18-4"><a href="#__codelineno-18-4" id="__codelineno-18-4" name="__codelineno-18-4"></a>        <span class="n">status_code</span><span class="o">=</span><span class="n">exc</span><span class="o">.</span><span class="n">status_code</span><span class="p">,</span>
+</span><span id="__span-18-5"><a href="#__codelineno-18-5" id="__codelineno-18-5" name="__codelineno-18-5"></a>        <span class="n">content</span><span class="o">=</span><span class="n">ErrorEnvelope</span><span class="p">(</span><span class="n">error</span><span class="o">=</span><span class="p">{</span>
+</span><span id="__span-18-6"><a href="#__codelineno-18-6" id="__codelineno-18-6" name="__codelineno-18-6"></a>            <span class="s2">"code"</span><span class="p">:</span> <span class="n">exc</span><span class="o">.</span><span class="n">code</span><span class="p">,</span>
+</span><span id="__span-18-7"><a href="#__codelineno-18-7" id="__codelineno-18-7" name="__codelineno-18-7"></a>            <span class="s2">"message"</span><span class="p">:</span> <span class="n">exc</span><span class="o">.</span><span class="n">message</span><span class="p">,</span>
+</span><span id="__span-18-8"><a href="#__codelineno-18-8" id="__codelineno-18-8" name="__codelineno-18-8"></a>        <span class="p">})</span><span class="o">.</span><span class="n">dict</span><span class="p">()</span>
+</span><span id="__span-18-9"><a href="#__codelineno-18-9" id="__codelineno-18-9" name="__codelineno-18-9"></a>    <span class="p">)</span>
+</span></code></pre></div>
+<hr/>
+<p>📎 Mẫu <code>ErrorEnvelope</code>, <code>BaseError</code> có sẵn trong: <a href="https://github.com/vas-org/dx-service-template"><code>dx-service-template/schemas/common.py</code></a></p>
+<hr/>
+<h2 id="8-repository-truy-xuat-du-lieu">8. Repository &amp; truy xuất dữ liệu<a class="headerlink" href="#8-repository-truy-xuat-du-lieu" title="Permanent link">¶</a></h2>
+<p>Repository là tầng duy nhất tương tác trực tiếp với cơ sở dữ liệu. Mục tiêu là tách biệt logic nghiệp vụ khỏi chi tiết truy vấn SQL hoặc ORM.</p>
+<hr/>
+<h3 id="vai-tro-cua-repository">📦 Vai trò của repository<a class="headerlink" href="#vai-tro-cua-repository" title="Permanent link">¶</a></h3>
+<ul>
+<li>Quản lý session DB (commit, rollback)</li>
+<li>Tương tác SQLAlchemy model</li>
+<li>Trả về entity/raw data, không map sang schema</li>
+<li>Có thể group theo domain (<code>student_repo.py</code>, <code>classroom_repo.py</code>)</li>
+</ul>
+<hr/>
+<h3 id="mau-repository-studentrepo">🧱 Mẫu repository – StudentRepo<a class="headerlink" href="#mau-repository-studentrepo" title="Permanent link">¶</a></h3>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-19-1"><a href="#__codelineno-19-1" id="__codelineno-19-1" name="__codelineno-19-1"></a><span class="k">class</span><span class="w"> </span><span class="nc">StudentRepo</span><span class="p">:</span>
+</span><span id="__span-19-2"><a href="#__codelineno-19-2" id="__codelineno-19-2" name="__codelineno-19-2"></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">session</span><span class="p">:</span> <span class="n">Session</span><span class="p">):</span>
+</span><span id="__span-19-3"><a href="#__codelineno-19-3" id="__codelineno-19-3" name="__codelineno-19-3"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">session</span> <span class="o">=</span> <span class="n">session</span>
+</span><span id="__span-19-4"><a href="#__codelineno-19-4" id="__codelineno-19-4" name="__codelineno-19-4"></a>
+</span><span id="__span-19-5"><a href="#__codelineno-19-5" id="__codelineno-19-5" name="__codelineno-19-5"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_by_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">id</span><span class="p">:</span> <span class="n">UUID</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Student</span><span class="p">]:</span>
+</span><span id="__span-19-6"><a href="#__codelineno-19-6" id="__codelineno-19-6" name="__codelineno-19-6"></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">Student</span><span class="p">)</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">Student</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="nb">id</span><span class="p">)</span><span class="o">.</span><span class="n">first</span><span class="p">()</span>
+</span><span id="__span-19-7"><a href="#__codelineno-19-7" id="__codelineno-19-7" name="__codelineno-19-7"></a>
+</span><span id="__span-19-8"><a href="#__codelineno-19-8" id="__codelineno-19-8" name="__codelineno-19-8"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">create</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">student</span><span class="p">:</span> <span class="n">Student</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Student</span><span class="p">:</span>
+</span><span id="__span-19-9"><a href="#__codelineno-19-9" id="__codelineno-19-9" name="__codelineno-19-9"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">student</span><span class="p">)</span>
+</span><span id="__span-19-10"><a href="#__codelineno-19-10" id="__codelineno-19-10" name="__codelineno-19-10"></a>        <span class="k">return</span> <span class="n">student</span>
+</span><span id="__span-19-11"><a href="#__codelineno-19-11" id="__codelineno-19-11" name="__codelineno-19-11"></a>
+</span><span id="__span-19-12"><a href="#__codelineno-19-12" id="__codelineno-19-12" name="__codelineno-19-12"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">student</span><span class="p">:</span> <span class="n">Student</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Student</span><span class="p">:</span>
+</span><span id="__span-19-13"><a href="#__codelineno-19-13" id="__codelineno-19-13" name="__codelineno-19-13"></a>        <span class="k">return</span> <span class="n">student</span>
+</span><span id="__span-19-14"><a href="#__codelineno-19-14" id="__codelineno-19-14" name="__codelineno-19-14"></a>
+</span><span id="__span-19-15"><a href="#__codelineno-19-15" id="__codelineno-19-15" name="__codelineno-19-15"></a>
+</span><span id="__span-19-16"><a href="#__codelineno-19-16" id="__codelineno-19-16" name="__codelineno-19-16"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">list_by_class</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">class_id</span><span class="p">:</span> <span class="n">UUID</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Student</span><span class="p">]:</span>
+</span><span id="__span-19-17"><a href="#__codelineno-19-17" id="__codelineno-19-17" name="__codelineno-19-17"></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">Student</span><span class="p">)</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">Student</span><span class="o">.</span><span class="n">class_id</span> <span class="o">==</span> <span class="n">class_id</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+</span></code></pre></div>
+<hr/>
+<h3 id="luu-y">🧯 Lưu ý<a class="headerlink" href="#luu-y" title="Permanent link">¶</a></h3>
+<table>
+<thead>
+<tr>
+<th>Quy tắc</th>
+<th>Giải thích</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Không trả về Pydantic schema</td>
+<td>Chỉ trả về SQLAlchemy model</td>
+</tr>
+<tr>
+<td>Không gọi schema trong repo</td>
+<td>Repo không biết gì về tầng trên</td>
+</tr>
+<tr>
+<td>Luôn kiểm soát session commit</td>
+<td>Không để service tự commit DB</td>
+</tr>
+<tr>
+<td>Transaction nhiều bước → gói lại bằng context hoặc unit of work</td>
+<td>Tránh lỗi rollback thiếu bước</td>
+</tr>
+</tbody>
+</table>
+<hr/>
+<h3 id="tao-session-db">🛠 Tạo session DB<a class="headerlink" href="#tao-session-db" title="Permanent link">¶</a></h3>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-20-1"><a href="#__codelineno-20-1" id="__codelineno-20-1" name="__codelineno-20-1"></a><span class="k">def</span><span class="w"> </span><span class="nf">get_db</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">:</span>
+</span><span id="__span-20-2"><a href="#__codelineno-20-2" id="__codelineno-20-2" name="__codelineno-20-2"></a>    <span class="n">session</span> <span class="o">=</span> <span class="n">SessionLocal</span><span class="p">()</span>
+</span><span id="__span-20-3"><a href="#__codelineno-20-3" id="__codelineno-20-3" name="__codelineno-20-3"></a>    <span class="k">try</span><span class="p">:</span>
+</span><span id="__span-20-4"><a href="#__codelineno-20-4" id="__codelineno-20-4" name="__codelineno-20-4"></a>        <span class="k">yield</span> <span class="n">session</span>
+</span><span id="__span-20-5"><a href="#__codelineno-20-5" id="__codelineno-20-5" name="__codelineno-20-5"></a>        <span class="n">session</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+</span><span id="__span-20-6"><a href="#__codelineno-20-6" id="__codelineno-20-6" name="__codelineno-20-6"></a>    <span class="k">except</span><span class="p">:</span>
+</span><span id="__span-20-7"><a href="#__codelineno-20-7" id="__codelineno-20-7" name="__codelineno-20-7"></a>        <span class="n">session</span><span class="o">.</span><span class="n">rollback</span><span class="p">()</span>
+</span><span id="__span-20-8"><a href="#__codelineno-20-8" id="__codelineno-20-8" name="__codelineno-20-8"></a>        <span class="k">raise</span>
+</span><span id="__span-20-9"><a href="#__codelineno-20-9" id="__codelineno-20-9" name="__codelineno-20-9"></a>    <span class="k">finally</span><span class="p">:</span>
+</span><span id="__span-20-10"><a href="#__codelineno-20-10" id="__codelineno-20-10" name="__codelineno-20-10"></a>        <span class="n">session</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</span></code></pre></div>
+<p>Trong service:</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-21-1"><a href="#__codelineno-21-1" id="__codelineno-21-1" name="__codelineno-21-1"></a><span class="c1"># Trong FastAPI handler</span>
+</span><span id="__span-21-2"><a href="#__codelineno-21-2" id="__codelineno-21-2" name="__codelineno-21-2"></a><span class="nd">@router</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"/students/</span><span class="si">{id}</span><span class="s2">"</span><span class="p">,</span> <span class="n">response_model</span><span class="o">=</span><span class="n">StudentOut</span><span class="p">)</span>
+</span><span id="__span-21-3"><a href="#__codelineno-21-3" id="__codelineno-21-3" name="__codelineno-21-3"></a><span class="k">def</span><span class="w"> </span><span class="nf">get_student_api_handler</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="n">UUID</span><span class="p">,</span> <span class="n">student_svc</span><span class="p">:</span> <span class="n">StudentService</span> <span class="o">=</span> <span class="n">Depends</span><span class="p">(</span><span class="n">get_student_service</span><span class="p">)):</span>
+</span><span id="__span-21-4"><a href="#__codelineno-21-4" id="__codelineno-21-4" name="__codelineno-21-4"></a>    <span class="n">student</span> <span class="o">=</span> <span class="n">student_svc</span><span class="o">.</span><span class="n">get_student_by_id</span><span class="p">(</span><span class="nb">id</span><span class="p">)</span>
+</span><span id="__span-21-5"><a href="#__codelineno-21-5" id="__codelineno-21-5" name="__codelineno-21-5"></a>    <span class="k">if</span> <span class="ow">not</span> <span class="n">student</span><span class="p">:</span>
+</span><span id="__span-21-6"><a href="#__codelineno-21-6" id="__codelineno-21-6" name="__codelineno-21-6"></a>        <span class="k">raise</span> <span class="n">StudentNotFoundError</span><span class="p">()</span>
+</span><span id="__span-21-7"><a href="#__codelineno-21-7" id="__codelineno-21-7" name="__codelineno-21-7"></a>    <span class="k">return</span> <span class="n">StudentOut</span><span class="o">.</span><span class="n">from_orm</span><span class="p">(</span><span class="n">student</span><span class="p">)</span>
+</span></code></pre></div>
+<blockquote>
+<p>📎 StudentService và StudentRepo nên được khởi tạo thông qua DI – hoặc thông qua hàm get_student_service() như mô tả ở Mục 3.</p>
+</blockquote>
+<hr/>
+<p>📎 DB schema → xem <code>models/student.py</code></p>
+<p>📎 Cấu hình DB trong <code>core/config.py</code>, session ở <code>deps.py</code></p>
+<hr/>
+<h2 id="9-pubsub-subscriber-idempotency">9. Pub/Sub subscriber &amp; idempotency<a class="headerlink" href="#9-pubsub-subscriber-idempotency" title="Permanent link">¶</a></h2>
+<p>Một số service backend của dx-vas hoạt động theo mô hình event-driven – nghĩa là nhận sự kiện từ các topic Pub/Sub và xử lý bất đồng bộ. Việc đảm bảo <strong>idempotency</strong> (xử lý lặp lại không gây lỗi) là bắt buộc.</p>
+<hr/>
+<h3 id="cau-truc-thu-muc-goi-y">📦 Cấu trúc thư mục gợi ý<a class="headerlink" href="#cau-truc-thu-muc-goi-y" title="Permanent link">¶</a></h3>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-22-1"><a href="#__codelineno-22-1" id="__codelineno-22-1" name="__codelineno-22-1"></a>events/
+</span><span id="__span-22-2"><a href="#__codelineno-22-2" id="__codelineno-22-2" name="__codelineno-22-2"></a>├── subscriber/
+</span><span id="__span-22-3"><a href="#__codelineno-22-3" id="__codelineno-22-3" name="__codelineno-22-3"></a>│   └── user\_event\_handler.py
+</span><span id="__span-22-4"><a href="#__codelineno-22-4" id="__codelineno-22-4" name="__codelineno-22-4"></a>├── publisher/
+</span><span id="__span-22-5"><a href="#__codelineno-22-5" id="__codelineno-22-5" name="__codelineno-22-5"></a>│   └── notify\_event.py
+</span></code></pre></div>
+<hr/>
+<h3 id="viet-mot-subscriber-handler">📥 Viết một subscriber handler<a class="headerlink" href="#viet-mot-subscriber-handler" title="Permanent link">¶</a></h3>
+<blockquote>
+<p>📎 Schema bảng <code>processed_messages</code>:
+<div class="language-sql highlight"><pre><span></span><code><span id="__span-23-1"><a href="#__codelineno-23-1" id="__codelineno-23-1" name="__codelineno-23-1"></a><span class="k">CREATE</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="n">processed_messages</span><span class="w"> </span><span class="p">(</span>
+</span><span id="__span-23-2"><a href="#__codelineno-23-2" id="__codelineno-23-2" name="__codelineno-23-2"></a><span class="w">  </span><span class="n">message_id</span><span class="w"> </span><span class="nb">VARCHAR</span><span class="p">(</span><span class="mi">255</span><span class="p">)</span><span class="w"> </span><span class="k">PRIMARY</span><span class="w"> </span><span class="k">KEY</span><span class="p">,</span>
+</span><span id="__span-23-3"><a href="#__codelineno-23-3" id="__codelineno-23-3" name="__codelineno-23-3"></a><span class="w">  </span><span class="n">processed_at</span><span class="w"> </span><span class="k">TIMESTAMP</span><span class="w"> </span><span class="k">DEFAULT</span><span class="w"> </span><span class="k">CURRENT_TIMESTAMP</span><span class="p">,</span>
+</span><span id="__span-23-4"><a href="#__codelineno-23-4" id="__codelineno-23-4" name="__codelineno-23-4"></a><span class="w">  </span><span class="n">status</span><span class="w"> </span><span class="nb">VARCHAR</span><span class="p">(</span><span class="mi">50</span><span class="p">)</span><span class="w"> </span><span class="k">DEFAULT</span><span class="w"> </span><span class="s1">'success'</span>
+</span><span id="__span-23-5"><a href="#__codelineno-23-5" id="__codelineno-23-5" name="__codelineno-23-5"></a><span class="p">);</span>
+</span></code></pre></div></p>
+</blockquote>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-24-1"><a href="#__codelineno-24-1" id="__codelineno-24-1" name="__codelineno-24-1"></a><span class="k">def</span><span class="w"> </span><span class="nf">handle_user_created</span><span class="p">(</span><span class="n">message</span><span class="p">:</span> <span class="n">PubSubMessage</span><span class="p">):</span>
+</span><span id="__span-24-2"><a href="#__codelineno-24-2" id="__codelineno-24-2" name="__codelineno-24-2"></a>    <span class="n">db_session_event</span> <span class="o">=</span> <span class="n">SessionLocal</span><span class="p">()</span>
+</span><span id="__span-24-3"><a href="#__codelineno-24-3" id="__codelineno-24-3" name="__codelineno-24-3"></a>    <span class="k">try</span><span class="p">:</span>
+</span><span id="__span-24-4"><a href="#__codelineno-24-4" id="__codelineno-24-4" name="__codelineno-24-4"></a>        <span class="n">repo</span> <span class="o">=</span> <span class="n">UserRepo</span><span class="p">(</span><span class="n">db_session_event</span><span class="p">)</span>
+</span><span id="__span-24-5"><a href="#__codelineno-24-5" id="__codelineno-24-5" name="__codelineno-24-5"></a>        <span class="n">data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">message</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">"utf-8"</span><span class="p">))</span>
+</span><span id="__span-24-6"><a href="#__codelineno-24-6" id="__codelineno-24-6" name="__codelineno-24-6"></a>        <span class="n">user_id</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">"user_id"</span><span class="p">]</span>
+</span><span id="__span-24-7"><a href="#__codelineno-24-7" id="__codelineno-24-7" name="__codelineno-24-7"></a>
+</span><span id="__span-24-8"><a href="#__codelineno-24-8" id="__codelineno-24-8" name="__codelineno-24-8"></a>        <span class="k">if</span> <span class="n">repo</span><span class="o">.</span><span class="n">has_processed</span><span class="p">(</span><span class="n">message</span><span class="o">.</span><span class="n">message_id</span><span class="p">):</span>
+</span><span id="__span-24-9"><a href="#__codelineno-24-9" id="__codelineno-24-9" name="__codelineno-24-9"></a>            <span class="k">return</span>
+</span><span id="__span-24-10"><a href="#__codelineno-24-10" id="__codelineno-24-10" name="__codelineno-24-10"></a>
+</span><span id="__span-24-11"><a href="#__codelineno-24-11" id="__codelineno-24-11" name="__codelineno-24-11"></a>        <span class="n">user</span> <span class="o">=</span> <span class="n">repo</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">user_id</span><span class="p">)</span>
+</span><span id="__span-24-12"><a href="#__codelineno-24-12" id="__codelineno-24-12" name="__codelineno-24-12"></a>        <span class="k">if</span> <span class="ow">not</span> <span class="n">user</span><span class="p">:</span>
+</span><span id="__span-24-13"><a href="#__codelineno-24-13" id="__codelineno-24-13" name="__codelineno-24-13"></a>            <span class="k">raise</span> <span class="n">UserNotFoundError</span><span class="p">()</span>
+</span><span id="__span-24-14"><a href="#__codelineno-24-14" id="__codelineno-24-14" name="__codelineno-24-14"></a>
+</span><span id="__span-24-15"><a href="#__codelineno-24-15" id="__codelineno-24-15" name="__codelineno-24-15"></a>        <span class="c1"># ... xử lý sự kiện ...</span>
+</span><span id="__span-24-16"><a href="#__codelineno-24-16" id="__codelineno-24-16" name="__codelineno-24-16"></a>
+</span><span id="__span-24-17"><a href="#__codelineno-24-17" id="__codelineno-24-17" name="__codelineno-24-17"></a>        <span class="n">repo</span><span class="o">.</span><span class="n">mark_processed</span><span class="p">(</span><span class="n">message</span><span class="o">.</span><span class="n">message_id</span><span class="p">)</span>
+</span><span id="__span-24-18"><a href="#__codelineno-24-18" id="__codelineno-24-18" name="__codelineno-24-18"></a>        <span class="n">db_session_event</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+</span><span id="__span-24-19"><a href="#__codelineno-24-19" id="__codelineno-24-19" name="__codelineno-24-19"></a>    <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+</span><span id="__span-24-20"><a href="#__codelineno-24-20" id="__codelineno-24-20" name="__codelineno-24-20"></a>        <span class="n">db_session_event</span><span class="o">.</span><span class="n">rollback</span><span class="p">()</span>
+</span><span id="__span-24-21"><a href="#__codelineno-24-21" id="__codelineno-24-21" name="__codelineno-24-21"></a>        <span class="k">raise</span>
+</span><span id="__span-24-22"><a href="#__codelineno-24-22" id="__codelineno-24-22" name="__codelineno-24-22"></a>    <span class="k">finally</span><span class="p">:</span>
+</span><span id="__span-24-23"><a href="#__codelineno-24-23" id="__codelineno-24-23" name="__codelineno-24-23"></a>        <span class="n">db_session_event</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</span></code></pre></div>
+<blockquote>
+<p>✅ Sử dụng SessionLocal() riêng cho background worker, đảm bảo quản lý transaction tách biệt với request.</p>
+</blockquote>
+<hr/>
+<h3 id="idempotency-cach-am-bao">🧪 Idempotency: cách đảm bảo<a class="headerlink" href="#idempotency-cach-am-bao" title="Permanent link">¶</a></h3>
+<table>
+<thead>
+<tr>
+<th>Kỹ thuật</th>
+<th>Ghi chú</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Ghi log message đã xử lý</td>
+<td>Tạo bảng <code>processed_messages(message_id)</code></td>
+</tr>
+<tr>
+<td>Tránh logic gây side effect nhiều lần</td>
+<td>Gửi noti 1 lần, tạo record 1 lần</td>
+</tr>
+<tr>
+<td>Transaction toàn bộ handler</td>
+<td>Commit/rollback toàn phần</td>
+</tr>
+<tr>
+<td>Retry-safe</td>
+<td>Nếu lỗi do mạng → message sẽ được retry</td>
+</tr>
+</tbody>
+</table>
+<hr/>
+<h3 id="framework-ho-tro">🧭 Framework hỗ trợ<a class="headerlink" href="#framework-ho-tro" title="Permanent link">¶</a></h3>
+<ul>
+<li>Google Pub/Sub client (<code>google-cloud-pubsub</code>)</li>
+<li>Wrapper: <code>pubsub_fastapi</code>, <code>pubsub-consumer</code> custom</li>
+<li>Có thể tích hợp vào background task trong <code>main.py</code></li>
+</ul>
+<hr/>
+<h3 id="cleanup">🧼 Cleanup<a class="headerlink" href="#cleanup" title="Permanent link">¶</a></h3>
+<ul>
+<li>Dùng TTL hoặc cronjob để xoá bản ghi <code>processed_messages</code> cũ</li>
+<li>Có thể dùng Redis thay DB nếu cần tốc độ cao và lưu ngắn hạn</li>
+</ul>
+<hr/>
+<p>📎 Mẫu event flow: <a href="../../architecture/system-diagrams/#5-data-synchronization-flow--đồng-bộ-học-sinh-crm--sis--lms">System Diagrams</a></p>
+<p>📎 Quy ước Pub/Sub topic: <a href="../ops-guide/#8-quản-lý-pubsub--dead-letter">Dev Ops Guide</a></p>
+<hr/>
+<h2 id="10-test-on-vi-tich-hop">10. Test đơn vị &amp; tích hợp<a class="headerlink" href="#10-test-on-vi-tich-hop" title="Permanent link">¶</a></h2>
+<p>Viết test là bắt buộc trong mỗi backend service. dx-vas ưu tiên <strong>unit test cho service layer</strong> và <strong>integration test cho route + DB + Pub/Sub</strong>.</p>
+<hr/>
+<h3 id="cau-truc-thu-muc-test">🧪 Cấu trúc thư mục test<a class="headerlink" href="#cau-truc-thu-muc-test" title="Permanent link">¶</a></h3>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-25-1"><a href="#__codelineno-25-1" id="__codelineno-25-1" name="__codelineno-25-1"></a>tests/
+</span><span id="__span-25-2"><a href="#__codelineno-25-2" id="__codelineno-25-2" name="__codelineno-25-2"></a>├── unit/
+</span><span id="__span-25-3"><a href="#__codelineno-25-3" id="__codelineno-25-3" name="__codelineno-25-3"></a>│   └── test\_user\_service.py
+</span><span id="__span-25-4"><a href="#__codelineno-25-4" id="__codelineno-25-4" name="__codelineno-25-4"></a>├── integration/
+</span><span id="__span-25-5"><a href="#__codelineno-25-5" id="__codelineno-25-5" name="__codelineno-25-5"></a>│   ├── test\_user\_routes.py
+</span><span id="__span-25-6"><a href="#__codelineno-25-6" id="__codelineno-25-6" name="__codelineno-25-6"></a>│   └── test\_pubsub\_event.py
+</span><span id="__span-25-7"><a href="#__codelineno-25-7" id="__codelineno-25-7" name="__codelineno-25-7"></a>├── conftest.py
+</span></code></pre></div>
+<hr/>
+<h3 id="unit-test-service-khong-phu-thuoc-db">✅ Unit test – Service không phụ thuộc DB<a class="headerlink" href="#unit-test-service-khong-phu-thuoc-db" title="Permanent link">¶</a></h3>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-26-1"><a href="#__codelineno-26-1" id="__codelineno-26-1" name="__codelineno-26-1"></a><span class="k">def</span><span class="w"> </span><span class="nf">test_get_user_success</span><span class="p">():</span>
+</span><span id="__span-26-2"><a href="#__codelineno-26-2" id="__codelineno-26-2" name="__codelineno-26-2"></a>    <span class="n">fake_repo</span> <span class="o">=</span> <span class="n">MagicMock</span><span class="p">()</span>
+</span><span id="__span-26-3"><a href="#__codelineno-26-3" id="__codelineno-26-3" name="__codelineno-26-3"></a>    <span class="n">fake_repo</span><span class="o">.</span><span class="n">get</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="n">User</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span>\<span class="s2">"John</span><span class="se">\"</span><span class="s2">)</span>
+</span><span id="__span-26-4"><a href="#__codelineno-26-4" id="__codelineno-26-4" name="__codelineno-26-4"></a>
+</span><span id="__span-26-5"><a href="#__codelineno-26-5" id="__codelineno-26-5" name="__codelineno-26-5"></a>    <span class="n">svc</span> <span class="o">=</span> <span class="n">UserService</span><span class="p">(</span><span class="n">fake_repo</span><span class="p">)</span>
+</span><span id="__span-26-6"><a href="#__codelineno-26-6" id="__codelineno-26-6" name="__codelineno-26-6"></a>    <span class="n">result</span> <span class="o">=</span> <span class="n">svc</span><span class="o">.</span><span class="n">get_user</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+</span><span id="__span-26-7"><a href="#__codelineno-26-7" id="__codelineno-26-7" name="__codelineno-26-7"></a>
+</span><span id="__span-26-8"><a href="#__codelineno-26-8" id="__codelineno-26-8" name="__codelineno-26-8"></a>    <span class="k">assert</span> <span class="n">result</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> \<span class="s2">"John</span><span class="se">\"</span>
+</span></code></pre></div>
+<ul>
+<li>Dùng <code>MagicMock</code> để mô phỏng repository</li>
+<li>Không cần DB hoặc HTTP client</li>
+<li>Chạy nhanh, dễ debug</li>
+</ul>
+<hr/>
+<h3 id="integration-test-route-db">🔁 Integration test – Route + DB<a class="headerlink" href="#integration-test-route-db" title="Permanent link">¶</a></h3>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-27-1"><a href="#__codelineno-27-1" id="__codelineno-27-1" name="__codelineno-27-1"></a><span class="k">def</span><span class="w"> </span><span class="nf">test_create_user</span><span class="p">(</span><span class="n">client</span><span class="p">,</span> <span class="n">db_session</span><span class="p">):</span>
+</span><span id="__span-27-2"><a href="#__codelineno-27-2" id="__codelineno-27-2" name="__codelineno-27-2"></a>    <span class="n">payload</span> <span class="o">=</span> <span class="p">{</span>\<span class="s2">"name</span><span class="se">\"</span><span class="s2">: </span><span class="se">\"</span><span class="s2">John</span><span class="se">\"</span><span class="s2">}</span>
+</span><span id="__span-27-3"><a href="#__codelineno-27-3" id="__codelineno-27-3" name="__codelineno-27-3"></a>    <span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span>\<span class="s2">"/v1/users</span><span class="se">\"</span><span class="s2">, json=payload)</span>
+</span><span id="__span-27-4"><a href="#__codelineno-27-4" id="__codelineno-27-4" name="__codelineno-27-4"></a>    <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">201</span>
+</span></code></pre></div>
+<ul>
+<li>Dùng <code>TestClient</code> của FastAPI + session test DB</li>
+<li>Có thể seed dữ liệu bằng fixture</li>
+</ul>
+<hr/>
+<h3 id="pytest-fixture-goi-y-conftestpy">🧩 Pytest fixture gợi ý (<code>conftest.py</code>)<a class="headerlink" href="#pytest-fixture-goi-y-conftestpy" title="Permanent link">¶</a></h3>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-28-1"><a href="#__codelineno-28-1" id="__codelineno-28-1" name="__codelineno-28-1"></a><span class="nd">@pytest</span><span class="o">.</span><span class="n">fixture</span>
+</span><span id="__span-28-2"><a href="#__codelineno-28-2" id="__codelineno-28-2" name="__codelineno-28-2"></a><span class="k">def</span><span class="w"> </span><span class="nf">db_session</span><span class="p">():</span>
+</span><span id="__span-28-3"><a href="#__codelineno-28-3" id="__codelineno-28-3" name="__codelineno-28-3"></a>    <span class="n">session</span> <span class="o">=</span> <span class="n">SessionLocal</span><span class="p">()</span>
+</span><span id="__span-28-4"><a href="#__codelineno-28-4" id="__codelineno-28-4" name="__codelineno-28-4"></a>    <span class="k">yield</span> <span class="n">session</span>
+</span><span id="__span-28-5"><a href="#__codelineno-28-5" id="__codelineno-28-5" name="__codelineno-28-5"></a>    <span class="n">session</span><span class="o">.</span><span class="n">rollback</span><span class="p">()</span>
+</span><span id="__span-28-6"><a href="#__codelineno-28-6" id="__codelineno-28-6" name="__codelineno-28-6"></a>    <span class="n">session</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</span><span id="__span-28-7"><a href="#__codelineno-28-7" id="__codelineno-28-7" name="__codelineno-28-7"></a>
+</span><span id="__span-28-8"><a href="#__codelineno-28-8" id="__codelineno-28-8" name="__codelineno-28-8"></a><span class="nd">@pytest</span><span class="o">.</span><span class="n">fixture</span>
+</span><span id="__span-28-9"><a href="#__codelineno-28-9" id="__codelineno-28-9" name="__codelineno-28-9"></a><span class="k">def</span><span class="w"> </span><span class="nf">client</span><span class="p">():</span>
+</span><span id="__span-28-10"><a href="#__codelineno-28-10" id="__codelineno-28-10" name="__codelineno-28-10"></a>    <span class="kn">from</span><span class="w"> </span><span class="nn">app.main</span><span class="w"> </span><span class="kn">import</span> <span class="n">app</span>
+</span><span id="__span-28-11"><a href="#__codelineno-28-11" id="__codelineno-28-11" name="__codelineno-28-11"></a>    <span class="k">return</span> <span class="n">TestClient</span><span class="p">(</span><span class="n">app</span><span class="p">)</span>
+</span></code></pre></div>
+<hr/>
+<h3 id="luu-y-khi-viet-test">💡 Lưu ý khi viết test<a class="headerlink" href="#luu-y-khi-viet-test" title="Permanent link">¶</a></h3>
+<table>
+<thead>
+<tr>
+<th>Nguyên tắc</th>
+<th>Giải thích</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Tên test rõ ràng</td>
+<td><code>test_create_user_fail_invalid_email()</code></td>
+</tr>
+<tr>
+<td>Test không phụ thuộc nhau</td>
+<td>Không dùng shared global state</td>
+</tr>
+<tr>
+<td>Bao phủ logic rẽ nhánh</td>
+<td>Test success, fail, edge case</td>
+</tr>
+<tr>
+<td>Mock đúng chỗ</td>
+<td>Repo, API external, Pub/Sub client</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>Có thể dùng <code>pytest-mock</code> hoặc <code>unittest.mock</code> để mock nhanh logic phụ thuộc (Pub/Sub, Redis)</li>
+<li>Đối với integration test:</li>
+<li>Dùng Alembic để apply schema lên test DB (hoặc tạo file <code>.sql</code>)</li>
+<li>Seed data mẫu bằng fixture (VD: 1 học sinh, 1 lớp học)</li>
+<li>Rollback sau mỗi test để đảm bảo isolation</li>
+</ul>
+<hr/>
+<p>📎 Coverage tối thiểu yêu cầu: 85% cho unit, 70% cho integration
+📎 Lệnh test mẫu:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-29-1"><a href="#__codelineno-29-1" id="__codelineno-29-1" name="__codelineno-29-1"></a>make<span class="w"> </span><span class="nb">test</span>
+</span><span id="__span-29-2"><a href="#__codelineno-29-2" id="__codelineno-29-2" name="__codelineno-29-2"></a>pytest<span class="w"> </span>tests/unit/
+</span><span id="__span-29-3"><a href="#__codelineno-29-3" id="__codelineno-29-3" name="__codelineno-29-3"></a>pytest<span class="w"> </span>--cov<span class="o">=</span>app
+</span></code></pre></div>
+<hr/>
+<h2 id="11-checklist-khi-tao-pr-backend">11. Checklist khi tạo PR backend<a class="headerlink" href="#11-checklist-khi-tao-pr-backend" title="Permanent link">¶</a></h2>
+<p>Mỗi Pull Request (PR) backend trong dx-vas cần tuân theo checklist sau để đảm bảo chất lượng, tính nhất quán và tránh lỗi khi merge vào nhánh chính.</p>
+<hr/>
+<h3 id="checklist-ky-thuat">✅ Checklist kỹ thuật<a class="headerlink" href="#checklist-ky-thuat" title="Permanent link">¶</a></h3>
+<ul class="task-list">
+<li class="task-list-item"><label class="task-list-control"><input disabled="" type="checkbox"><span class="task-list-indicator"></span></input></label> Tên PR rõ ràng, theo format: <code>[feature] Add create student usecase</code></li>
+<li class="task-list-item"><label class="task-list-control"><input disabled="" type="checkbox"><span class="task-list-indicator"></span></input></label> Code đã format bằng Black / isort / lint pass</li>
+<li class="task-list-item"><label class="task-list-control"><input disabled="" type="checkbox"><span class="task-list-indicator"></span></input></label> Đã thêm unit test cho logic nghiệp vụ</li>
+<li class="task-list-item"><label class="task-list-control"><input disabled="" type="checkbox"><span class="task-list-indicator"></span></input></label> Đã thêm integration test cho API / DB / PubSub</li>
+<li class="task-list-item"><label class="task-list-control"><input disabled="" type="checkbox"><span class="task-list-indicator"></span></input></label> Đảm bảo test pass (<code>make test</code>, CI green)</li>
+<li class="task-list-item"><label class="task-list-control"><input disabled="" type="checkbox"><span class="task-list-indicator"></span></input></label> Không commit <code>.env</code>, file secret hoặc credential</li>
+<li class="task-list-item"><label class="task-list-control"><input disabled="" type="checkbox"><span class="task-list-indicator"></span></input></label> Không hardcode config, API key trong code</li>
+<li class="task-list-item"><label class="task-list-control"><input disabled="" type="checkbox"><span class="task-list-indicator"></span></input></label> Schema đầu vào có validate đầy đủ (Pydantic)</li>
+<li class="task-list-item"><label class="task-list-control"><input disabled="" type="checkbox"><span class="task-list-indicator"></span></input></label> Error trả về đúng <code>ErrorEnvelope</code> chuẩn</li>
+</ul>
+<hr/>
+<h3 id="checklist-logic-nghiep-vu">📎 Checklist logic nghiệp vụ<a class="headerlink" href="#checklist-logic-nghiep-vu" title="Permanent link">¶</a></h3>
+<ul class="task-list">
+<li class="task-list-item"><label class="task-list-control"><input disabled="" type="checkbox"><span class="task-list-indicator"></span></input></label> Nếu có sửa DB → đã viết migration</li>
+<li class="task-list-item"><label class="task-list-control"><input disabled="" type="checkbox"><span class="task-list-indicator"></span></input></label> Nếu thêm permission → cập nhật file RBAC <code>permissions.yaml</code>
+    📎 Xem cách định nghĩa permission tại <a href="../../architecture/rbac-deep-dive/#5-permission-có-điều-kiện-condition-jsonb">RBAC Deep Dive</a></li>
+<li class="task-list-item"><label class="task-list-control"><input disabled="" type="checkbox"/><span class="task-list-indicator"></span></label> Nếu thay đổi API → cập nhật OpenAPI / Interface Contracts</li>
+<li class="task-list-item"><label class="task-list-control"><input disabled="" type="checkbox"/><span class="task-list-indicator"></span></label> Nếu ảnh hưởng cross-service → đã thông báo/ghi chú rõ</li>
+<li class="task-list-item"><label class="task-list-control"><input disabled="" type="checkbox"/><span class="task-list-indicator"></span></label> Nếu cần sync dữ liệu → viết rõ flow trong commit message</li>
+</ul>
+<hr/>
+<h3 id="goi-y-review">🔍 Gợi ý review<a class="headerlink" href="#goi-y-review" title="Permanent link">¶</a></h3>
+<ul>
+<li>Xem flow từ API → Service → Repo → Test</li>
+<li>Xem logging có đúng cấp độ, không log sensitive</li>
+<li>Xem logic rẽ nhánh đầy đủ chưa (success, fail, edge case)</li>
+<li>Comment rõ TODO nếu còn dở dang (và ghi task follow-up)</li>
+</ul>
+<hr/>
+<p>📎 Format commit message → xem Dev Guide  </p>
+<p>📎 Quản lý permission → xem RBAC Deep Dive  </p>
+<p>📎 Migration &amp; version DB → xem Dev Ops Guide mục 7</p>
+<hr/>
+<h2 id="12-tai-lieu-lien-quan">12. Tài liệu liên quan<a class="headerlink" href="#12-tai-lieu-lien-quan" title="Permanent link">¶</a></h2>
+<p>Dưới đây là các tài liệu nội bộ hỗ trợ cho quá trình phát triển backend trong hệ thống dx-vas. Developer nên tham khảo đầy đủ để nắm được toàn bộ bức tranh kiến trúc, quy trình CI/CD, RBAC, interface contracts, và vận hành.</p>
+<hr/>
+<h3 id="tai-lieu-kien-truc-luong-he-thong">📚 Tài liệu kiến trúc &amp; luồng hệ thống<a class="headerlink" href="#tai-lieu-kien-truc-luong-he-thong" title="Permanent link">¶</a></h3>
+<table>
+<thead>
+<tr>
+<th>Tài liệu</th>
+<th>Mục tiêu</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="../../architecture/system-diagrams/">System Diagrams</a></td>
+<td>Tổng quan kiến trúc, sơ đồ các luồng nghiệp vụ</td>
+</tr>
+<tr>
+<td><a href="../../architecture/rbac-deep-dive/">RBAC Deep Dive</a></td>
+<td>Kiến trúc RBAC động, JSONB, phân quyền &amp; cache</td>
+</tr>
+<tr>
+<td><a href="../interfaces/">Interface Contracts</a></td>
+<td>Định nghĩa OpenAPI + schema liên service</td>
+</tr>
+</tbody>
+</table>
+<hr/>
+<h3 id="dev-guide-cicd">🧪 Dev Guide &amp; CI/CD<a class="headerlink" href="#dev-guide-cicd" title="Permanent link">¶</a></h3>
+<table>
+<thead>
+<tr>
+<th>Tài liệu</th>
+<th>Mục tiêu</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="../dev-guide/">Dev Guide</a></td>
+<td>Hướng dẫn CI/CD, test, lint, docker hóa, PR flow</td>
+</tr>
+<tr>
+<td><a href="../ops-guide/">Dev Ops Guide</a></td>
+<td>Hướng dẫn vận hành: Cloud Run, Redis, Pub/Sub</td>
+</tr>
+<tr>
+<td><a href="../../ADR/">ADR Index</a></td>
+<td>Danh sách các quyết định kiến trúc quan trọng</td>
+</tr>
+</tbody>
+</table>
+<hr/>
+<h3 id="service-template-example">🛠 Service template &amp; example<a class="headerlink" href="#service-template-example" title="Permanent link">¶</a></h3>
+<table>
+<thead>
+<tr>
+<th>Repo</th>
+<th>Vai trò</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="https://github.com/vas-org/dx-service-template"><code>dx-service-template</code></a></td>
+<td>Mẫu service chuẩn (FastAPI, pubsub, test, CI)</td>
+</tr>
+<tr>
+<td><a href="https://github.com/vas-org/dx-user-service"><code>dx-user-service</code></a></td>
+<td>Triển khai mẫu: RBAC, JWT, user CRUD</td>
+</tr>
+<tr>
+<td><a href="https://github.com/vas-org/dx-notification-service"><code>dx-notification-service</code></a></td>
+<td>Gửi thông báo Web/Zalo/Email, Pub/Sub event-driven</td>
+</tr>
+</tbody>
+</table>
+<hr/>
+<p>📎 Developer mới nên đọc theo thứ tự:</p>
+<ol>
+<li><code>backend-dev-guide.md</code> (tài liệu này)</li>
+<li>System Diagrams → RBAC Deep Dive</li>
+<li>Dev Guide → Dev Ops Guide</li>
+</ol>
+<hr/>
+<h2 id="13-logging-best-practices">13. Logging Best Practices<a class="headerlink" href="#13-logging-best-practices" title="Permanent link">¶</a></h2>
+<p>Hệ thống nên sử dụng logging chuẩn với các nguyên tắc sau để đảm bảo khả năng giám sát và trace dễ dàng:</p>
+<h3 id="cap-o-log">🔍 Cấp độ log<a class="headerlink" href="#cap-o-log" title="Permanent link">¶</a></h3>
+<table>
+<thead>
+<tr>
+<th>Level</th>
+<th>Mục đích</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>DEBUG</td>
+<td>Chi tiết kỹ thuật để debug (không log ở production)</td>
+</tr>
+<tr>
+<td>INFO</td>
+<td>Bước xử lý chính, hành vi người dùng</td>
+</tr>
+<tr>
+<td>WARNING</td>
+<td>Bất thường không gây lỗi</td>
+</tr>
+<tr>
+<td>ERROR</td>
+<td>Lỗi nghiêm trọng, nên có traceback</td>
+</tr>
+</tbody>
+</table>
+<h3 id="cau-truc-log">📦 Cấu trúc log<a class="headerlink" href="#cau-truc-log" title="Permanent link">¶</a></h3>
+<ul>
+<li>Dùng structured log (JSON format) → dễ tích hợp với Cloud Logging</li>
+<li>Bao gồm <code>request_id</code>, <code>user_id</code> nếu có thể</li>
+<li>Log theo trace-id nếu dùng OpenTelemetry hoặc tương tự</li>
+</ul>
+<h3 id="goi-y-log-theo-tang">🧭 Gợi ý log theo tầng<a class="headerlink" href="#goi-y-log-theo-tang" title="Permanent link">¶</a></h3>
+<table>
+<thead>
+<tr>
+<th>Tầng</th>
+<th>Log gì</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Handler</td>
+<td>Bắt đầu/kết thúc xử lý request, input</td>
+</tr>
+<tr>
+<td>Service</td>
+<td>Bước nghiệp vụ quan trọng, điều kiện phân nhánh</td>
+</tr>
+<tr>
+<td>Repo</td>
+<td>Truy vấn đặc biệt hoặc lỗi DB</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>📎 Không log dữ liệu nhạy cảm (password, token, email học sinh...)</p>
+</blockquote>
+<hr/>
+<h2 id="14-security-considerations-can-nhac-bao-mat-cho-backend">14. Security Considerations – Cân nhắc bảo mật cho Backend<a class="headerlink" href="#14-security-considerations-can-nhac-bao-mat-cho-backend" title="Permanent link">¶</a></h2>
+<h3 id="nguyen-tac-cot-loi_1">🔐 Nguyên tắc cốt lõi<a class="headerlink" href="#nguyen-tac-cot-loi_1" title="Permanent link">¶</a></h3>
+<ul>
+<li><strong>Security by Design:</strong> Bảo mật không phải là tính năng phụ trợ – nó phải được tích hợp ngay từ kiến trúc và quy trình phát triển.</li>
+<li><strong>Zero Trust</strong>: Không giả định bất kỳ nguồn dữ liệu nào là an toàn, kể cả từ nội bộ.</li>
+</ul>
+<hr/>
+<h3 id="input-validation-sanity-check">🧪 Input validation &amp; Sanity Check<a class="headerlink" href="#input-validation-sanity-check" title="Permanent link">¶</a></h3>
+<ul>
+<li><strong>Luôn dùng Pydantic Schema</strong> để kiểm soát input cho API &amp; Pub/Sub.</li>
+<li><strong>Validation bổ sung ở tầng Service</strong> nếu logic phức tạp hơn (ví dụ: chỉ giáo viên chủ nhiệm mới sửa điểm).</li>
+<li><strong>Không tin tưởng payload nội bộ</strong> – không được skip validation khi nhận request từ API Gateway hoặc từ event Pub/Sub.</li>
+</ul>
+<hr/>
+<h3 id="quan-ly-secret-cau-hinh-an-toan">🔐 Quản lý secret &amp; cấu hình an toàn<a class="headerlink" href="#quan-ly-secret-cau-hinh-an-toan" title="Permanent link">¶</a></h3>
+<ul>
+<li><strong>Không bao giờ commit file <code>.env</code></strong> hoặc biến môi trường chứa token, DB URL, v.v.</li>
+<li><strong>Secrets nên được quản lý qua</strong>:</li>
+<li>Google Secret Manager (hoặc <code>doppler</code>, <code>Vault</code> nếu dùng self-hosted)</li>
+<li>Inject vào môi trường Cloud Run qua <code>env var</code> hoặc <code>mount volume</code></li>
+<li>Tách biệt <code>config.py</code> chứa biến công khai và <code>env var</code> chứa thông tin nhạy cảm.</li>
+</ul>
+<hr/>
+<h3 id="token-phan-quyen">📦 Token &amp; phân quyền<a class="headerlink" href="#token-phan-quyen" title="Permanent link">¶</a></h3>
+<ul>
+<li>Không decode token JWT tại backend nếu đã có API Gateway kiểm tra rồi – thay vào đó:</li>
+<li><strong>Tin tưởng <code>X-User-ID</code>, <code>X-User-Role</code>, <code>X-Permissions</code></strong> được Gateway gắn vào header đã được ký (<code>X-Signature</code>)</li>
+<li><strong>Không dùng token client-side trực tiếp gọi vào backend</strong> – mọi truy cập bắt buộc qua Gateway.</li>
+</ul>
+<hr/>
+<h3 id="owasp-api-security-cac-lo-hong-can-e-phong">📛 OWASP API Security – Các lỗ hổng cần đề phòng<a class="headerlink" href="#owasp-api-security-cac-lo-hong-can-e-phong" title="Permanent link">¶</a></h3>
+<table>
+<thead>
+<tr>
+<th>Vấn đề</th>
+<th>Biện pháp</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Injection</td>
+<td>Dùng ORM (SQLAlchemy), tránh query raw nếu không escape</td>
+</tr>
+<tr>
+<td>Broken Auth</td>
+<td>Không dùng xác thực riêng tại backend – chỉ kiểm tra phân quyền</td>
+</tr>
+<tr>
+<td>Excessive Data Exposure</td>
+<td>Dùng <code>response_model</code> để giới hạn dữ liệu trả ra</td>
+</tr>
+<tr>
+<td>Improper Asset Mgmt</td>
+<td>Không expose <code>/docs</code>, <code>/openapi.json</code> trên production</td>
+</tr>
+<tr>
+<td>Lack of Rate Limit</td>
+<td>Đã xử lý ở API Gateway, nhưng vẫn cần audit log local</td>
+</tr>
+</tbody>
+</table>
+<hr/>
+<h3 id="logging-auditing">🧯 Logging &amp; Auditing<a class="headerlink" href="#logging-auditing" title="Permanent link">¶</a></h3>
+<ul>
+<li>Không log dữ liệu nhạy cảm (email học sinh, mã OTP, token).</li>
+<li>Luôn log <code>request_id</code>, <code>user_id</code>, <code>endpoint</code>, và <code>status</code>.</li>
+<li>Xem thêm phần <a href="#13-logging-best-practices"><code>13. Logging Best Practices</code></a></li>
+</ul>
+<hr/>
+<p>📌 Xem thêm chính sách bảo mật toàn hệ thống tại ADR: <a href="../../ADR/adr-004-security/"><code>adr-004-security.md</code></a></p>
+<hr/>
+<h2 id="15-performance-tips-toi-uu-hieu-nang-backend">15. Performance Tips – Tối ưu hiệu năng Backend<a class="headerlink" href="#15-performance-tips-toi-uu-hieu-nang-backend" title="Permanent link">¶</a></h2>
+<p>Hiệu năng hệ thống không chỉ phụ thuộc vào hạ tầng mà còn bị ảnh hưởng trực tiếp bởi cách viết code ở tầng service và repository.</p>
+<hr/>
+<h3 id="truy-van-db-hieu-qua">📥 Truy vấn DB hiệu quả<a class="headerlink" href="#truy-van-db-hieu-qua" title="Permanent link">¶</a></h3>
+<table>
+<thead>
+<tr>
+<th>Mẹo</th>
+<th>Ghi chú</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Dùng <code>.limit()</code> thay vì <code>.all()</code> nếu dữ liệu nhiều</td>
+<td>Tránh load toàn bộ bảng vào RAM</td>
+</tr>
+<tr>
+<td>Dùng <code>selectinload()</code> hoặc <code>joinedload()</code> khi cần truy cập nhiều bản ghi liên quan</td>
+<td>Tránh N+1 query</td>
+</tr>
+<tr>
+<td>Tránh <code>.count()</code> trong bảng lớn</td>
+<td>Nếu có thể, dùng limit + exists/check</td>
+</tr>
+<tr>
+<td>Tách các truy vấn phân tích/phức tạp ra background</td>
+<td>Tránh block API request</td>
+</tr>
+</tbody>
+</table>
+<hr/>
+<h3 id="caching-neu-can-thiet">📤 Caching nếu cần thiết<a class="headerlink" href="#caching-neu-can-thiet" title="Permanent link">¶</a></h3>
+<ul>
+<li><strong>Không nên cache sớm</strong> – chỉ cache khi thấy rõ bottleneck</li>
+<li>Ưu tiên cache kết quả <code>read-only</code> (VD: danh sách ngành học)</li>
+<li>Dùng Redis hoặc local in-memory cache (VD: <code>lru_cache</code>) nếu phù hợp</li>
+<li>Cẩn trọng với cache invalidation nếu dữ liệu thường xuyên thay đổi</li>
+</ul>
+<hr/>
+<h3 id="toi-uu-luong-xu-ly">🪄 Tối ưu luồng xử lý<a class="headerlink" href="#toi-uu-luong-xu-ly" title="Permanent link">¶</a></h3>
+<table>
+<thead>
+<tr>
+<th>Kỹ thuật</th>
+<th>Dùng khi nào</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>BackgroundTasks</code> (FastAPI)</td>
+<td>Gửi email, sync webhook, audit, log external</td>
+</tr>
+<tr>
+<td><code>Pub/Sub</code> hoặc message queue</td>
+<td>Tách các hành động không cần blocking user</td>
+</tr>
+<tr>
+<td>Batch insert/update</td>
+<td>Nếu cần ghi hàng loạt (VD: điểm học sinh)</td>
+</tr>
+</tbody>
+</table>
+<hr/>
+<h3 id="giam-thieu-io-blocking">🧮 Giảm thiểu I/O Blocking<a class="headerlink" href="#giam-thieu-io-blocking" title="Permanent link">¶</a></h3>
+<ul>
+<li>Luôn dùng <code>async def</code> ở API handler nếu gọi I/O (DB, HTTP)</li>
+<li>Tránh các blocking call trong async context (VD: <code>requests.get()</code> → dùng <code>httpx.AsyncClient</code>)</li>
+</ul>
+<hr/>
+<h3 id="o-luong-va-theo-doi">🧪 Đo lường và theo dõi<a class="headerlink" href="#o-luong-va-theo-doi" title="Permanent link">¶</a></h3>
+<ul>
+<li>Dùng <code>OpenTelemetry</code> để trace request &amp; đo thời gian xử lý từng tầng</li>
+<li>Đo <code>latency</code> và <code>throughput</code> theo từng API</li>
+<li>Giám sát số lượng request lỗi (5xx), timeout, và retry qua các biểu đồ Cloud Monitoring</li>
+</ul>
+<hr/>
+<p>📌 Xem thêm cấu trúc log và trace tại Mục <a href="#13-logging-best-practices"><code>13. Logging</code></a> và cấu hình hạ tầng tại <a href="../ops-guide/">Dev Ops Guide</a></p>
+<hr/>
+<blockquote>
+<p>📎 Developer mới nên đọc theo thứ tự:</p>
+<ol>
+<li><code>backend-dev-guide.md</code> (tài liệu này)</li>
+<li>System Diagrams → RBAC Deep Dive</li>
+<li>Dev Guide → Dev Ops Guide</li>
+</ol>
+</blockquote>
+<hr/>
+</article>
+</div>
+<script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var labels=set.querySelector(".tabbed-labels");for(var tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+</div>
+<button class="md-top md-icon" data-md-component="top" hidden="" type="button">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"></path></svg>
+  Trở lại mục lục
+</button>
+</main>
+<footer class="md-footer">
+<div class="md-footer-meta md-typeset">
+<div class="md-footer-meta__inner md-grid">
+<div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" rel="noopener" target="_blank">
+      Material for MkDocs
+    </a>
+</div>
+</div>
+</div>
+</footer>
+</div>
+<div class="md-dialog" data-md-component="dialog">
+<div class="md-dialog__inner md-typeset"></div>
+</div>
+<script id="__config" type="application/json">{"base": "../..", "features": ["navigation.tabs", "navigation.tabs.sticky", "navigation.sections", "navigation.expand", "navigation.top", "navigation.indexes", "search.suggest", "search.highlight", "content.code.annotate", "content.tabs.link"], "search": "../../assets/javascripts/workers/search.d50fe291.min.js", "tags": null, "translations": {"clipboard.copied": "\u0110\u00e3 sao ch\u00e9p", "clipboard.copy": "Sao ch\u00e9p v\u00e0o b\u1ed9 nh\u1edb t\u1ea1m", "search.result.more.one": "1 t\u1eeb kh\u00e1c trong trang", "search.result.more.other": "# t\u1eeb kh\u00e1c trong trang", "search.result.none": "Kh\u00f4ng t\u00ecm th\u1ea5y t\u00e0i li\u1ec7u li\u00ean quan", "search.result.one": "1 t\u00e0i li\u1ec7u li\u00ean quan", "search.result.other": "# t\u00e0i li\u1ec7u li\u00ean quan", "search.result.placeholder": "Nh\u1eadp \u0111\u1ec3 b\u1eaft \u0111\u1ea7u t\u00ecm ki\u1ebfm", "search.result.term.missing": "Kh\u00f4ng", "select.version": "Ch\u1ecdn phi\u00ean b\u1ea3n"}, "version": null}</script>
+<script src="../../assets/javascripts/bundle.13a4f30d.min.js"></script>
+<script type="module">import mermaid from "https://unpkg.com/mermaid@10.4.0/dist/mermaid.esm.min.mjs";
+window.mermaidConfig = {default: {
+    startOnLoad: false
+}};</script></body>
+</html>
