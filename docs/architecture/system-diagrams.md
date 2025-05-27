@@ -459,8 +459,8 @@ flowchart TD
   end
 
   subgraph JWT["📦 JWT Payload"]
-    Roles[roles[]]
-    Permissions[permissions[]]
+    Roles["roles[]"]
+    Permissions["permissions[]"]
   end
 
   JWT --> SuperadminWebapp
