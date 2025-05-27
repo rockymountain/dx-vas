@@ -7,113 +7,145 @@ date: 2025-06-22
 tags: [auth, security, dx-vas, oauth2, otp]
 ---
 
-## 📌 Bối cảnh
+# ADR-006: Chiến lược Xác thực (Auth Strategy)
 
-Hệ thống dx-vas phục vụ nhiều nhóm người dùng:
-- Giáo viên, nhân viên trường học (nội bộ VAS)
-- Học sinh (sử dụng dịch vụ học tập)
-- Phụ huynh (theo dõi kết quả học tập, nhận thông báo)
+## Bối cảnh (Context)
 
-Google Workspace for Education hiện được cấp cho học sinh, giáo viên và nhân viên, nhưng **không cấp cho phụ huynh**. Do đó, cần có cơ chế xác thực phù hợp cho từng nhóm người dùng.
+Hệ thống dx-vas cần hỗ trợ các nhóm người dùng đa dạng:
 
----
+- Nhân viên, giáo viên & học sinh (một số tenant cấp): sử dụng tài khoản Google Workspace (OAuth2)
+- Phụ huynh & học sinh: sử dụng OTP hoặc tài khoản local riêng theo từng trường
+- Một người dùng có thể hoạt động ở nhiều tenant (trường thành viên)
 
-## 🧠 Quyết định
+Do đó, hệ thống cần kiến trúc xác thực:
 
-**Hệ thống dx-vas áp dụng cơ chế xác thực phân biệt theo nhóm người dùng:**
-- OAuth2 (Google) cho học sinh, giáo viên, nhân viên nội bộ
-- Email hoặc SĐT + OTP (Firebase hoặc custom OTP backend) cho phụ huynh
+- Hỗ trợ Google OAuth2 & Local/OTP đồng thời
+- Tách biệt vai trò xác thực toàn cục vs xác thực cục bộ
+- Phát hành JWT chứa đầy đủ `user_id_global`, `tenant_id`, `roles`, `permissions`
+- Phù hợp với kiến trúc multi-tenant phân tầng (Auth Master / Sub Auth)
 
-> Quyết định không embed `permissions` vào JWT access token để tránh tăng kích thước và rủi ro stale data. Các quyền được tra cứu từ Redis hoặc DB trong mỗi request nếu cần, và được forward dưới dạng `X-Permissions` từ API Gateway.
+## Quyết định (Decision)
 
----
+### 1. Tầng xác thực (Authentication Layers)
 
-## 🔐 Chi tiết chiến lược xác thực
+| Thành phần | Vai trò |
+|------------|---------|
+| **Auth Service Master** | Xử lý đăng nhập Google OAuth2 toàn cục |
+| **Sub Auth Service (per tenant)** | Xử lý đăng nhập Local/OTP nội bộ theo từng tenant |
 
-### 1. OAuth2 (Google Workspace Education) làm Identity Provider
-- Áp dụng cho: **học sinh, giáo viên, nhân viên**
-- Sử dụng OAuth2 standard flow
-- Mỗi lần đăng nhập tạo JWT access token + refresh token
-- Refresh token TTL: **30–90 ngày tùy loại user**, lưu Redis hoặc DB (theo [adr-024](./adr-024-data-anonymization-retention.md))
+### 2. Luồng xác thực chính
 
-### 2. Xác thực phụ huynh (Không dùng Google)
-- Áp dụng cho: **phụ huynh**
-- Do không có Google Workspace Account → sử dụng **Email hoặc Phone + OTP**
-- Tùy chọn provider:
-  - Firebase Auth (email OTP, phone OTP)
-  - Custom OTP API tích hợp Zalo OA hoặc SMS Gateway
-- Sau xác thực OTP thành công → tạo JWT giống như OAuth2 (gắn claim `auth_method=otp`, `role=parent`)
-- Refresh token TTL: **30–90 ngày tùy loại user** (quy định cụ thể cho `parent` sẽ được config theo chính sách nội bộ)
+#### 🔐 Google OAuth2 (qua Auth Master)
 
-### 3. Common JWT Structure
+1. Người dùng đăng nhập Google → nhận access token
+2. Auth Master gọi User Service Master để:
+   - Tìm hoặc tạo `user_id_global`
+   - Lấy danh sách `tenant_id` user thuộc về
+3. Nếu user có nhiều tenant → chọn tenant
+4. Auth Master, sau khi biết `tenant_id`, sẽ gọi Sub User Service tương ứng để lấy `roles`, `permissions` của người dùng trong tenant đã chọn. Việc gọi này:
+   - **Luôn đi qua API Gateway**, nhằm đảm bảo chuẩn hóa định tuyến, xác thực nội bộ, logging và audit trail.
+   - Gateway sẽ định tuyến đến đúng stack của tenant tương ứng (VD: `dx-vas-tenant-abc`), theo `tenant_id` và prefix nội bộ.
+   - Auth Master gắn header đặc biệt `X-Internal-Call` hoặc sử dụng service account JWT để được phép truy cập Sub User Service.
+5. Phát hành JWT chứa thông tin người dùng và RBAC trong tenant đã chọn:
+
 ```json
 {
-  "sub": "user_id",
-  "email": "parent@example.com",
-  "role": "parent",
-  "auth_method": "otp",
-  "iat": 1710000000,
-  "exp": 1710003600
+  "user_id": "uuid",
+  "tenant_id": "uuid",
+  "roles": [...],
+  "permissions": [...],
+  "auth_provider": "google",
+  "exp": ...,
+  "trace_id": ...
 }
 ```
-- `role`: chuỗi đơn (not array), phản ánh vai trò chính của user: `student`, `teacher`, `parent`, `admin`...
-- `auth_method`: chỉ rõ phương thức xác thực, ví dụ: `oauth2`, `otp`, `internal`
 
----
+> Lưu ý: Trong một số triển khai, JWT có thể chỉ chứa `roles` (danh sách role\_code), còn `permissions` sẽ được Gateway truy vấn từ Redis theo `rbac:{user_id}:{tenant_id}` để giảm kích thước token và đảm bảo điều kiện (`condition`) luôn được cập nhật chính xác.
 
-## 📤 Frontend nhận token
-- Frontend nhận access token từ backend sau khi xác thực thành công
-- **Không nên lưu token trong localStorage**. Thay vào đó:
-  - SPA: lưu trong `sessionStorage`
-  - SSR hoặc frontend truyền thống: lưu trong `HttpOnly Cookie`
-- **Frontend KHÔNG tự thêm các header `X-Role`, `X-User-ID`, `X-Permissions`**. Những header này sẽ được sinh ra bởi API Gateway sau khi JWT được xác thực.
+#### 🔐 OTP/Local Login (qua Sub Auth Service)
 
----
+1. Sub Auth nhận yêu cầu login OTP (SMS/email)
+2. Gọi User Master để tạo hoặc lấy `user_id_global`
+   - Giao tiếp này **luôn qua API Gateway**, theo chuẩn nội bộ.
+   - Sub Auth Service sử dụng token đặc biệt hoặc header `X-Internal-Call` để được phép truy cập
+3. Gọi Sub User Service (của tenant hiện tại) **qua Gateway** để lấy RBAC
+4. Phát hành JWT giống Auth Master:
 
-## 🧩 Tích hợp RBAC & Service header forwarding
-- API Gateway xác thực JWT, sau đó:
-  - Tra `role` và `permissions` (từ DB hoặc Redis)
-  - Forward các header sau:
+   * Sử dụng cùng chuẩn JWT (thuật toán ký, claim format)
+   * Có thể dùng key ký riêng per tenant, nhưng phải được Gateway biết để xác minh
+
+### 3. JWT và RBAC
+
+* JWT được ký và xác minh bởi API Gateway
+* JWT luôn chứa:
+
+  * `user_id`
+  * `tenant_id`
+  * `roles` (tối thiểu)
+* `permissions` có thể:
+
+  * Embed trực tiếp trong JWT (nếu đơn giản và ngắn)
+  * Hoặc được tra cứu tại API Gateway từ Redis cache theo key:
+    `rbac:{user_id}:{tenant_id}`
+    ⇒ giúp RBAC condition luôn cập nhật theo thời gian thực và dễ invalidate
+
+### 4. Rotation & Bảo mật
+
+* JWT ký bằng key riêng theo môi trường (`dev`, `staging`, `prod`)
+* Luân phiên key định kỳ (manual hoặc automatic rotation)
+* Kiểm soát TTL & revocation thông qua trace ID + Pub/Sub event
+
+## Hệ quả (Consequences)
+
+✅ Ưu điểm:
+
+* Phân tách rõ vai trò xác thực toàn cục vs cục bộ
+* Dễ mở rộng khi có thêm tenant mới
+* Có thể deploy Sub Auth Service riêng nếu trường cần xác thực tùy biến
+
+⚠️ Lưu ý:
+
+* Cần handle trường hợp người dùng thuộc nhiều tenant (buộc chọn tenant)
+* Mỗi Sub Auth Service cần được kiểm toán kỹ về bảo mật OTP
+
+## Sơ đồ minh họa
+
+```mermaid
+sequenceDiagram
+    autonumber
+    participant User as 👤 Người dùng
+    participant AuthM as 🔐 Auth Master
+    participant AuthT as 🔐 Sub Auth Service
+    participant UserMaster as 🧠 User Master
+    participant UserSub as 🧩 Sub User Service
+    participant JWT as 📦 JWT
+
+    rect rgba(220,220,220,0.1)
+    Note over User, AuthM: Login Google OAuth2
+    User->>AuthM: Gửi access token
+    AuthM->>UserMaster: Lookup user_id_global
+    UserMaster-->>AuthM: Trả user_id_global + tenant list
+    AuthM->>User: Hiển thị chọn tenant (nếu cần)
+    AuthM->>Gateway: Gọi nội bộ đến Sub User Service (theo tenant_id)
+    Gateway->>UserSub: Lấy roles + permissions
+    AuthM->>JWT: Phát JWT đầy đủ
+    AuthM-->>User: Trả token
+    end
+
+    rect rgba(220,220,220,0.1)
+    Note over User, AuthT: Login OTP (Sub Auth)
+    User->>AuthT: Gửi mã OTP
+    AuthT->>Gateway: Gọi nội bộ UserMaster (tạo / lookup user_id_global)
+    Gateway->>UserMaster: Thực thi
+    AuthT->>Gateway: Gọi nội bộ UserSub (lấy RBAC)
+    Gateway->>UserSub: Trả roles + permissions
+    AuthT->>JWT: Phát token
+    AuthT-->>User: Trả JWT
+    end
 ```
-X-User-ID: user_id
-X-Role: parent
-X-Auth-Method: otp
-X-Permissions: read:score, receive:notification
-```
-- Các service backend có thể tin cậy vào các header này và phân quyền theo RBAC (ADR-007), không cần decode lại JWT.
 
----
+## Liên kết liên quan
 
-## 🔐 Anonymous & Internal Service Auth
-- Một số API public cho phép truy cập anonymous (có quota/rate-limit riêng)
-- Các internal service (e.g. Notification Service, Cron) sử dụng service account JWT với `auth_method=internal`, `role=system` hoặc `cron` để phân biệt RBAC
-
----
-
-## ✅ Lợi ích
-- Phân tách rõ loại người dùng và hình thức xác thực
-- Cho phép mở rộng dễ dàng thêm các provider khác
-- Phụ huynh có thể sử dụng hệ thống mà không cần tạo tài khoản Google riêng
-
----
-
-## ❌ Rủi ro & Giải pháp
-
-| Rủi ro | Giải pháp |
-|--------|-----------|
-| OTP spam hoặc brute force | Limit rate + CAPTCHA |
-| Google OAuth2 token bị lộ | Chỉ chấp nhận domain `@truongvietanh.edu.vn` + refresh token có TTL rõ ràng |
-| JWT reuse từ phụ huynh sang học sinh | Check `role`, `auth_method` strict ở API Gateway + audit |
-
----
-
-## 📎 Tài liệu liên quan
-
-- RBAC Strategy: [ADR-007](./adr-007-rbac.md)
-- Security Hardening: [ADR-004](./adr-004-security.md)
-- Secrets Management: [ADR-003](./adr-003-secrets.md)
-- Audit Logging: [ADR-008](./adr-008-audit-logging.md)
-- Token TTL & Data policy: [ADR-024](./adr-024-data-anonymization-retention.md)
-
----
-> “Xác thực không chỉ là cánh cửa — đó là cách bạn kiểm soát ai bước vào hệ thống.”
+* [`adr-007-rbac.md`](./adr-007-rbac.md) – Chiến lược RBAC phân tầng
+* [`rbac-deep-dive.md`](../architecture/rbac-deep-dive.md)
+* [`README.md#3-auth-service`](../README.md#3-auth-service)
