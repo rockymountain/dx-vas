@@ -7,139 +7,82 @@ date: 2025-06-22
 tags: [deployment, strategy, cloud-run, ci-cd, dx-vas]
 ---
 
-## 📌 Bối cảnh
+# ADR-015: Chiến lược Triển khai (Deployment Strategy)
 
-Hệ sinh thái **dx-vas** bao gồm nhiều loại dịch vụ:
-- Dịch vụ frontend (SSR App Portal, Admin)
-- Dịch vụ backend (API Gateway, LMS/CRM Adapter, Notification)
-- Dịch vụ batch/ngầm hoặc tích hợp bên ngoài
+## Bối cảnh
 
-Mỗi loại dịch vụ có đặc thù khác nhau về:
-- Độ critical (ảnh hưởng người dùng thực, backend nội bộ...)
-- Khả năng rollback
-- Tần suất release
+Hệ thống dx-vas cần hỗ trợ vận hành ổn định cho nhiều trường thành viên (tenant), với các yêu cầu:
 
-Việc chuẩn hoá **các chiến lược triển khai phù hợp cho từng loại** là cần thiết để đảm bảo:
-- Tránh downtime, sai lệch version
-- Có rollback rõ ràng nếu xảy ra lỗi
-- Tối ưu chi phí và thời gian triển khai
+- Tách biệt môi trường của từng tenant để đảm bảo bảo mật và tính ổn định
+- Dễ dàng mở rộng khi có tenant mới
+- Quản lý deployment theo cụm dịch vụ riêng biệt (core / tenant)
+- Đảm bảo khả năng tự động hóa CI/CD, rollback, và giám sát theo tenant
 
----
+## Quyết định
 
-## 🧠 Quyết định
+### 1. Kiến trúc triển khai tổng thể
 
-**Áp dụng tập hợp các chiến lược triển khai chuẩn (manual, auto, canary, blue/green, progressive, rolling) cho hệ thống dx-vas. CI/CD sẽ hỗ trợ lựa chọn động tùy vào service và môi trường.**
+Hệ thống được chia làm 2 nhóm triển khai chính:
 
----
+| Nhóm | Nội dung | Môi trường |
+|------|----------|------------|
+| **Shared Core Services** | Gateway, Auth Master, User Master, Notification Master, Redis, Pub/Sub | `dx-vas-core` |
+| **Tenant Stack (per tenant)** | Frontend apps, Sub Auth, Sub User, CRM/SIS/LMS Adapters, Sub Notification | `dx-vas-tenant-abc`, `dx-vas-tenant-xyz`, ... |
 
-## 🛠 Chi tiết các chiến lược triển khai
+Mỗi tenant có thể chạy độc lập trên một GCP project riêng → dễ quản lý billing, tài nguyên, bảo mật.
 
-### 1. Manual Deployment
-- **Mô tả**: Deploy thủ công bằng tay (UI/CLI) có kiểm soát người thực hiện
-- **Sử dụng cho**:
-  - Production critical service có release lớn
-  - Trường hợp khẩn cấp cần kiểm soát cao
-- **Ưu điểm**: Kiểm soát kỹ, an toàn hơn
-- **Nhược điểm**: Dễ quên bước, không lặp lại được, dễ lỗi người
+### 2. Mô hình project trên Google Cloud
 
-### 2. Automated Deployment (to Staging)
-- **Mô tả**: Deploy tự động khi CI pass trên nhánh `dev`
-- **Sử dụng cho**:
-  - Staging của mọi service
-- **Ưu điểm**: Nhanh, liên tục, phát hiện lỗi sớm
-- **Nhược điểm**: Không kiểm soát production release
+| Project | Vai trò |
+|---------|---------|
+| `dx-vas-core` | Dịch vụ chung (Gateway, Auth/User Master, Redis, Pub/Sub) |
+| `dx-vas-tenant-[name]` | Stack riêng của từng tenant |
+| `dx-vas-monitoring` | Giám sát, alerting, log tập trung |
+| `dx-vas-data` | Cloud SQL, BigQuery, GCS dùng chung hoặc chia theo namespace |
 
-### 3. Rolling Update (Cloud Run Default)
-- **Mô tả**: Cập nhật revision mới → từng request chuyển dần sang revision mới
-- **Sử dụng cho**:
-  - Service ít critical, không giữ state
-- **Ưu điểm**: Đơn giản, không cấu hình thêm
-- **Nhược điểm**: Không có bước kiểm soát traffic như Canary
-- **Khả năng rollback**:
-  - Cloud Run luôn tạo revision mới → rollback = update traffic về revision cũ
-  - Nhưng rolling không có các bước chia traffic tinh vi như Canary hay môi trường song song như Blue/Green
+### 3. Tên miền và định danh dịch vụ
 
-### 4. Canary Release
-- **Mô tả**: Triển khai phiên bản mới tới 1%/10% traffic → giám sát → tăng dần
-- **Sử dụng cho**:
-  - API Gateway, Frontend SSR, LMS Adapter
-- **Ưu điểm**: Phát hiện sớm lỗi, rollback nhanh
-- **Nhược điểm**: Phức tạp hơn trong CI/CD, cần alert/metric
-- **Chi tiết rollout**:
-  - `10%` → `25%` → `50%` → `100%`
-  - Giám sát `error_rate`, `latency`, `availability`
-  - Rollback bằng `update-traffic` về revision trước
-- **Liên kết kỹ thuật**: [`adr-014-zero-downtime.md`](./adr-014-zero-downtime.md)
+- Mỗi frontend tenant có domain riêng:  
+  `admin.abcschool.edu.vn`, `portal.xyzschool.edu.vn`
+- Mỗi dịch vụ backend được đặt theo chuẩn:  
+  `auth-service-master`, `user-service-master`, `auth-service-[tenant]`, `user-service-[tenant]`, ...
+- API Gateway định tuyến theo `tenant_id` hoặc domain/subdomain
 
-### 5. Blue/Green Deployment
-- **Mô tả**: Triển khai vào môi trường tách biệt (green), kiểm thử → chuyển traffic toàn bộ từ blue → green nếu OK
-- **Sử dụng cho**:
-  - Thay đổi lớn, có thể gây mất tương thích
-  - Khi cần kiểm thử thực tế nhưng không ảnh hưởng người dùng
-- **Ưu điểm**: Rollback nhanh bằng cách switch lại blue
-- **Nhược điểm**: Tốn tài nguyên (2 môi trường), khó duy trì state đồng bộ
-- **Triển khai trên Cloud Run**:
-  - Dùng `tag`: `blue`, `green`
-  - Chuyển traffic bằng `gcloud run services update-traffic --to-tags`
+### 4. Tách biệt deployment & pipeline
 
-### 6. Progressive Rollout (Gate-driven)
-- **Mô tả**: Tăng dần traffic + trigger bởi review hoặc metric
-- **Sử dụng cho**:
-  - Các service có SLA cao, không thể chịu downtime
-- **Ưu điểm**: Kiểm soát cực tốt, rollback từng bước
-- **Nhược điểm**: Rất phức tạp, chỉ áp dụng khi cần nghiêm ngặt
-- **Ví dụ**:
-  - `5%` → review ✅
-  - `25%` → monitor ✅
-  - `100%`
+- CI/CD được chia theo module:
+  - Core: `gateway/`, `auth-master/`, `user-master/`, ...
+  - Tenant: `tenant-[name]/auth/`, `tenant-[name]/frontend/`, ...
+- Mỗi tenant có thể deploy riêng không ảnh hưởng tenant khác
+- Superadmin Webapp có thể khởi tạo tenant mới bằng script (`terraform + deploy`)
 
----
+### 5. Giám sát & quản lý môi trường
 
-## 🧭 Hướng dẫn lựa chọn chiến lược
+- Mỗi tenant có log, alert riêng biệt (theo project)
+- Có khả năng collect toàn bộ log về Stackdriver chung (theo `tenant_id`)
+- Hỗ trợ môi trường `dev`, `staging`, `prod` riêng biệt per stack
 
-| Tiêu chí | Manual | Auto | Rolling | Canary | Blue/Green | Progressive |
-|---------|--------|------|---------|--------|------------|-------------|
-| Critical service | ✅ | ❌ | ❌ | ✅ | ✅ | ✅✅ |
-| Backend không giữ state | ✅ | ✅ | ✅ | ✅ | ✅ | ❌ |
-| Có schema migration | ✅ | ❌ | ❌ | ✅ | ✅ | ✅ |
-| Yêu cầu rollback nhanh | ❌ | ❌ | ✅ | ✅ | ✅ | ✅ |
-| Nhỏ, internal, low risk | ❌ | ✅ | ✅ | ✅ | ❌ | ❌ |
+## Hệ quả
 
----
+✅ Ưu điểm:
 
-## 🔁 Chiến lược rollback
+- Mỗi trường có thể vận hành độc lập (từ xác thực → gửi thông báo)
+- Dễ scale khi có thêm tenant
+- Đảm bảo isolation về bảo mật, performance
+- Dễ tổ chức CI/CD theo module rõ ràng
 
-| Chiến lược | Cách rollback |
-|-----------|----------------|
-| Manual | Revert thủ công từ Git/Cloud Run UI |
-| Auto | Revert commit + re-trigger CI/CD |
-| Rolling | Update traffic về revision trước (pin lại revision cũ) |
-| Canary | Update traffic về revision trước |
-| Blue/Green | Switch lại tag `blue` |
-| Progressive | Ngừng rollout + rollback traffic |
+⚠️ Lưu ý:
 
-> **Mọi rollback production phải có phê duyệt theo [`adr-018-release-approval-policy.md`]**
+- Cần chi phí triển khai thêm GCP project và stack per tenant
+- Quản trị multi-project cần Terraform module chuẩn hóa
+- Quy trình deploy tenant mới cần được chuẩn hóa kỹ càng (tự động càng tốt)
 
----
+## Liên kết liên quan
 
-## 🔄 Tích hợp CI/CD
-
-- GitHub Actions pipeline:
-  - `dev` branch → auto deploy staging
-  - `main` branch → deploy production theo chiến lược:
-    - Có file `.deployment-strategy.yml`
-    - CI quyết định: rolling / canary / blue/green
-  - Canary monitor metric từ `Cloud Monitoring`
-- Terraform modules hỗ trợ traffic split/tag Cloud Run revision
-
----
-
-## 📎 Tài liệu liên quan
-
-- CI/CD Strategy: [ADR-001](./adr-001-ci-cd.md)
-- Env Config: [ADR-005](./adr-005-env-config.md)
-- Zero downtime: [ADR-014](./adr-014-zero-downtime.md)
-- Release Approval Policy: [ADR-018](./adr-018-release-approval-policy.md)
+- [`adr-019-project-layout.md`](./adr-019-project-layout.md)
+- [`adr-006-auth-strategy.md`](./adr-006-auth-strategy.md)
+- [`adr-007-rbac.md`](./adr-007-rbac.md)
+- [`system-diagrams.md#5-sơ-đồ-triển-khai-hạ-tầng-deployment-diagram`](../architecture/system-diagrams.md#5-sơ-đồ-triển-khai-hạ-tầng-deployment-diagram)
 
 ---
 > "Triển khai đúng không chỉ là push code – mà là kiểm soát rủi ro và tạo niềm tin."

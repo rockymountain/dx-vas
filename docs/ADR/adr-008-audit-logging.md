@@ -7,107 +7,102 @@ date: 2025-06-22
 tags: [audit, logging, observability, dx-vas, security]
 ---
 
-## 📌 Bối cảnh
+# ADR-008: Audit Logging – Nhật ký hoạt động và giám sát an ninh hệ thống
 
-Hệ thống **dx-vas** xử lý dữ liệu nhạy cảm và hành vi người dùng:
-- Quản lý thông tin học sinh, giáo viên, điểm số (SIS, LMS)
-- Tác vụ phân quyền, đăng nhập, cập nhật hồ sơ (CRM, Gateway)
-- Gửi thông báo, gọi API tích hợp (Notification, External Services)
+## Bối cảnh
 
-Để phục vụ kiểm toán (audit), bảo mật, truy vết hành vi và điều tra sự cố, cần hệ thống **Audit Logging tập trung và chuẩn hoá** trên toàn bộ các service.
+Hệ thống dx-vas phục vụ nhiều tenant (trường thành viên), mỗi tenant có người dùng, phân quyền và thao tác riêng biệt. Việc theo dõi và ghi lại đầy đủ các hành vi quan trọng là thiết yếu để:
 
-## 🧠 Quyết định
+- Đảm bảo minh bạch trong thao tác phân quyền
+- Phát hiện sớm các hành vi đáng ngờ hoặc sai lệch
+- Hỗ trợ phân tích lỗi, truy vết sự cố và đối soát hoạt động
+- Đáp ứng yêu cầu bảo mật và kiểm toán theo từng tenant
 
-**Áp dụng chiến lược Audit Logging chuẩn hoá, gửi log dạng JSON tới Cloud Logging, phân loại theo `audit_level`, lưu dài hạn và giới hạn truy cập. Áp dụng cho cả Gateway và các backend service.**
+## Quyết định
 
-## 🧩 Cấu trúc log audit chuẩn
+### 1. Mọi hành động quan trọng phải được ghi log
 
-```json
-{
-  "timestamp": "2025-06-22T14:00:00Z",
-  "request_id": "abc-123",
-  "user_id": "u_567",
-  "role": "admin",
-  "ip": "203.113.1.5",
-  "action": "update_student",
-  "resource": "student/102",
-  "method": "PUT",
-  "status_code": 200,
-  "latency_ms": 147,
-  "source": "gateway|crm_adapter|lms_proxy",
-  "actor_type": "human|service|system",
-  "audit_level": "critical|info|debug"
-}
-```
+Bao gồm (nhưng không giới hạn):
 
-- `resource`: dạng `{type}/{id}`
-- `source`: định danh service
-- `audit_level`:
-  - `critical`: thao tác ghi nhạy cảm (PUT/DELETE/role change)
-  - `info`: xem dữ liệu quan trọng (GET student/grades)
-  - `debug`: mặc định off, chỉ dùng dev/test
+- Đăng nhập / Đăng xuất (Google OAuth2, OTP, Local)
+- Gán quyền (user ↔ role ↔ permission)
+- Thay đổi trạng thái người dùng (`is_active`, `is_active_in_tenant`)
+- Gửi thông báo (qua Sub Notification Service hoặc từ Master)
+- Tạo / sửa / xoá role, permission, template
+- Bất kỳ hành động hệ thống liên quan tới tài chính, học sinh, hồ sơ
 
-## 🔄 Luồng tích hợp
+### 2. Log bắt buộc phải chứa các trường:
 
-### Tại API Gateway
-- Log mọi hành động cần phân quyền → log sau khi xác thực và kiểm tra RBAC
-- Viết middleware `audit_logger.py`
-- Gửi log qua stdout → Cloud Logging
+| Trường | Ý nghĩa |
+|--------|--------|
+| `tenant_id` | Tenant nơi xảy ra hành động |
+| `actor_user_id` | ID người thực hiện hành động (user đăng nhập) |
+| `target_resource_type` | Loại tài nguyên bị tác động (user, role, permission, notification, ...) |
+| `target_resource_id` | ID tài nguyên bị tác động (nếu có) |
+| `action_type` | Hành động cụ thể (assign_role, update_user, send_notification, ...) |
+| `action_scope` | Phạm vi tác động (global / per-tenant) |
+| `trace_id` | ID theo dõi xuyên suốt chuỗi sự kiện |
+| `timestamp` | Thời điểm xảy ra |
+| `ip`, `user_agent` | (nếu có thể lấy) từ request đầu vào |
+| `payload_before`, `payload_after` | Ghi nhận giá trị trước/sau (cho audit thay đổi) |
 
-### Tại Backend Services
-- Cung cấp SDK hoặc decorator `@audit_event`
-- Gọi `audit_logger.log(...)` tại các API có side-effect
-- Có thể gửi về chung 1 topic Pub/Sub hoặc stdout riêng của từng service
+> Trong trường hợp audit RBAC hoặc notification, có thể log `target_resource_type = "user"`, `target_resource_id = <user_id>` để thể hiện user bị gán vai trò hoặc nhận thông báo.
 
-## 📦 Lưu trữ & Truy vấn
+### 3. Giao tiếp giữa service phải traceable
 
-- Dữ liệu log lưu tại Cloud Logging (180 ngày)
-- Export sang BigQuery → tạo bảng `audit_logs_dxvas`
-- Query theo:
-  - `user_id`, `action`, `role`, `source`, `audit_level`
-  - Thống kê theo ngày/tháng/quý để phục vụ audit nội bộ
+- Các service (Auth, Gateway, Sub Service) gắn `trace_id` vào log
+- Nếu là call qua Pub/Sub → gắn `message_id`, `correlation_id`
 
-## 🔐 Kiểm soát truy cập & bảo mật
+### 4. Notification Service (Pub/Sub Option B) ghi log như sau:
 
-- Chỉ nhóm `Platform Admin` và `Security Team` được xem full audit log
-- Phân quyền chi tiết theo log type: `system`, `user`, `security`
-- Ghi log hành vi đọc audit log nếu cần (meta-audit)
-- Mask thông tin nhạy cảm: không log full payload, chỉ log ID hoặc field xác định
+- Mỗi Sub Notification Service:
+  - Ghi log trạng thái gửi thông báo (`sent`, `failed`, `queued`, `skipped`)
+  - Gắn: `tenant_id`, `notification_id`, `channel`, `receiver_count`, `error_detail` (nếu có)
+  - Log có thể gắn `correlation_id` theo sự kiện từ Master
 
-## 🛠 Tích hợp CI & Kiểm thử
+- Notification Master:
+  - Lắng nghe các sự kiện `tenant_notification_batch_status` để tổng hợp kết quả toàn hệ thống
+  - Tổng hợp này cũng được ghi log dưới dạng audit, ví dụ:
+    ```json
+    {
+      "actor_user_id": "<superadmin_id>",
+      "action_type": "global_notification_summary",
+      "target_resource_type": "notification",
+      "target_resource_id": "notif-xyz",
+      "success_count": 2,
+      "fail_count": 1,
+      "trace_id": "...",
+      "timestamp": "..."
+    }
+    ```
+  - Ghi rõ tenant nào nhận thành công / thất bại (nếu cần đối soát)
 
-- Kiểm thử middleware tạo log đúng schema
-- Kiểm tra CI reject nếu thiếu audit log cho API ghi nhạy cảm
-- Có thể mock `audit_logger.log()` trong unit test
+### 5. Hệ thống log tập trung
 
-## ✅ Lợi ích
+- Dùng Cloud Logging / Stackdriver
+- Tất cả log đều có cấu trúc JSON chuẩn → dễ phân tích bằng BigQuery
+- Cho phép filter theo `tenant_id`, `action_type`, `trace_id`
 
-- Tăng khả năng kiểm soát hành vi hệ thống
-- Hỗ trợ điều tra sự cố, phản ứng nhanh khi bị tấn công
-- Đáp ứng yêu cầu kiểm toán nội bộ, tuân thủ dữ liệu
-- Dễ thống kê hoạt động quan trọng theo người dùng và thời gian
+## Hệ quả
 
-## ❌ Rủi ro & Giải pháp
+✅ Ưu điểm:
 
-| Rủi ro | Giải pháp |
-|--------|-----------|
-| Ghi log quá mức gây overload | Chỉ log hành động rõ ràng trong danh sách cho phép |
-| Log chứa dữ liệu nhạy cảm | Mask hoặc log field định danh thay vì full object |
-| Bỏ sót hành động nhạy cảm | CI/CD kiểm tra + checklist tại PR + middleware bắt buộc |
+- Dễ theo dõi hoạt động của từng người dùng trong từng tenant
+- Giúp truy vết nhanh khi có lỗi, gian lận hoặc bất thường
+- Hỗ trợ quản trị tập trung nhưng phân quyền phân tích theo tenant
 
-## 🔄 Các phương án đã loại bỏ
+⚠️ Lưu ý:
 
-| Phương án | Lý do không chọn |
-|-----------|------------------|
-| Chỉ log lỗi hệ thống | Không đủ để audit hành vi người dùng |
-| Log chung lẫn access/error log | Khó tách, phân quyền, và phân tích |
-| Log tại backend riêng biệt, không đồng bộ schema | Không query được tập trung, thiếu chuẩn hóa |
+- Dữ liệu log cần được bảo vệ riêng, có retention phù hợp
+- Audit log quan trọng (RBAC, phân quyền) không được phép xóa
+- Cần cơ chế mask dữ liệu nhạy cảm khi export (email, số điện thoại)
 
-## 📎 Tài liệu liên quan
+## Liên kết liên quan
 
-- RBAC Strategy: [ADR-007](./adr-007-rbac.md)
-- Auth Strategy: [ADR-006](./adr-006-auth-strategy.md)
-- Security Hardening: [ADR-004](./adr-004-security.md)
+- [`adr-007-rbac.md`](./adr-007-rbac.md)
+- [`adr-006-auth-strategy.md`](./adr-006-auth-strategy.md)
+- [`rbac-deep-dive.md`](../architecture/rbac-deep-dive.md#10-giám-sát--gỡ-lỗi)
+- [`README.md#17-bảo-mật--giám-sát`](../README.md#17-bảo-mật--giám-sát)
 
 ---
 > “Nếu bạn không ghi lại hành vi của hệ thống – bạn sẽ không bao giờ biết điều gì đã xảy ra khi nó xảy ra.”
