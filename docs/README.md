@@ -1,93 +1,395 @@
-## TÀI LIỆU KIẾN TRÚC CHI TIẾT – HỆ THỐNG CHUYỂN ĐỔI SỐ VAS
+# TÀI LIỆU KIẾN TRÚC CHI TIẾT – HỆ THỐNG CHUYỂN ĐỔI SỐ VAS
 
-### 0. Yêu cầu dự án
+## 1. Yêu cầu dự án
 
-* **Mục tiêu chính:** Triển khai một hệ thống chuyển đổi số toàn diện cho Trường Việt Anh, tích hợp quản lý học sinh, giáo viên, phụ huynh, lớp học, học phí, thông báo, học tập online và quy trình tuyển sinh.
-* **Quy mô thiết kế ban đầu:**
+* **Mục tiêu chính:** Triển khai một hệ thống chuyển đổi số toàn diện cho một công ty giáo dục quản lý nhiều trường thành viên, tích hợp quản lý học sinh, giáo viên, phụ huynh, lớp học, học phí, thông báo, học tập online và quy trình tuyển sinh.
 
-  * 80 nhân viên, giáo viên
-  * 500 học sinh
-  * Tối đa 500 phụ huynh (1 phụ huynh/học sinh)
-* **Khả năng mở rộng tối đa:**
+* **Mô hình vận hành:** 
+  * Công ty sở hữu và quản lý **3 trường thành viên** (mỗi trường là một tenant riêng biệt).
+  * Hệ thống vận hành theo kiến trúc **multi-tenant**, mỗi tenant có stack riêng (frontend, adapters, auth/user sub-service), và dùng chung API Gateway & Tenant Master Services.
 
-  * 200 nhân viên, giáo viên
-  * 1200 học sinh
-  * 1200 phụ huynh
-* **Phân quyền người dùng:**
+* **Thiết kế ban đầu (cho toàn hệ thống):**
+  * 1 công ty quản lý 3 tenant (trường thành viên).
+  * Tổng số người dùng dự kiến:
+    * **100 nhân viên, giáo viên** (toàn hệ thống)
+    * **Từ 100 đến 600 học sinh mỗi trường** → tổng cộng **khoảng 1000 học sinh**
+    * **Khoảng 1000 phụ huynh**, tương ứng 1:1 với học sinh
 
-  * Nhân viên, giáo viên, học sinh sử dụng tài khoản Google Workspace Education Essentials → Đăng nhập qua Google OAuth2
-  * Phụ huynh không có tài khoản Workspace → Đăng nhập bằng tài khoản cục bộ hoặc OTP
+* **Khả năng mở rộng tối đa (gấp 2.5 lần):**
+  * **250 nhân viên, giáo viên**
+  * **Tối đa 2500 học sinh**
+  * **Tối đa 2500 phụ huynh**
 
-### 1. Đăng nhập & Phân quyền động (RBAC)
+## 2. Đăng nhập & Phân quyền động (RBAC)
 
-VAS sử dụng cơ chế RBAC động được đánh giá và thực thi tại API Gateway, giúp kiểm soát chi tiết theo vai trò và ngữ cảnh truy cập của từng người dùng. Các nhóm người dùng như giáo viên, học sinh (qua Google OAuth2) và phụ huynh (qua OTP hoặc tài khoản cục bộ) đều được phân quyền rõ ràng thông qua hệ thống RBAC này.
+Hệ thống dx-vas sử dụng kiến trúc RBAC động với khả năng multi-tenant. Quyền truy cập được kiểm soát chính xác theo từng tenant (trường thành viên), kết hợp quản trị tập trung từ Master với khả năng tùy biến cục bộ tại từng tenant.
 
-* Triết lý thiết kế:
+### 🔑 Mô hình phân tầng định danh và RBAC
 
-  * Hệ thống RBAC động, condition-based.
-  * Phân tách rõ vai trò (role), hành động (action) và điều kiện (condition) theo từng người dùng.
-  * API Gateway chịu trách nhiệm xác thực token, kiểm tra trạng thái hoạt động và đánh giá phân quyền trước khi chuyển tiếp request.
+- **User Service Master**:
+  - Quản lý toàn bộ định danh người dùng (`users_global`)
+  - Duy trì thông tin `tenants`, `user_tenant_assignments`
+  - Cung cấp bộ `global_roles_templates` và `global_permissions_templates`
+  - Trạng thái `is_active` toàn cục
 
-📘 Để tìm hiểu sâu hơn về cơ chế RBAC, vui lòng xem tài liệu chi tiết tại:👉 [Chi tiết Kiến trúc RBAC](./architecture/rbac-deep-dive.md)
+- **Sub User Service (per tenant)**:
+  - Quản lý RBAC riêng biệt của tenant
+  - Tham chiếu `user_id_global`, có `is_active_in_tenant`
+  - Cho phép kế thừa hoặc tuỳ chỉnh role/permission riêng
+  - Thực hiện gán vai trò, phân quyền, và kiểm tra RBAC trong nội bộ tenant
 
-### 2. Customer Portal (PWA)
+📘 Mọi chi tiết về schema, bảng, quan hệ được định nghĩa rõ trong:
+- [`user-service/master/data-model.md`](./services/user-service/master/data-model.md)
+- [`user-service/tenant/data-model.md`](./services/user-service/tenant/data-model.md)
+
+### 🔐 Đánh giá phân quyền tại API Gateway
+
+- JWT do Auth Master/Sub cấp, chứa `user_id`, `tenant_id`, `roles`, `permissions`
+- Gateway thực hiện:
+  - Xác thực JWT
+  - Kiểm tra `is_active` và `is_active_in_tenant`
+  - Truy vấn cache RBAC (theo `user_id + tenant_id`)
+  - Đánh giá điều kiện JSONB nếu có (VD: xem điểm học sinh nếu cùng lớp)
+
+### 🧭 Tính linh hoạt
+
+- Một user có thể thuộc nhiều tenant với vai trò khác nhau
+- Tenant có thể chỉnh sửa RBAC riêng mà không ảnh hưởng các tenant khác
+- RBAC cache tại Gateway được đồng bộ qua Pub/Sub hoặc TTL tự động
+
+📘 Đọc thêm mô hình phân quyền chi tiết tại: [`rbac-deep-dive.md`](./architecture/rbac-deep-dive.md)
+
+## 3. Auth Service
+
+Hệ thống dx-vas sử dụng mô hình xác thực đa tầng để hỗ trợ multi-tenant, đồng thời đảm bảo tính linh hoạt trong xác thực Google OAuth2 và Local/OTP.
+
+### 🔐 Auth Service Master
+- Chịu trách nhiệm xử lý xác thực thông qua Google OAuth2 cho toàn bộ hệ thống.
+- Sau khi người dùng xác thực thành công qua Google, hệ thống sẽ:
+  - Xác định danh sách các tenant mà người dùng thuộc về.
+  - Nếu người dùng thuộc nhiều tenant, hiển thị giao diện chọn tenant.
+  - Gọi User Service Master để kiểm tra `user_id_global`, và xác thực xem người dùng có quyền truy cập tenant đã chọn không.
+  - Gọi Sub User Service (của tenant đó) để lấy danh sách roles/permissions trong tenant.
+  - Phát hành JWT "đầy đủ" chứa:
+    - `user_id`
+    - `tenant_id`
+    - `roles`, `permissions`
+    - `auth_provider`, `exp`, `trace_id`…
+
+### 🔐 Sub Auth Service (per tenant)
+- Triển khai riêng biệt trong từng tenant stack.
+- Xử lý xác thực cho các user sử dụng:
+  - Tài khoản Local (tên đăng nhập/mật khẩu)
+  - OTP (SMS/email)
+- Sau khi xác thực local thành công:
+  - Gọi User Service Master để đăng ký người dùng (nếu lần đầu) và nhận `user_id_global`.
+  - Gọi Sub User Service của chính tenant để lấy RBAC tương ứng.
+  - Phát hành JWT đầy đủ như Auth Master.
+
+### 🔐 Tính năng bảo mật nâng cao
+- Cơ chế CAPTCHA và giới hạn số lần gửi OTP theo IP/user.
+- JWT ký bằng key được luân phiên định kỳ (theo chính sách [`ADR-006`](./ADR/adr-006-auth-strategy.md)).
+- Hỗ trợ đăng xuất, làm mới token (refresh), kiểm tra trace log đăng nhập.
+
+### 🎯 Lưu ý về triển khai:
+- Mỗi tenant có thể dùng Sub Auth Service tùy chọn (bắt buộc nếu có học sinh/phụ huynh không dùng Workspace).
+- Tất cả JWT (kể cả từ Sub Auth) đều phải tuân thủ format chuẩn và có thể được xác minh bởi API Gateway.
+
+📘 Xem thêm: [ADR-006 – Auth Strategy](./ADR/adr-006-auth-strategy.md)
+
+## 4. User Service
+
+User Service trong hệ thống dx-vas được chia thành hai cấp độ để hỗ trợ kiến trúc multi-tenant:
+
+### 🧠 User Service Master (Tập trung toàn hệ thống)
+- Là nơi **quản lý định danh người dùng toàn cục**:
+  - Bảng `users_global`: mỗi user có một `user_id` duy nhất toàn hệ thống, kèm `auth_provider`, `email`, `phone`, `local_auth_tenant_id` (nếu là user local).
+  - Bảng `tenants`: danh sách tenant (trường thành viên) đang hoạt động.
+  - Bảng `user_tenant_assignments`: ánh xạ user ↔ tenant (người dùng có thể thuộc nhiều tenant).
+  - Trạng thái `is_active` toàn cục.
+- Quản lý bộ **template role/permission** dùng chung toàn hệ thống (`global_roles_templates`, `global_permissions_templates`).
+- Phát sự kiện Pub/Sub (`user_assigned_to_tenant`, `user_info_updated`) để đồng bộ xuống Sub User Service.
+- Cung cấp API quản trị cho Superadmin:
+  - Tạo tenant, gán user vào tenant, cập nhật thông tin định danh chung.
+
+### 🧩 Sub User Service (Cấp tenant – được triển khai trong từng stack tenant)
+- Quản lý RBAC riêng biệt cho từng tenant:
+  - Bảng `users_in_tenant`: tham chiếu `user_id_global`, có `is_active_in_tenant`.
+  - `roles_in_tenant`, `permissions_in_tenant`: kế thừa từ Master hoặc tự định nghĩa.
+  - Mapping RBAC: `user_role_in_tenant`, `role_permission_in_tenant`.
+- Truy vấn RBAC tại API Gateway dựa trên `user_id + tenant_id`.
+- Đồng bộ hóa dữ liệu từ Master thông qua Pub/Sub.
+- Cung cấp API cho Admin tenant để:
+  - Gán role cho user trong tenant
+  - Cập nhật trạng thái user trong tenant
+  - Xem nhật ký phân quyền (nếu bật audit)
+
+### 🔄 Cơ chế hoạt động điển hình:
+- Khi Superadmin gán một user vào tenant:
+  - User Service Master ghi nhận và phát sự kiện `user_assigned_to_tenant`
+  - Sub User Service của tenant nhận sự kiện và tạo bản ghi "shadow user" nếu chưa có
+- Khi user login thành công và chọn tenant:
+  - Auth Service gọi Master → kiểm tra quyền truy cập tenant
+  - Gọi Sub User Service → truy vấn RBAC → trả lại để phát hành JWT
+
+📘 Xem chi tiết cấu trúc bảng và luồng tại: [`rbac-deep-dive.md`](./architecture/rbac-deep-dive.md), [`user-service/data-model.md`](./services/user-service/data-model.md)
+
+## 5. API Gateway
+
+API Gateway đóng vai trò trung tâm điều phối trong kiến trúc dx-vas, đặc biệt trong mô hình multi-tenant. Nó xử lý xác thực, phân quyền động (RBAC), định tuyến đến đúng tenant stack, và bảo vệ các backend nội bộ.
+
+### 🧭 Định tuyến theo Tenant
+
+- Gateway phục vụ nhiều tenant (trường thành viên) trên cùng một entrypoint.
+- **Tenant được xác định qua một trong ba cách:**
+  1. `tenant_id` trong JWT (ưu tiên)
+  2. Domain/subdomain của Frontend App (VD: `abc.truongvietanh.edu.vn`)
+  3. Tham số `tenant` trong URL (fallback, dùng trong môi trường phát triển)
+
+- Dựa vào `tenant_id`, Gateway sẽ:
+  - Forward request đến **Sub Adapter / Sub Service** đúng tenant.
+  - Hoặc đến **Tenant Master Service** nếu request thuộc về Superadmin Webapp.
+
+### 🔐 Kiểm tra RBAC động theo tenant
+
+- Gateway thực hiện xác thực JWT:
+  - Do Auth Master hoặc Sub Auth Service phát hành.
+  - Phải chứa: `user_id`, `tenant_id`, `roles`, `permissions`, `auth_provider`.
+
+- Kiểm tra trạng thái người dùng:
+  - `is_active` toàn cục (từ User Service Master)
+  - `is_active_in_tenant` (từ Sub User Service)
+
+- Truy vấn Redis cache để lấy `permissions` gắn theo `tenant_id`.
+- Evaluate `condition` (nếu có) theo context request (VD: `student_id`, `class_id`...)
+
+### 📦 Forward request
+
+- Nếu pass: Gateway forward request đến backend service đúng tenant:
+  - Gắn các header: `X-User-ID`, `X-Tenant-ID`, `X-Permissions`, `X-Role`, `X-Trace-ID`, `X-Auth-Method`
+- Nếu fail: Trả lỗi 403 hoặc 401 tùy trường hợp.
+
+### 🔐 Bảo vệ nội dung & định danh
+
+- Các header định danh được ký (`X-Signature`) hoặc chỉ forward trong nội bộ (mTLS).
+- Backend service KHÔNG được chấp nhận header định danh nếu request từ bên ngoài Gateway.
+
+📘 Sơ đồ đánh giá RBAC xem chi tiết tại: 👉 [RBAC Evaluation Flow – System Diagrams](./architecture/system-diagrams.md#4-rbac-evaluation-flow--luồng-đánh-giá-phân-quyền-động)
+
+## 6. Notification Service (Multi-Tenant – Option B)
+
+Notification Service trong kiến trúc dx-vas được triển khai theo mô hình phân tầng, hỗ trợ gửi thông báo cách ly theo tenant và broadcast toàn hệ thống bằng kiến trúc bất đồng bộ qua Pub/Sub.
+
+### 🧭 Phân tầng dịch vụ
+
+#### 🔹 Sub Notification Service (per Tenant)
+- Mỗi tenant có một instance Notification Service riêng trong stack của mình.
+- **Chức năng:**
+  - Gửi thông báo nội bộ của tenant (học phí, điểm danh, v.v.)
+  - Quản lý template riêng (`notification_templates_in_tenant`)
+  - Sử dụng cấu hình kênh riêng: Zalo OA, Gmail API, Google Chat webhook
+  - Ghi log theo dõi gửi thông báo (`notification_logs_in_tenant`)
+- **Lắng nghe Pub/Sub:** Subscribe vào topic `vas-global-notifications-topic`, lọc và xử lý các thông báo toàn hệ thống nếu phù hợp `tenant_id`.
+
+#### 🔹 Notification Service Master (Shared Core)
+- Phục vụ Superadmin Webapp.
+- **Chức năng:**
+  - Gửi thông báo toàn hệ thống hoặc đến một nhóm trường.
+  - Phát sự kiện `global_notification_requested` lên Pub/Sub với:
+    - `target_tenant_ids` hoặc tiêu chí lọc (VD: `target_user_roles`)
+    - `message_id`, nội dung gốc, `correlation_id`
+  - Không can thiệp chi tiết xử lý tại các tenant.
+  - Thu thập trạng thái gửi từ các Sub Service thông qua sự kiện phản hồi `tenant_notification_batch_status`.
+
+---
+
+### 🔄 Luồng gửi thông báo toàn hệ thống (Option B – Event-based)
+
+1. Superadmin gửi yêu cầu thông báo → Notification Service Master nhận.
+2. Master publish sự kiện lên topic `vas-global-notifications-topic`.
+3. Các Sub Notification Service subscribe topic:
+   - Lọc theo `tenant_id`, xử lý nếu phù hợp.
+   - Gửi thông báo bằng kênh riêng.
+   - Gửi sự kiện phản hồi `tenant_notification_batch_status` lên topic `vas-tenant-notification-ack-topic`.
+
+---
+
+### ✅ Cơ chế phòng ngừa rủi ro
+
+| Rủi ro | Phòng ngừa |
+|--------|------------|
+| Không theo dõi được trạng thái gửi | Sub gửi sự kiện phản hồi, Master hoặc một Monitor Service thu thập & log |
+| Gửi trùng thông báo (non-idempotent) | Dùng `message_id` duy nhất + kiểm tra `processed_global_notifications` |
+| Sub xử lý nhầm sự kiện không dành cho mình | Payload chứa rõ `target_tenant_ids`, Sub lọc kỹ |
+| Sub quá tải khi nhận nhiều sự kiện | Giới hạn Pub/Sub `flow control` + xử lý bất đồng bộ nội bộ |
+| Lỗi cấu hình kênh gửi | Sub log lỗi rõ, phát sự kiện phản hồi với trạng thái lỗi cụ thể |
+| Dead Letter Topic bị đầy do lỗi lặp lại | Giám sát DLT, có quy trình re-publish sau fix logic |
+
+---
+
+📦 Các thành phần dữ liệu liên quan:
+
+- `notification_templates_in_tenant`
+- `channel_configs_in_tenant`
+- `notification_logs_in_tenant`
+- `global_notification_requested` (Pub/Sub)
+- `tenant_notification_batch_status` (Pub/Sub ACK)
+- `processed_global_notifications` (DB Sub)
+
+## 7. Superadmin Webapp (SPA)
+
+Superadmin Webapp là ứng dụng quản trị tập trung dành riêng cho đội ngũ quản lý cấp công ty – nơi điều hành toàn bộ hệ thống dx-vas đa tenant.
+
+### 🏛️ Chức năng chính
+
+- Quản lý danh sách tenant (trường thành viên):
+  - Tạo/sửa tenant mới, kích hoạt/khóa tenant
+  - Cấu hình kết nối CRM/SIS/LMS cho từng tenant
+- Gán người dùng vào tenant:
+  - Chọn user từ danh sách toàn cục
+  - Chọn tenant và gán vai trò ban đầu
+  - Gửi lời mời/OTP tới người dùng nếu cần
+- Quản lý role/permission toàn hệ thống:
+  - Xây dựng **Global Role/Permission Templates**
+  - Xem các tenant đang dùng template nào
+  - Clone/cập nhật/cảnh báo nếu tenant chỉnh sửa vượt chuẩn
+- Quản lý thông tin định danh người dùng:
+  - Tìm kiếm user toàn hệ thống
+  - Kiểm tra họ thuộc tenant nào, vai trò gì, trạng thái
+  - Vô hiệu hóa tài khoản toàn cục hoặc theo từng tenant
+- Tổng hợp và theo dõi thống kê toàn hệ thống:
+  - Số lượng học sinh/nhân sự theo từng tenant
+  - Log hoạt động toàn hệ thống
+  - Báo cáo phân quyền, truy cập, đăng nhập, chi phí (nếu cần)
+
+### 🛠 Công nghệ & tích hợp
+
+- SPA chạy trên domain riêng (`superadmin.truongvietanh.edu.vn`)
+- Đăng nhập qua Google OAuth2 (yêu cầu quyền `superadmin`)
+- Gọi API trực tiếp đến **User Service Master**, **Auth Master**, và các Tenant Registry Services
+- Kết nối đến các service quản lý chi phí, logging, audit tập trung
+
+📘 Các API được mô tả trong: [`ic-superadmin-webapp.md`](./interfaces/ic-superadmin-webapp.md)
+
+## 8. Hạ tầng triển khai
+
+Hệ thống dx-vas được triển khai trên Google Cloud theo mô hình **multi-tenant tách biệt theo stack**, kết hợp với các thành phần dùng chung để tối ưu hoá bảo mật, khả năng mở rộng và quản trị tập trung.
+
+### 🧱 Mô hình triển khai
+
+#### 📌 Shared Core (dùng chung toàn hệ thống)
+- **API Gateway:** Trung tâm điều phối request, xác thực, phân quyền động RBAC.
+- **Auth Service Master:** Xử lý Google OAuth2, phát hành JWT đa tenant.
+- **User Service Master:** Quản lý định danh người dùng toàn cục, tenant registry, RBAC templates.
+- **Superadmin Webapp:** Quản trị toàn bộ hệ thống (tenant, người dùng, RBAC templates, báo cáo).
+- **Shared Redis Cluster:** Cache RBAC theo `user_id + tenant_id` (theo namespace).
+- **Monitoring & Audit Stack:** Logging, tracing, SLO cho toàn bộ hệ thống.
+- **Pub/Sub Bus:** Truyền sự kiện từ Master xuống các tenant stack.
+
+#### 🏫 Tenant Stack (triển khai riêng biệt cho từng trường thành viên)
+Mỗi tenant (trường) được triển khai dưới dạng **một stack riêng biệt** trên Google Cloud Run, bao gồm:
+
+- **Frontend Apps riêng (PWA + Admin SPA)**:
+  - Chạy theo domain của từng trường: `abc.truongvietanh.edu.vn`, `xyz.truongvietanh.edu.vn`
+- **Sub Auth Service**:
+  - Xác thực Local/OTP (phụ huynh, học sinh) độc lập theo tenant
+- **Sub User Service**:
+  - Quản lý RBAC riêng, mapping đến `user_id_global`, kiểm soát `is_active_in_tenant`
+- **CRM/SIS/LMS Adapter riêng**:
+  - Kết nối đến hệ thống legacy của từng trường (SuiteCRM, Gibbon, Moodle)
+- **Database riêng hoặc schema phân vùng (nếu dùng chung Cloud SQL)**
+- **Logging riêng, giám sát riêng theo `tenant_id` và `env`**
+
+### ⚙️ Cấu trúc Project GCP đề xuất
+
+| Project | Mục đích |
+|--------|---------|
+| `dx-vas-core` | Shared Core Services (API Gateway, Auth/User Master, PubSub, Redis...) |
+| `dx-vas-network` | Shared VPC, NAT, DNS nội bộ |
+| `dx-vas-tenant-abc` | Stack riêng cho tenant ABC |
+| `dx-vas-tenant-xyz` | Stack riêng cho tenant XYZ |
+| `dx-vas-monitoring` | Stack tập trung cho logging, metrics, alerting |
+| `dx-vas-data` | Cloud SQL, GCS, BigQuery dùng chung hoặc phân vùng |
+
+### ☁️ Các công nghệ hạ tầng sử dụng
+- **Cloud Run:** Triển khai serverless cho tất cả services
+- **Cloud SQL:** PostgreSQL (core), MySQL (adapter)
+- **Redis (MemoryStore):** RBAC caching
+- **Cloud Pub/Sub:** Đồng bộ định danh giữa master ↔ tenant
+- **Cloud Monitoring & Logging:** SLO/SLA tracking
+- **Terraform:** Mô hình hoá hạ tầng theo module (`core`, `tenant`, `shared`)
+
+📘 Sơ đồ triển khai xem tại: 👉 [Deployment Overview Diagram](./architecture/system-diagrams.md#9-deployment-overview-diagram--sơ-đồ-triển-khai-tổng-quan)
+
+## 9. Admin Webapp - SPA (cấp độ tenant)
+
+Admin Webapp là ứng dụng quản trị nội bộ dành riêng cho từng trường thành viên (tenant). Đây là giao diện chính để giáo viên, nhân viên và ban giám hiệu quản lý hoạt động học tập, vận hành và phối hợp giữa các bộ phận trong trường.
+
+### 🧩 Đặc điểm
+
+- **Triển khai độc lập cho từng tenant:**
+  - Có domain riêng, ví dụ: `admin.abcschool.edu.vn`, `admin.xyzschool.edu.vn`
+  - Kết nối với các service backend riêng: CRM/SIS/LMS Adapter, Sub User Service, Sub Auth Service
+
+- **Đăng nhập:**
+  - Nhân viên, giáo viên sử dụng Google OAuth2 (qua Auth Master)
+  - Một số tenant có thể cho phép Local login (tùy cấu hình Sub Auth Service)
+
+### 🛠 Chức năng chính theo vai trò
+
+- **Giáo viên:**
+  - Quản lý lớp giảng dạy, điểm danh, nhập điểm
+  - Xem thời khóa biểu, nhận thông báo
+  - Gửi phản hồi tới phụ huynh/học sinh
+
+- **Nhân viên học vụ / kế toán:**
+  - Quản lý hồ sơ học sinh
+  - Cập nhật học phí, tình trạng đóng tiền
+  - Thống kê sĩ số, điểm số, báo cáo định kỳ
+
+- **Admin trường (BGH):**
+  - Gán vai trò cho nhân sự trong tenant
+  - Quản lý phân quyền nội bộ (RBAC tenant)
+  - Kết nối CRM/SIS/LMS nếu được phép
+  - Theo dõi nhật ký hoạt động của user trong trường
+
+### 🔒 Phân quyền & bảo mật nội bộ
+
+- Dựa trên RBAC từ **Sub User Service**, quyền được cấp theo vai trò trong từng tenant
+- Backend chỉ xử lý request có `X-Tenant-ID`, `X-User-ID` và `X-Permissions` do API Gateway cấp phát
+- Mọi thao tác quản trị được ghi log và trace theo `tenant_id` để phục vụ audit
+
+📘 Các API backend sử dụng được định nghĩa tại: [`user-service/interface-contract.md`](./services/user-service/interface-contract.md)
+
+## 10. Customer Portal - PWA (cấp độ tenant)
 
 * Giao diện cho phụ huynh và học sinh.
 * Hỗ trợ OTP/Zalo login, cài đặt trên mobile, offline với cache gần nhất.
 * Chế độ offline chỉ cho phép đọc dữ liệu đã được cache trước đó.
 * Đồng bộ lại dữ liệu tự động khi có kết nối mạng.
 
-### 3. Admin Webapp (SPA)
-
-* Giao diện quản trị.
-* Tích hợp LMS, SIS, Notification, RBAC.
-* Sẽ tích hợp Condition Builder UI để quản lý granular permission một cách trực quan.
-
-### 4. API Gateway
-
-* Xác thực đa luồng (OAuth2 hoặc local token).
-* Kiểm tra RBAC theo loại người dùng và scope.
-* Forward request đến CRM, SIS, LMS, Notification.
-* Header định danh cần bảo vệ bằng ký số hoặc mạng nội bộ tin cậy.
-* Áp dụng rate limiting chi tiết, CAPTCHA chống brute-force.
-* Đang viết ADR riêng để triển khai ký header nội bộ (`X-Signature`).
-
-### 5. Auth Service
-
-* Xử lý xác thực người dùng: Google OAuth2 (giáo viên, học sinh, nhân viên) và OTP/email (phụ huynh).
-* Phát hành JWT và Refresh Token.
-* Hỗ trợ làm mới token, đăng xuất, và truy vết thông tin đăng nhập.
-* OTP có thêm CAPTCHA và giới hạn gửi để tránh spam.
-* Khuyến nghị phụ huynh tạo tài khoản cục bộ với mật khẩu mạnh nếu đăng nhập thường xuyên.
-
-### 6. User Service
-
-* Quản lý toàn bộ người dùng trong hệ thống: định danh, trạng thái hoạt động (`is_active`), quyền truy cập (roles, permissions).
-* Là trung tâm RBAC.
-* Phát sự kiện `user_status_changed`, `rbac_updated` để Gateway cập nhật cache RBAC tương ứng.
-
-### 7. CRM – SuiteCRM
+## 11. CRM – SuiteCRM (cấp độ tenant)
 
 * Quản lý pipeline tuyển sinh.
 * Khi phụ huynh đăng ký nhập học thành công → tự chuyển sang SIS.
 * Giao tiếp qua API Gateway, kiểm soát RBAC.
 * Kế hoạch chuyển đổi cơ chế đồng bộ sang event-driven, dùng Pub/Sub hoặc Redis stream.
 
-### 8. SIS – Gibbon
+## 12. SIS – Gibbon (cấp độ tenant)
 
 * Quản lý học sinh, lớp, điểm danh, học phí.
 * Có export API cho LMS, Portal, Admin Webapp.
 * Lưu vết lịch sử: học lực, lớp học, học bạ.
 * Liên kết phụ huynh – học sinh lưu trong bảng tham chiếu.
 
-### 9. LMS – Moodle
+## 13. LMS – Moodle (cấp độ tenant)
 
 * Học tập online, giao bài, chấm điểm.
 * SSO với OAuth2.
 * Tự động đồng bộ học sinh từ SIS.
 * Điểm có thể đẩy ngược về SIS.
 
-### 10. Notification Service
+## 14. Notification Service
 
 * Gửi thông báo Web, Email (Gmail API), Zalo OA, Google Chat.
 * Phụ huynh nhận thông báo qua Zalo/Email.
@@ -95,23 +397,14 @@ VAS sử dụng cơ chế RBAC động được đánh giá và thực thi tại
 * Người dùng chọn kênh ưa thích qua giao diện.
 * Tích hợp A/B testing và tracking nếu cần.
 
-### 11. Zalo OA & Google Chat
+## 15. Zalo OA & Google Chat
 
 * Gửi thông báo học phí, sự kiện qua Zalo ZNS.
 * Gửi nội bộ (giáo viên, nhân viên) qua Google Chat.
 * Có xử lý lỗi API, quota, timeout.
 * Dự kiến bổ sung cơ chế retry và dashboard kiểm tra trạng thái gửi.
 
-### 12. Hạ tầng triển khai
-
-* Cloud Run, Cloud SQL (có PITR), Redis, Cloud Storage.
-* Logging & Monitoring: Thu thập log tập trung, giám sát error rate, latency.
-* Triển khai distributed tracing (ví dụ: OpenTelemetry).
-* Đang thiết kế kế hoạch DR (Disaster Recovery) đầy đủ với RTO/RPO theo từng service.
-* 📘 Xem thêm:
-  👉 [DR Playbook](./runbooks/dr-playbook.md) [Checklist xử lý sự cố](./runbooks/incident-checklist.md)
-
-### 13. CI/CD & DevOps
+## 16. CI/CD & DevOps
 
 * GitHub Actions / Cloud Build → Cloud Run.
 * Staging + production, rollback.
@@ -119,7 +412,7 @@ VAS sử dụng cơ chế RBAC động được đánh giá và thực thi tại
 * Đã áp dụng ADR-003 – secrets được quản lý và rotate định kỳ qua Secret Manager.
 * Dự kiến triển khai Chaos Testing cho các dịch vụ quan trọng.
 
-### 14. Bảo mật & Giám sát
+## 17. Bảo mật & Giám sát
 
 * Mã hóa dữ liệu nhạy cảm.
 * Chống OWASP Top 10, bao gồm CSRF, XSS, SQL Injection.
@@ -127,7 +420,7 @@ VAS sử dụng cơ chế RBAC động được đánh giá và thực thi tại
 * Giám sát xác thực phụ huynh (login rate, reset mật khẩu).
 * Ghi log chi tiết theo người dùng, endpoint, trạng thái.
 
-### 15. Data Migration Plan
+## 18. Data Migration Plan
 
 * Nếu có hệ thống cũ, dữ liệu sẽ được di chuyển theo lộ trình Blueprint rõ ràng:
 
@@ -137,7 +430,7 @@ VAS sử dụng cơ chế RBAC động được đánh giá và thực thi tại
   * Rollback plan nếu phát hiện lỗi
   * Hỗ trợ chế độ song song (parallel run)
 
-### 16. Đào tạo & Chuyển giao
+## 19. Đào tạo & Chuyển giao
 
 * Mỗi nhóm người dùng sẽ có gói đào tạo riêng (nhân viên, giáo viên, học sinh, phụ huynh).
 * Tài liệu bao gồm:
@@ -146,9 +439,9 @@ VAS sử dụng cơ chế RBAC động được đánh giá và thực thi tại
   * Handout dạng PDF
   * Demo trực tiếp (live/recorded)
 
-### 17. Tổng kết
+## 20. Tổng kết
 
-Hệ thống chuyển đổi số VAS được thiết kế mở rộng linh hoạt đến 2600 người dùng, hỗ trợ xác thực phân tách giữa người dùng có Workspace (OAuth2) và phụ huynh (Local/OTP), đảm bảo bảo mật, giám sát, phục hồi thảm họa, đào tạo và khả năng phát triển dài hạn.
+Hệ thống chuyển đổi số VAS được thiết kế mở rộng linh hoạt đến 5260 người dùng, hỗ trợ xác thực phân tách giữa người dùng có Workspace (OAuth2) và phụ huynh (Local/OTP), đảm bảo bảo mật, giám sát, phục hồi thảm họa, đào tạo và khả năng phát triển dài hạn.
 
 Toàn bộ các phản hồi chiến lược từ anh Bill đã được đưa vào kế hoạch hành động và roadmap triển khai – đặc biệt các khía cạnh RBAC UI, Data Sync, OTP Security, Offline PWA, DR Planning và Data Migration đã được chuẩn bị cụ thể và ghi nhận trong README.md này như một tài liệu trung tâm sống của dự án.
 
@@ -164,11 +457,39 @@ Dự án dx-vas sử dụng các Quyết định Kiến trúc (Architecture Deci
 
 ## Phụ lục B – Nguyên tắc Kiến trúc Cốt lõi
 
+Hệ thống dx-vas được thiết kế theo các nguyên tắc nền tảng để đảm bảo mở rộng linh hoạt, bảo mật, tối ưu trải nghiệm người dùng và vận hành bền vững:
+
 * **UX-first:** Ưu tiên trải nghiệm người dùng (đặc biệt phụ huynh không rành công nghệ)
 * **Modular-first:** Thiết kế hệ thống dạng microservice – dễ thay thế, triển khai riêng rẽ
-* **Security-by-Design:** Tích hợp bảo mật từ đầu vào thiết kế
+* **Security-by-Design:** Tích hợp bảo mật từ đầu vào thiết kế (CSRF, RBAC, MFA, ký định danh)
 * **Data Consistency > Availability:** Trong môi trường giáo dục, dữ liệu đúng quan trọng hơn phản hồi nhanh
 * **Infra-as-Code:** Hạ tầng và CI/CD đều được mô hình hóa, kiểm soát bằng mã nguồn
+
+### ✨ Bổ sung nguyên tắc cho Multi-Tenant
+
+* **Multi-Tenant by Isolation:**
+  - Mỗi tenant có frontend, adapters, auth và user service riêng
+  - Không chia sẻ database nếu không có cơ chế phân vùng/tenant ID rõ ràng
+  - Cho phép mô hình tách stack theo tenant, đồng thời tận dụng tài nguyên shared core
+
+* **Centralized Identity & Governance:**
+  - Một User Service Master duy nhất là nơi kiểm soát định danh người dùng
+  - Superadmin có toàn quyền điều phối, gán người dùng vào các tenant, quản lý templates RBAC
+  - Mọi stack tenant phải tuân theo chuẩn JWT, RBAC schema và audit định danh
+
+* **Pluggable Tenant Stack:**
+  - Mỗi tenant là một khối độc lập có thể được bật/tắt/destroy mà không ảnh hưởng hệ thống còn lại
+  - Dễ dàng onboarding tenant mới bằng quy trình tự động hóa Terraform + CI/CD
+
+* **Auditability & Traceability Across Tenants:**
+  - Mọi action phân quyền, truy cập, login phải được log theo `tenant_id` + `user_id`
+  - Các thay đổi RBAC, kích hoạt/deactivate người dùng được trace toàn hệ thống
+
+📘 Các quyết định kiến trúc liên quan được mô tả trong:  
+- [ADR-007: RBAC Strategy](./ADR/adr-007-rbac.md)  
+- [ADR-006: Auth Strategy](./ADR/adr-006-auth-strategy.md)  
+- [ADR-019: GCP Project Layout](./ADR/adr-019-project-layout.md)  
+- [ADR-015: Deployment Strategy](./ADR/adr-015-deployment-strategy.md)
 
 ---
 
@@ -178,60 +499,83 @@ Dự án dx-vas sử dụng các Quyết định Kiến trúc (Architecture Deci
 
 Tài liệu này bao gồm:
 - Sơ đồ tổng quan hệ thống
-- Các luồng nghiệp vụ chính (tuyển sinh, thông báo, phân quyền...)
+- Sơ đồ kiến trúc multi-tenant
+- Các luồng nghiệp vụ chính (tuyển sinh, thông báo, phân quyền, xác thực…)
 - Sơ đồ vòng đời tài khoản
 - Sơ đồ triển khai hạ tầng trên Google Cloud
 - Chú giải và hướng dẫn đọc sơ đồ
 
-Dưới đây là sơ đồ cấu trúc tổng thể để quản lý toàn bộ tài liệu kiến trúc hệ thống **dx-vas**, được tổ chức theo các tầng logic: Tổng quan hệ thống → Tài liệu kiến trúc → Hướng dẫn phát triển/vận hành → Thiết kế chi tiết theo service → Interface Contracts → ADRs.
+### 🧭 Sơ đồ tổng quan kiến trúc multi-tenant
 
 ```mermaid
-graph TD
-  A[README.md<br/>Tổng quan kiến trúc dự án] --> B[🏛️ docs/architecture/<br/>Tài liệu kiến trúc hệ thống]
-  A --> C[📁 docs/interfaces/<br/>Interface Contracts - OpenAPI]
-  A --> D[📚 docs/dev/<br/>Cẩm nang phát triển & vận hành]
-  A --> E[🧱 docs/services/<br/>Thiết kế chi tiết từng service]
-  A --> F[📜 docs/ADR/index.md<br/>Chỉ mục ADRs]
+flowchart TD
+  subgraph Tenant_A["Tenant A Stack"]
+    A_PWA[PWA A]
+    A_Admin[Admin SPA A]
+    A_Auth[Sub Auth A]
+    A_User[Sub User A]
+    A_CRM[CRM Adapter A]
+    A_SIS[SIS Adapter A]
+    A_LMS[LMS Adapter A]
+  end
 
-  B --> B1[📊 system-diagrams.md<br/>Sơ đồ tổng quan & luồng]
-  B --> B2[🔐 rbac-deep-dive.md<br/>RBAC động chi tiết]
-  B --> B3[... kiến trúc khác nếu có]
+  subgraph Tenant_B["Tenant B Stack"]
+    B_PWA[PWA B]
+    B_Admin[Admin SPA B]
+    B_Auth[Sub Auth B]
+    B_User[Sub User B]
+    B_CRM[CRM Adapter B]
+    B_SIS[SIS Adapter B]
+    B_LMS[LMS Adapter B]
+  end
 
-  C --> C1[📑 ic-09-user-service.md<br/>IC cho User Service]
-  C --> C2[Các IC cho các service khác...]
-  C --> C3[🧭 adr-index.md<br/>Mapping IC ↔ ADR]
+  subgraph Master["Shared Core Services"]
+    Gateway[API Gateway]
+    AuthMaster[Auth Service Master]
+    UserMaster[User Service Master]
+    Superadmin[Superadmin Webapp]
+    Redis[Redis Cache]
+    PubSub[Pub/Sub]
+    Logging[Monitoring & Audit]
+  end
 
-  D --> D1[🧑‍💻 dev-guide.md]
-  D --> D2[🧪 backend-dev-guide.md]
-  D --> D3[⚙️ ops-guide.md]
-  D --> D4[🧑‍💻 frontend-dev-guide.md]
+  A_PWA --> Gateway
+  A_Admin --> Gateway
+  B_PWA --> Gateway
+  B_Admin --> Gateway
 
-  E --> E1[📌 user-service/]
-  E --> E2[📌 auth-service/]
-  E --> E3[📌 notification-service/]
-  E1 --> E1a[📄 design.md]
-  E1 --> E1b[🗃️ data-model.md]
+  Gateway --> AuthMaster
+  Gateway --> UserMaster
+  Gateway --> Redis
+  Gateway --> Logging
 
-  F --> F1[adr-001-ci-cd.md]
-  F --> F2[adr-003-secrets.md]
-  F --> F3[adr-006-auth-strategy.md]
-  F --> F4[... đến adr-024]
+  Gateway --> A_Auth
+  Gateway --> A_User
+  Gateway --> A_CRM
+  Gateway --> A_SIS
+  Gateway --> A_LMS
 
-  style A fill:#f9f,stroke:#333,stroke-width:2px
-  style B,C,D,E,F fill:#ffe,stroke:#666
-  style B1,B2,B3,C1,C2,C3,D1,D2,D3,D4,E1,E2,E3,E1a,E1b,F1,F2,F3,F4 fill:#fff,stroke:#ccc
+  Gateway --> B_Auth
+  Gateway --> B_User
+  Gateway --> B_CRM
+  Gateway --> B_SIS
+  Gateway --> B_LMS
 
+  AuthMaster --> UserMaster
+  A_Auth --> UserMaster
+  B_Auth --> UserMaster
+
+  Superadmin --> UserMaster
 ```
 
-📌 **Ý nghĩa cấu trúc:**
+📌 **Ý nghĩa sơ đồ**:
 
-* **`README.md`** là trung tâm, giúp người mới có thể hiểu toàn bộ kiến trúc trong vài phút.
-* **`docs/architecture/`** là bộ kiến trúc chuyên sâu.
-  * **`system-diagrams.md`** và **`rbac-deep-dive.md`** là 2 nhánh kiến trúc chuyên sâu (tổng thể & RBAC).
-* **`docs/dev/`** là bộ hướng dẫn vận hành & phát triển cho toàn đội.
-* **`docs/services/`** chứa thiết kế chi tiết của từng service theo cấu trúc chuẩn (SDD, Data Model).
-* **`interface-contracts/`** chứa định nghĩa OpenAPI YAML cho từng service.
-* **`adr-index.md`** và các ADRs lưu lại toàn bộ quyết định kiến trúc quan trọng theo thời gian.
+* **Gateway** là trung tâm điều phối, phân quyền và định tuyến theo `tenant_id`.
+* Mỗi tenant có **stack riêng biệt hoàn toàn**, độc lập về frontend, adapters và phân quyền nội bộ.
+* Các khối **Master** là dịch vụ dùng chung, duy trì tập trung danh tính, phân quyền mẫu và điều phối toàn hệ thống.
+* Superadmin Webapp tương tác trực tiếp với các dịch vụ Master để điều hành toàn bộ kiến trúc.
+
+📘 Để xem đầy đủ các sơ đồ chi tiết hơn (RBAC, Auth, Lifecycle, Sync...), truy cập: [system-diagrams.md](./architecture/system-diagrams.md)
 
 ---
 
