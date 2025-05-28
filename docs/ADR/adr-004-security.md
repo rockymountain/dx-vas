@@ -1,106 +1,90 @@
 ---
 id: adr-004-security
-title: ADR-004: Chiến lược Bảo mật tổng thể cho hệ thống dx-vas
+title: ADR-004 \n Chiến lược Bảo mật tổng thể cho hệ thống dx-vas
 status: accepted
 author: DX VAS Security Team
 date: 2025-06-22
 tags: [security, hardening, dx-vas, cloud-run, jwt, rate-limiting]
 ---
 
-## 📌 Bối cảnh
+# ADR-004: Chính sách Bảo mật Hệ thống (Security Policy)
 
-Hệ thống **dx-vas** gồm nhiều thành phần xử lý dữ liệu nhạy cảm như:
-- Học sinh, giáo viên, điểm số, học phí (qua SIS, CRM, LMS)
-- Dữ liệu cá nhân và hành vi người dùng (qua frontend và API Gateway)
-- Giao tiếp với bên thứ ba (Zalo, OAuth, đối tác CRM)
+## Bối cảnh
 
-Mọi giao tiếp đều đi qua các tầng public như Cloud Run, Redis, frontend web, API Gateway… nên cần thiết kế **chiến lược bảo mật toàn diện, đa lớp**.
+Hệ thống dx-vas cung cấp dịch vụ cho nhiều trường thành viên khác nhau (multi-tenant), bao gồm nhiều loại người dùng: học sinh, giáo viên, nhân viên, phụ huynh, quản trị viên...
 
-## 🧠 Quyết định
+Bảo mật hệ thống không chỉ bao gồm xác thực và phân quyền, mà còn đảm bảo:
 
-**Áp dụng chiến lược security hardening đa tầng (transport, application, token, headers, logging, dependency, CI/CD), theo chuẩn OWASP và best practice của Google Cloud.**
+- Mỗi tenant được cách ly độc lập
+- Không có rò rỉ dữ liệu giữa các tenant
+- Dữ liệu nhạy cảm được mã hóa và giám sát truy cập
+- JWT và Redis cache được sử dụng an toàn
 
-## 🔐 Các lớp bảo vệ
+## Quyết định
 
-### 1. Transport Layer
-- Bắt buộc HTTPS trên tất cả Cloud Run endpoint
-- Dùng TLS 1.2+ với cert của Google Managed
-- Chặn HTTP fallback nếu dùng Cloud Load Balancer
+### 1. Xác thực
 
-### 2. Application Layer
-- Sanitize input toàn bộ qua Pydantic / frontend validator
-- Giới hạn kích thước request (body, file upload)
-- Từ chối content-type không hợp lệ
-- Dùng CSRF token nếu có cookie-based auth (VD: frontend admin panel có form)
+- Sử dụng Google OAuth2 cho nhân viên & giáo viên
+- Sử dụng OTP login (SMS/email) cho phụ huynh và học sinh
+- Tất cả xác thực đều đi qua Auth Master hoặc Sub Auth Service (theo từng tenant)
 
-### 3. Token & Session
-- Sử dụng JWT với expiry ngắn (`15 phút`)
-- Refresh token lưu trong Secret Manager hoặc DB, mã hoá trước khi lưu
-- Frontend không dùng `localStorage` để lưu token → ưu tiên `HttpOnly cookie` hoặc `sessionStorage`
-- Ký JWT bằng `HS256` hoặc `ES256` với secret/key được rotate định kỳ (xem [adr-003-secrets.md](./adr-003-secrets.md))
+### 2. Phân quyền động (RBAC)
 
-### 4. Rate Limiting & DoS protection
-- Áp dụng rate limit theo user_id/IP bằng Redis (`slowapi` middleware)
-- Cloud Armor bảo vệ ở layer IP + Geo-based block
-- Có logic phân biệt giữa role admin/internal và client
-- Alert nếu rate limit trả 429 > 5% trong 5 phút
+- JWT chứa `user_id`, `tenant_id`, `roles`
+- API Gateway sẽ lấy `permissions` từ Redis cache (`rbac:{user_id}:{tenant_id}`)
+- Hệ thống đánh giá `condition` động dựa trên context của user/request
 
-### 5. Security Headers (qua Gateway / frontend)
-- `Strict-Transport-Security`
-- `X-Frame-Options: DENY`
-- `X-Content-Type-Options: nosniff`
-- `Referrer-Policy: no-referrer`
-- `Permissions-Policy: geolocation=()`
-- (Optional nếu HTML render): `Content-Security-Policy`
+---
 
-### 6. Dependency Management
-- Lock phiên bản deps (`requirements.txt`, `package-lock.json`, `poetry.lock`)
-- Scan bảo mật CI bằng `safety`, `bandit`, `npm audit`, `trivy`
-- Alert nếu có CVE nặng qua Dependabot hoặc GitHub CodeQL
+### 3. Cách ly Tenant (Tenant Isolation)
 
-### 7. Logging & Monitoring
-- Tuyệt đối không log access token/refresh token
-- Log structured có `request_id`, `user_id`, `path`, `latency`, `status`
-- Dùng masking với regex `.*(token|secret|key).*` để tránh rò rỉ
-- Alert khi có:
-  - Đăng nhập thất bại nhiều lần
-  - Truy cập trái phép RBAC
-  - Tăng đột biến status 403/429/5xx
+Hệ thống đảm bảo cách ly tenant ở nhiều cấp độ:
 
-### 8. CI/CD Pipeline
-- Tất cả secrets qua `GitHub Secrets` và `Secret Manager`
-- Pre-commit kiểm tra `TODO`, `print()`, debug, file `.env`
-- Mọi PR phải pass lint + test + scan
-- Production deploy yêu cầu approval manual
+| Lớp | Chi tiết |
+|-----|----------|
+| **Hạ tầng (GCP)** | Mỗi tenant có GCP project riêng (`dx-vas-tenant-*`), không chia sẻ Cloud Run, Cloud SQL, Secret |
+| **Mạng** | Các service tenant chỉ nhận request từ Gateway hoặc IP danh sách cho phép |
+| **Dữ liệu** | Mỗi tenant có thể có **Cloud SQL instance riêng** (trong project `dx-vas-tenant-*` hoặc `dx-vas-data`). Trường hợp dùng chung instance → phải đảm bảo cách ly bằng schema riêng, hoặc ít nhất các bảng có `tenant_id` rõ ràng. |
+| **JWT** | Mỗi tenant sử dụng JWT chứa `tenant_id`, giúp Gateway xác định context chính xác |
+| **CI/CD** | Pipeline tách biệt, không có khả năng cross-deploy giữa tenants |
 
-## ✅ Lợi ích
+---
 
-- Bảo vệ toàn bộ dữ liệu học sinh, người dùng khỏi rò rỉ hoặc tấn công
-- Đáp ứng yêu cầu bảo mật nội bộ, audit, và tiêu chuẩn ngành
-- Phát hiện sớm và ngăn chặn hành vi đáng ngờ
-- Đồng bộ hóa bảo mật giữa backend, frontend và hạ tầng
+### 4. Ranh giới Tin cậy JWT (JWT Trust Boundary)
 
-## ❌ Rủi ro & Giải pháp
+Để đảm bảo an toàn trong xác thực và phân quyền:
 
-| Rủi ro | Giải pháp |
-|--------|-----------|
-| Bỏ sót layer security trong service mới | Template `security.md` + checklist bắt buộc CI |
-| Token bị leak qua log/debug | Middleware masking + test CI block log lỗi chứa sensitive data |
-| Config bảo mật bị override bởi dev | Apply default via Terraform/Env, enforce trong review CI |
+- Tất cả JWT đều phải:
+  - Có chữ ký với secret/key được quản lý bởi Gateway
+  - Có `tenant_id` để xác định context phân quyền
+- **Gateway là nơi duy nhất tin cậy để đọc & phân tích JWT**
+- Các service backend (Sub Service, Core Service) không được xử lý trực tiếp RBAC nếu không xác minh JWT qua Gateway
+- Tất cả JWT đều có TTL ngắn (dưới 1 giờ), và có thể revoke nếu cần
 
-## 🔄 Các lựa chọn đã loại bỏ
+> Nếu cần xác thực giữa các service, phải sử dụng `X-Internal-Call` hoặc service token nội bộ có kiểm soát
 
-| Phương án | Lý do không chọn |
-|-----------|------------------|
-| Không enforce rate limit | Dễ bị abuse hoặc DDoS nhẹ |
-| Không rotate JWT secret | Không tuân thủ zero-trust, risk nếu secret bị leak |
-| Lưu token frontend bằng `localStorage` | Dễ bị XSS tấn công |
+---
 
-## 📎 Tài liệu liên quan
+## Hệ quả
 
-- Secrets: [ADR-003](./adr-003-secrets.md)
-- IaC Terraform Strategy: [ADR-002](./adr-002-iac.md)
-- CI/CD Strategy: [ADR-001](./adr-001-ci-cd.md)
+✅ Ưu điểm:
+
+- Đảm bảo mỗi tenant được cách ly tuyệt đối về dữ liệu, mạng, quyền
+- Ngăn chặn tấn công ngang giữa tenant
+- Giảm thiểu rủi ro liên quan đến token giả, cache sai context
+- Dễ mở rộng mô hình bảo mật theo từng lớp (network, ứng dụng, logic)
+
+⚠️ Lưu ý:
+
+- Việc revoke JWT tức thời cần triển khai thêm token blacklist hoặc short TTL
+- Redis cache cần có namespace rõ ràng theo `tenant_id`, ví dụ: `rbac:{user_id}:{tenant_id}` (xem chi tiết trong [`adr-007-rbac.md`](./adr-007-rbac.md))
+
+## Liên kết liên quan
+
+- [`adr-006-auth-strategy.md`](./adr-006-auth-strategy.md)
+- [`adr-007-rbac.md`](./adr-007-rbac.md)
+- [`adr-008-audit-logging.md`](./adr-008-audit-logging.md)
+- [`rbac-deep-dive.md`](../architecture/rbac-deep-dive.md)
 
 ---
 > “Security không phải là một module – mà là mindset toàn hệ thống.”
