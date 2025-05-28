@@ -171,6 +171,88 @@ paths:
               schema:
                 $ref: '#/components/schemas/UserTenantAssignmentResponse'
 
+  /rbac/templates/roles/{template_id}:
+    patch:
+      summary: Cập nhật Role Template
+      operationId: updateGlobalRoleTemplate
+      tags: [RBAC Templates]
+      parameters:
+        - name: template_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GlobalRoleTemplateUpdate'
+      responses:
+        '200':
+          description: Cập nhật thành công
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RoleTemplateResponse'
+
+    delete:
+      summary: Xoá Role Template
+      operationId: deleteGlobalRoleTemplate
+      tags: [RBAC Templates]
+      parameters:
+        - name: template_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: Xoá thành công
+
+  /rbac/templates/permissions/{template_id}:
+    patch:
+      summary: Cập nhật Permission Template
+      operationId: updateGlobalPermissionTemplate
+      tags: [RBAC Templates]
+      parameters:
+        - name: template_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GlobalPermissionTemplateUpdate'
+      responses:
+        '200':
+          description: Cập nhật thành công
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PermissionTemplateResponse'
+
+    delete:
+      summary: Xoá Permission Template
+      operationId: deleteGlobalPermissionTemplate
+      tags: [RBAC Templates]
+      parameters:
+        - name: template_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: Xoá thành công
+
 components:
   schemas:
     UserGlobal:
@@ -300,6 +382,77 @@ components:
               type: array
               items:
                 $ref: '#/components/schemas/UserTenantAssignment'
+
+    GlobalRoleTemplateUpdate:
+      type: object
+      properties:
+        description:
+          type: string
+          nullable: true
+
+    GlobalPermissionTemplateUpdate:
+      type: object
+      properties:
+        action:
+          type: string
+        resource:
+          type: string
+        default_condition:
+          type: object
+          nullable: true
+        description:
+          type: string
+          nullable: true
+
+    RoleTemplateResponse:
+      allOf:
+        - $ref: '#/components/schemas/SuccessEnvelope'
+        - type: object
+          properties:
+            data:
+              $ref: '#/components/schemas/GlobalRoleTemplate'
+
+    PermissionTemplateResponse:
+      allOf:
+        - $ref: '#/components/schemas/SuccessEnvelope'
+        - type: object
+          properties:
+            data:
+              $ref: '#/components/schemas/GlobalPermissionTemplate'
+
+    GlobalRoleTemplate:
+      type: object
+      properties:
+        template_id:
+          type: string
+          format: uuid
+        template_code:
+          type: string
+        description:
+          type: string
+          nullable: true
+      required: [template_id, template_code]
+
+    GlobalPermissionTemplate:
+      type: object
+      properties:
+        template_id:
+          type: string
+          format: uuid
+        permission_code:
+          type: string
+        action:
+          type: string
+        resource:
+          type: string
+        default_condition:
+          type: object
+          nullable: true
+          description: Điều kiện mặc định dưới dạng JSON (JSONB)
+        description:
+          type: string
+          nullable: true
+      required: [template_id, permission_code, action, resource]
 
     ResponseMeta:
       type: object
