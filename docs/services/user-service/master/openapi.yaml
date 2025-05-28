@@ -1,0 +1,210 @@
+openapi: 3.0.3
+info:
+  title: 'User Service Master API'
+  description: >
+    OpenAPI specification cho User Service Master trong hệ thống dx_vas.
+
+    Service này chịu trách nhiệm quản lý người dùng toàn cục (`users_global`), danh sách tenant (`tenants`),
+    và việc gán người dùng vào tenant (`user_tenant_assignments`). Đồng thời cung cấp template RBAC
+    để các Sub User Service seed dữ liệu RBAC cục bộ.
+
+    Tuân thủ các chuẩn thiết kế trong ADR-009 đến ADR-013.
+  version: 0.1.0
+  contact:
+    name: DX VAS Platform Team
+    email: dev@truongvietanh.edu.vn
+
+servers:
+  - url: https://user.truongvietanh.edu.vn/api/v1
+
+tags:
+  - name: Users Global
+    description: Các API quản lý người dùng toàn cục
+  - name: Tenants
+    description: Danh sách các tenant trong hệ thống
+  - name: User–Tenant Assignment
+    description: Gán người dùng vào tenant và gán vai trò toàn cục
+
+paths:
+  /users-global/by-email:
+    get:
+      tags: [Users Global]
+      summary: Tra cứu người dùng toàn cục theo email
+      parameters:
+        - name: email
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Thông tin người dùng toàn cục
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserGlobal'
+        404:
+          $ref: '#/components/responses/ErrorResponse'
+
+  /users-global:
+    post:
+      tags: [Users Global]
+      summary: Tạo người dùng toàn cục mới
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserGlobalCreate'
+      responses:
+        200:
+          description: ID người dùng được tạo
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  user_id:
+                    type: string
+                    format: uuid
+        400:
+          $ref: '#/components/responses/ErrorResponse'
+
+  /tenants:
+    get:
+      tags: [Tenants]
+      summary: Trả về danh sách tất cả các tenant
+      responses:
+        200:
+          description: Danh sách tenant
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Tenant'
+
+  /user-tenant-assignments:
+    get:
+      tags: [User–Tenant Assignment]
+      summary: Tra cứu danh sách tenant mà người dùng thuộc về
+      parameters:
+        - name: user_id
+          in: query
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        200:
+          description: Danh sách assignment theo tenant
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/UserTenantAssignment'
+
+    post:
+      tags: [User–Tenant Assignment]
+      summary: Gán người dùng vào tenant với các vai trò cụ thể
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserTenantAssignmentCreate'
+      responses:
+        200:
+          description: Thành công
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  responses:
+    ErrorResponse:
+      description: Lỗi xảy ra trong quá trình xử lý
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
+
+  schemas:
+    UserGlobal:
+      type: object
+      properties:
+        user_id:
+          type: string
+          format: uuid
+        full_name:
+          type: string
+        email:
+          type: string
+        auth_provider:
+          type: string
+          enum: [google, otp, local]
+        created_at:
+          type: string
+          format: date-time
+
+    UserGlobalCreate:
+      type: object
+      required: [full_name, email, auth_provider]
+      properties:
+        full_name:
+          type: string
+        email:
+          type: string
+        auth_provider:
+          type: string
+          enum: [google, otp, local]
+
+    Tenant:
+      type: object
+      properties:
+        tenant_id:
+          type: string
+        tenant_name:
+          type: string
+        status:
+          type: string
+          enum: [active, inactive]
+
+    UserTenantAssignment:
+      type: object
+      properties:
+        tenant_id:
+          type: string
+        role_codes:
+          type: array
+          items:
+            type: string
+        is_active:
+          type: boolean
+
+    UserTenantAssignmentCreate:
+      type: object
+      required: [user_id, tenant_id, role_codes]
+      properties:
+        user_id:
+          type: string
+          format: uuid
+        tenant_id:
+          type: string
+        role_codes:
+          type: array
+          items:
+            type: string
