@@ -1,149 +1,458 @@
 openapi: 3.0.3
 info:
-  title: 'User Service Master API'
-  description: >
-    OpenAPI specification cho User Service Master trong hệ thống dx_vas.
-
-    Service này chịu trách nhiệm quản lý người dùng toàn cục (`users_global`), danh sách tenant (`tenants`),
-    và việc gán người dùng vào tenant (`user_tenant_assignments`). Đồng thời cung cấp template RBAC
-    để các Sub User Service seed dữ liệu RBAC cục bộ.
-
-    Tuân thủ các chuẩn thiết kế trong ADR-009 đến ADR-013.
-  version: 0.1.0
-  contact:
-    name: DX VAS Platform Team
-    email: dev@truongvietanh.edu.vn
+  title: User Service Master API
+  description: |
+    Dịch vụ quản lý định danh người dùng toàn cục, tenant và RBAC templates trong hệ thống đa tenant của dx_vas.
+    Phục vụ Auth Services, Sub User Services và các ứng dụng quản trị Superadmin.
+  version: 1.0.0
 
 servers:
-  - url: https://user.truongvietanh.edu.vn/api/v1
+  - url: https://api.truongvietanh.edu.vn/user-service/master
+    description: Production
+  - url: https://staging.truongvietanh.edu.vn/user-service/master
+    description: Staging
+  - url: http://localhost:8000
+    description: Local Development
 
 tags:
   - name: Users Global
-    description: Các API quản lý người dùng toàn cục
+    description: Quản lý người dùng toàn cục
   - name: Tenants
-    description: Danh sách các tenant trong hệ thống
-  - name: User–Tenant Assignment
-    description: Gán người dùng vào tenant và gán vai trò toàn cục
+    description: Quản lý thông tin tenant
+  - name: User-Tenant Assignments
+    description: Gán người dùng vào tenant
+  - name: RBAC Templates
+    description: Quản lý role/permission template toàn cục
 
 paths:
-  /users-global/by-email:
-    get:
-      tags: [Users Global]
-      summary: Tra cứu người dùng toàn cục theo email
-      parameters:
-        - name: email
-          in: query
-          required: true
-          schema:
-            type: string
-      responses:
-        200:
-          description: Thông tin người dùng toàn cục
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/UserGlobal'
-        404:
-          $ref: '#/components/responses/ErrorResponse'
-
   /users-global:
     post:
-      tags: [Users Global]
+      tags:
+        - Users Global
       summary: Tạo người dùng toàn cục mới
+      operationId: createUserGlobal
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UserGlobalCreate'
+              type: object
+              required: [full_name, email, auth_provider]
+              properties:
+                full_name:
+                  type: string
+                email:
+                  type: string
+                  format: email
+                auth_provider:
+                  type: string
+                  enum: [google, local, otp]
+                phone:
+                  type: string
+                  nullable: true
       responses:
-        200:
-          description: ID người dùng được tạo
+        "201":
+          description: Tạo thành công
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  user_id:
-                    type: string
-                    format: uuid
-        400:
-          $ref: '#/components/responses/ErrorResponse'
+                $ref: "#/components/schemas/UserGlobal"
+        "400":
+          $ref: "#/components/responses/ValidationError"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+
+  /users-global/{user_id}:
+    get:
+      tags:
+        - Users Global
+      summary: Lấy thông tin người dùng toàn cục theo ID
+      operationId: getUserGlobalById
+      parameters:
+        - in: path
+          name: user_id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Thành công
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserGlobal"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+
+    patch:
+      tags:
+        - Users Global
+      summary: Cập nhật thông tin người dùng toàn cục
+      operationId: patchUserGlobal
+      parameters:
+        - in: path
+          name: user_id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                full_name:
+                  type: string
+                phone:
+                  type: string
+                  nullable: true
+      responses:
+        "204":
+          description: Cập nhật thành công, không có nội dung trả về
+        "400":
+          $ref: "#/components/responses/ValidationError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+
+  /users-global/by-email:
+    get:
+      tags:
+        - Users Global
+      summary: Lấy người dùng toàn cục theo email
+      operationId: getUserGlobalByEmail
+      parameters:
+        - in: query
+          name: email
+          required: true
+          schema:
+            type: string
+            format: email
+      responses:
+        "200":
+          description: Thành công
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserGlobal"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
 
   /tenants:
     get:
-      tags: [Tenants]
-      summary: Trả về danh sách tất cả các tenant
+      tags:
+        - Tenants
+      summary: Lấy danh sách tenant
+      operationId: listTenants
+      parameters:
+        - in: query
+          name: status
+          required: false
+          schema:
+            type: string
+            enum: [active, inactive]
       responses:
-        200:
+        "200":
           description: Danh sách tenant
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Tenant'
-
-  /user-tenant-assignments:
-    get:
-      tags: [User–Tenant Assignment]
-      summary: Tra cứu danh sách tenant mà người dùng thuộc về
-      parameters:
-        - name: user_id
-          in: query
-          required: true
-          schema:
-            type: string
-            format: uuid
-      responses:
-        200:
-          description: Danh sách assignment theo tenant
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/UserTenantAssignment'
+                  $ref: "#/components/schemas/Tenant"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
 
     post:
-      tags: [User–Tenant Assignment]
-      summary: Gán người dùng vào tenant với các vai trò cụ thể
+      tags:
+        - Tenants
+      summary: Tạo tenant mới
+      operationId: createTenant
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UserTenantAssignmentCreate'
+              type: object
+              required: [tenant_id, tenant_name]
+              properties:
+                tenant_id:
+                  type: string
+                tenant_name:
+                  type: string
+                status:
+                  type: string
+                  enum: [active, inactive]
       responses:
-        200:
+        "201":
+          description: Tạo thành công
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Tenant"
+        "400":
+          $ref: "#/components/responses/ValidationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+
+  /tenants/{tenant_id}:
+    get:
+      tags:
+        - Tenants
+      summary: Lấy thông tin chi tiết một tenant
+      operationId: getTenantById
+      parameters:
+        - in: path
+          name: tenant_id
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
           description: Thành công
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  status:
-                    type: string
-                    example: success
+                $ref: "#/components/schemas/Tenant"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
 
+    patch:
+      tags:
+        - Tenants
+      summary: Cập nhật thông tin tenant
+      operationId: patchTenant
+      parameters:
+        - in: path
+          name: tenant_id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                tenant_name:
+                  type: string
+                status:
+                  type: string
+                  enum: [active, inactive]
+      responses:
+        "204":
+          description: Cập nhật thành công, không có nội dung trả về
+        "400":
+          $ref: "#/components/responses/ValidationError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+
+    delete:
+      tags:
+        - Tenants
+      summary: Xóa tenant
+      operationId: deleteTenant
+      parameters:
+        - in: path
+          name: tenant_id
+          required: true
+          schema:
+            type: string
+      responses:
+        "204":
+          description: Xóa thành công
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+
+  /user-tenant-assignments:
+    get:
+      tags:
+        - User-Tenant Assignments
+      summary: Lấy danh sách tenant mà một user được gán
+      operationId: listTenantAssignments
+      parameters:
+        - in: query
+          name: user_id
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: status
+          required: false
+          schema:
+            type: string
+            enum: [active, revoked]
+      responses:
+        "200":
+          description: Danh sách tenant mà user được gán
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/UserTenantAssignment"
+        "400":
+          $ref: "#/components/responses/ValidationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+
+    post:
+      tags:
+        - User-Tenant Assignments
+      summary: Gán user vào một tenant cụ thể
+      operationId: assignUserToTenant
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [user_id, tenant_id]
+              properties:
+                user_id:
+                  type: string
+                tenant_id:
+                  type: string
+      responses:
+        "201":
+          description: Gán thành công
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserTenantAssignment"
+        "400":
+          $ref: "#/components/responses/ValidationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+
+  /user-tenant-assignments/{assignment_id}:
+    patch:
+      tags:
+        - User-Tenant Assignments
+      summary: Cập nhật trạng thái gán user vào tenant (hoạt động / thu hồi)
+      operationId: patchTenantAssignment
+      parameters:
+        - in: path
+          name: assignment_id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                is_active:
+                  type: boolean
+      responses:
+        "204":
+          description: Cập nhật thành công
+        "400":
+          $ref: "#/components/responses/ValidationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+
+  /rbac/templates/roles:
+    get:
+      tags:
+        - RBAC Templates
+      summary: Lấy danh sách template vai trò toàn cục
+      operationId: listGlobalRoleTemplates
+      responses:
+        "200":
+          description: Danh sách template vai trò
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/GlobalRoleTemplate"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+
+    post:
+      tags:
+        - RBAC Templates
+      summary: Tạo template vai trò mới
+      operationId: createGlobalRoleTemplate
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/GlobalRoleTemplateCreate"
+      responses:
+        "201":
+          description: Tạo thành công
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GlobalRoleTemplate"
+        "400":
+          $ref: "#/components/responses/ValidationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+
+  /rbac/templates/permissions:
+    get:
+      tags:
+        - RBAC Templates
+      summary: Lấy danh sách template quyền toàn cục
+      operationId: listGlobalPermissionTemplates
+      responses:
+        "200":
+          description: Danh sách template quyền
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/GlobalPermissionTemplate"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+
+    post:
+      tags:
+        - RBAC Templates
+      summary: Tạo template quyền mới
+      operationId: createGlobalPermissionTemplate
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/GlobalPermissionTemplateCreate"
+      responses:
+        "201":
+          description: Tạo thành công
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GlobalPermissionTemplate"
+        "400":
+          $ref: "#/components/responses/ValidationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
 
 components:
-  securitySchemes:
-    BearerAuth:
+  securitySchemes: []
+    bearerAuth:
       type: http
       scheme: bearer
       bearerFormat: JWT
 
-  responses:
-    ErrorResponse:
-      description: Lỗi xảy ra trong quá trình xử lý
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorEnvelope'
-
   schemas:
-    UserGlobal:
+    # USERS GLOBAL
+    GlobalUser:
       type: object
       properties:
         user_id:
@@ -153,25 +462,35 @@ components:
           type: string
         email:
           type: string
+          format: email
         auth_provider:
           type: string
-          enum: [google, otp, local]
-        created_at:
-          type: string
-          format: date-time
+          enum: [google, local, otp]
+      required: [user_id, full_name, email, auth_provider]
 
-    UserGlobalCreate:
+    GlobalUserCreate:
       type: object
-      required: [full_name, email, auth_provider]
       properties:
         full_name:
           type: string
         email:
           type: string
+          format: email
         auth_provider:
           type: string
-          enum: [google, otp, local]
+          enum: [google, local, otp]
+      required: [full_name, email, auth_provider]
 
+    GlobalUserUpdate:
+      type: object
+      properties:
+        full_name:
+          type: string
+        email:
+          type: string
+          format: email
+
+    # TENANTS
     Tenant:
       type: object
       properties:
@@ -182,29 +501,191 @@ components:
         status:
           type: string
           enum: [active, inactive]
+      required: [tenant_id, tenant_name, status]
 
-    UserTenantAssignment:
+    TenantCreate:
       type: object
       properties:
         tenant_id:
           type: string
-        role_codes:
-          type: array
-          items:
-            type: string
-        is_active:
-          type: boolean
+        tenant_name:
+          type: string
+      required: [tenant_id, tenant_name]
 
-    UserTenantAssignmentCreate:
+    TenantUpdate:
       type: object
-      required: [user_id, tenant_id, role_codes]
       properties:
-        user_id:
+        tenant_name:
+          type: string
+        status:
+          type: string
+          enum: [active, inactive]
+
+    # USER-TENANT ASSIGNMENT
+    UserTenantAssignment:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        user_id_global:
           type: string
           format: uuid
         tenant_id:
           type: string
-        role_codes:
-          type: array
-          items:
-            type: string
+        is_active:
+          type: boolean
+      required: [id, user_id_global, tenant_id, is_active]
+
+    UserTenantAssignmentCreate:
+      type: object
+      properties:
+        user_id_global:
+          type: string
+          format: uuid
+        tenant_id:
+          type: string
+      required: [user_id_global, tenant_id]
+
+    UserTenantAssignmentUpdate:
+      type: object
+      properties:
+        is_active:
+          type: boolean
+
+    # RBAC TEMPLATE
+    GlobalRoleTemplate:
+      type: object
+      properties:
+        template_id:
+          type: string
+          format: uuid
+        template_code:
+          type: string
+        description:
+          type: string
+      required: [template_id, template_code]
+
+    GlobalRoleTemplateCreate:
+      type: object
+      properties:
+        template_code:
+          type: string
+        description:
+          type: string
+      required: [template_code]
+
+    GlobalPermissionTemplate:
+      type: object
+      properties:
+        template_id:
+          type: string
+          format: uuid
+        permission_code:
+          type: string
+        action:
+          type: string
+        resource:
+          type: string
+        default_condition:
+          type: object
+      required: [template_id, permission_code, action, resource]
+
+    GlobalPermissionTemplateCreate:
+      type: object
+      properties:
+        permission_code:
+          type: string
+        action:
+          type: string
+        resource:
+          type: string
+        default_condition:
+          type: object
+      required: [permission_code, action, resource]
+
+  responses:
+    ValidationError:
+      description: Dữ liệu gửi lên không hợp lệ
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
+    UnauthorizedError:
+      description: Không có quyền truy cập (401)
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
+    ForbiddenError:
+      description: Bị từ chối truy cập (403)
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
+    NotFoundError:
+      description: Không tìm thấy tài nguyên yêu cầu
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
+    InternalServerError:
+      description: Lỗi nội bộ máy chủ (500)
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
+  examples:
+    UserGlobalExample:
+      summary: Ví dụ người dùng toàn cục
+      value:
+        user_id: "2d789a56-1a11-4e52-bfc6-4d9c3b2e9f79"
+        full_name: "Nguyễn Văn A"
+        email: "nguyenvana@example.com"
+        auth_provider: "google"
+        created_at: "2024-06-15T08:00:00Z"
+        updated_at: "2024-06-20T14:35:00Z"
+
+    TenantExample:
+      summary: Ví dụ một tenant (trường thành viên)
+      value:
+        tenant_id: "vas_001"
+        tenant_name: "Trường Tiểu học Việt Anh 1"
+        status: "active"
+        created_at: "2024-05-01T00:00:00Z"
+        updated_at: "2024-06-01T12:00:00Z"
+
+    AssignmentExample:
+      summary: Ví dụ gán người dùng vào tenant
+      value:
+        id: "845f9e3b-2f64-4dc5-b3e3-7c1a0fdd5f0c"
+        user_id: "2d789a56-1a11-4e52-bfc6-4d9c3b2e9f79"
+        tenant_id: "vas_001"
+        is_active: true
+        assigned_at: "2024-06-25T10:30:00Z"
+
+    GlobalPermissionTemplateExample:
+      summary: Ví dụ một permission template toàn cục
+      value:
+        template_id: "14d2e0bd-f9e0-4f88-b0b1-2182a5e9627e"
+        permission_code: "user.read_all"
+        action: "read"
+        resource: "user"
+        default_condition: { "department": "any" }
+        description: "Cho phép đọc tất cả người dùng trong hệ thống"
+
+tags:
+  - name: Users Global
+    description: Quản lý người dùng toàn cục trong hệ thống (User Service Master).
+  - name: Tenants
+    description: Quản lý thông tin các tenant (trường thành viên) trong hệ thống.
+  - name: User-Tenant Assignments
+    description: Gán người dùng vào tenant và quản lý trạng thái hoạt động của họ trong từng tenant.
+  - name: RBAC Templates
+    description: Quản lý template vai trò và quyền (RBAC) toàn cục, dùng để đồng bộ xuống các tenant.
+
