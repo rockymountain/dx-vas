@@ -1,6 +1,6 @@
 ---
 id: adr-018-release-approval-policy
-title: ADR-018 <br> Chính sách phê duyệt và rollback release cho môi trường production của dx-vas
+title: ADR-018 - Chính sách phê duyệt và rollback release cho môi trường production của dx-vas
 status: accepted
 author: DX VAS Platform Team
 date: 2025-06-22

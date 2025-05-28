@@ -1,9 +1,9 @@
 ---
 id: adr-017-env-deploy-boundary
-title: ADR-017: Quy tắc triển khai theo môi trường cho hệ thống dx-vas
+title: ADR-017 - Quy tắc triển khai theo môi trường cho hệ thống dx-vas
 status: accepted
 author: DX VAS Platform Team
-date: 2025-06-22
+date: 2025-05-22
 tags: [environment, deployment, boundary, dx-vas, config]
 ---
 

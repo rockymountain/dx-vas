@@ -1,9 +1,9 @@
 ---
 id: adr-013-path-naming-convention
-title: ADR-013: Quy ước đặt tên endpoint, method và tham số cho API hệ thống dx-vas
+title: ADR-013 - Quy ước đặt tên endpoint, method và tham số cho API hệ thống dx-vas
 status: accepted
 author: DX VAS Architecture Team
-date: 2025-06-22
+date: 2025-05-22
 tags: [api, naming, path, rest, dx-vas]
 ---
 

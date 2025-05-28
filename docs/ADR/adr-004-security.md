@@ -1,9 +1,9 @@
 ---
 id: adr-004-security
-title: ADR-004 \n Chiến lược Bảo mật tổng thể cho hệ thống dx-vas
+title: ADR-004 - Chiến lược Bảo mật tổng thể cho hệ thống dx-vas
 status: accepted
 author: DX VAS Security Team
-date: 2025-06-22
+date: 2025-05-22
 tags: [security, hardening, dx-vas, cloud-run, jwt, rate-limiting]
 ---
 

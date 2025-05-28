@@ -1,9 +1,9 @@
 ---
 id: adr-006-auth-strategy
-title: ADR-006: Chiến lược xác thực người dùng (Authentication) cho hệ thống dx-vas
+title: ADR-006 - Chiến lược xác thực người dùng (Authentication) cho hệ thống dx-vas
 status: accepted
 author: DX VAS Platform Team
-date: 2025-06-22
+date: 2025-05-22
 tags: [auth, security, dx-vas, oauth2, otp]
 ---
 

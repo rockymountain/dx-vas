@@ -1,9 +1,9 @@
 ---
 id: adr-016-auto-scaling
-title: ADR-016: Chiến lược Auto Scaling cho hệ thống dx-vas
+title: ADR-016 - Chiến lược Auto Scaling cho hệ thống dx-vas
 status: accepted
 author: DX VAS Platform Team
-date: 2025-06-22
+date: 2025-05-22
 tags: [scaling, cloud-run, performance, cost, dx-vas]
 ---
 

@@ -1,9 +1,9 @@
 ---
 id: adr-005-env-config
-title: ADR-005: Chiến lược Cấu hình đa môi trường (Environment Configuration) cho hệ thống dx-vas
+title: ADR-005 - Chiến lược Cấu hình đa môi trường (Environment Configuration) cho hệ thống dx-vas
 status: accepted
 author: DX VAS DevOps Team
-date: 2025-06-22
+date: 2025-05-22
 tags: [configuration, environment, dotenv, ci-cd, secrets, dx-vas]
 ---
 

@@ -1,9 +1,9 @@
 ---
 id: adr-008-audit-logging
-title: ADR-008: Chiến lược Audit Logging cho hệ thống dx-vas
+title: ADR-008 - Chiến lược Audit Logging cho hệ thống dx-vas
 status: accepted
 author: DX VAS Security & Platform Team
-date: 2025-06-22
+date: 2025-05-22
 tags: [audit, logging, observability, dx-vas, security]
 ---
 

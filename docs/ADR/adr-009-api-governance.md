@@ -1,9 +1,9 @@
 ---
 id: adr-009-api-governance
-title: ADR-009: Chính sách Quản trị API (API Governance) cho hệ thống dx-vas
+title: ADR-009 - Chính sách Quản trị API (API Governance) cho hệ thống dx-vas
 status: accepted
 author: DX VAS Architecture Team
-date: 2025-06-22
+date: 2025-05-22
 tags: [api, governance, versioning, standards, dx-vas]
 ---
 

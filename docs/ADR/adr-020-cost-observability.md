@@ -1,9 +1,9 @@
 ---
 id: adr-020-cost-observability
-title: ADR-020: Theo dõi và tối ưu chi phí vận hành cho hệ thống dx-vas
+title: ADR-020 - Theo dõi và tối ưu chi phí vận hành cho hệ thống dx-vas
 status: accepted
 author: DX VAS Platform Team
-date: 2025-06-22
+date: 2025-05-22
 tags: [observability, cost, monitoring, cloud-run, dx-vas]
 ---
 

@@ -1,9 +1,9 @@
 ---
 id: adr-011-api-error-format
-title: ADR-011: Chuẩn hóa định dạng lỗi API trong hệ thống dx-vas
+title: ADR-011 - Chuẩn hóa định dạng lỗi API trong hệ thống dx-vas
 status: accepted
 author: DX VAS Platform Team
-date: 2025-06-22
+date: 2025-05-22
 tags: [api, error, format, dx-vas]
 ---
 

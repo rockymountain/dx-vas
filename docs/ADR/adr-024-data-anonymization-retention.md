@@ -1,9 +1,9 @@
 ---
 id: adr-024-data-anonymization-retention
-title: ADR-024: Chính sách ẩn danh hóa và lưu trữ dữ liệu cho hệ thống dx-vas
+title: ADR-024 - Chính sách ẩn danh hóa và lưu trữ dữ liệu cho hệ thống dx-vas
 status: accepted
 author: DX VAS Platform Team
-date: 2025-06-22
+date: 2025-05-22
 tags: [privacy, anonymization, retention, data-governance, dx-vas]
 ---
 

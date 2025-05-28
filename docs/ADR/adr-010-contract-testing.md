@@ -1,113 +1,72 @@
 ---
 id: adr-010-contract-testing
-title: ADR-010: Chiến lược Contract Testing cho hệ thống dx-vas
+title: ADR-010 - Chiến lược Contract Testing cho hệ thống dx-vas
 status: accepted
 author: DX VAS Architecture Team
-date: 2025-06-22
+date: 2025-05-22
 tags: [contract-testing, pact, integration, api, dx-vas]
 ---
 
-## 📌 Bối cảnh
+# ADR-010: Contract Testing giữa các dịch vụ
 
-Trong hệ thống **dx-vas**, nhiều dịch vụ độc lập giao tiếp với nhau qua API:
-- Frontend (Portal/Admin) ↔ API Gateway
-- API Gateway ↔ LMS Adapter, CRM Adapter, Notification Service
-- API Gateway ↔ External systems (SSO, tuyển sinh...)
+## Bối cảnh
 
-Các dịch vụ được phát triển bởi các đội khác nhau, thay đổi độc lập. Điều này dẫn đến nguy cơ **breaking change** nếu một producer thay đổi API mà consumer chưa kịp thích nghi. Contract Testing là giải pháp đảm bảo sự tương thích đó.
+Hệ thống dx-vas bao gồm nhiều service giao tiếp qua HTTP hoặc Pub/Sub. Việc đảm bảo các service tương tác đúng với nhau (hợp đồng API không bị phá vỡ khi cập nhật) là rất quan trọng, đặc biệt trong mô hình microservices đa tenant.
 
-## 🧠 Quyết định
+Contract testing sẽ giúp phát hiện sớm lỗi tương thích khi có thay đổi schema, đầu vào/đầu ra, hoặc khi các team phát triển độc lập.
 
-**Áp dụng Consumer-Driven Contract Testing bằng công cụ Pact, với hỗ trợ Pact Broker để quản lý contracts giữa các dịch vụ trong dx-vas. Tích hợp contract testing vào CI/CD cả phía consumer và producer.**
+## Quyết định
 
-## 📖 Khái niệm chính
+### 1. Áp dụng hình thức contract testing
 
-- **Producer**: Dịch vụ cung cấp API (Gateway, Adapter)
-- **Consumer**: Dịch vụ gọi API (Frontend, API Gateway gọi backend...)
-- **Contract**: Một tệp JSON định nghĩa kỳ vọng của consumer với response từ producer
+- Sử dụng mô hình **Consumer-Driven Contract Testing**
+- Tools đề xuất: **Pact**, **Dredd**, hoặc custom test runners
+- Các consumer (Gateway, Frontend, Service khác) định nghĩa expectation → producer (Sub Service) cam kết đáp ứng
 
-## 🧩 Cặp producer–consumer áp dụng contract testing
+### 2. Contract testing phải hỗ trợ tenant context
 
-| Producer | Consumer |
-|----------|----------|
-| API Gateway | Frontend (Portal, Admin Webapp) |
-| LMS Adapter | API Gateway |
-| CRM Adapter | API Gateway |
-| Notification Service | API Gateway |
-| Public API | Hệ thống tuyển sinh (external consumer) |
+Với mô hình multi-tenant, mọi lời gọi service đều có ngữ cảnh `tenant_id`, `user_id`, `roles`, v.v.
 
-## 🔄 Quy trình làm việc
+Do đó, contract test **cần bao gồm**:
 
-### 1. Consumer side
-- Viết test giả lập gọi API của producer bằng `pact-js`, `pact-python`, `pact-go`...
-- Sinh Pact file (JSON) thể hiện request/response kỳ vọng
-- Gửi Pact file lên Pact Broker (hoặc commit vào repo producer nếu chưa có Broker)
+- Header: `x-tenant-id`, `authorization (Bearer <jwt>)`
+- Payload có chứa: `user_id`, hoặc thông tin RBAC liên quan
+- Response phù hợp với dữ liệu trong ngữ cảnh tenant cụ thể
 
-### 2. Producer side
-- Cài provider verifier (`pact-provider-verifier`)
-- Lấy pact từ Broker/repo → chạy test thực tế
-- Đảm bảo API thực tế đáp ứng đúng contract của consumer
+### 3. Các nhóm service cần testing
 
-### 3. CI/CD tích hợp
-- Consumer CI:
-  - Tạo Pact file sau mỗi build
-  - Upload Pact file lên Broker (hoặc Git)
-- Producer CI:
-  - Tự động verify contract với mỗi commit
-  - Fail nếu có breaking change (khác contract)
+| Service | Consumer | Mục tiêu contract |
+|---------|----------|-------------------|
+| Sub User Service | Auth Service / Gateway | Đảm bảo cung cấp đúng `roles`, `permissions` cho `user_id`, `tenant_id` |
+| Sub Notification Service | Notification Master | Đảm bảo nhận sự kiện `global_notification_requested` và phản hồi đúng |
+| Sub Auth Service | Frontend / Gateway | Đảm bảo login OTP trả JWT đúng định dạng, context |
+| SIS Adapter | Sub User Service | Trả thông tin học sinh đúng RBAC/tenant context |
 
-### 4. Pact Broker
-- Lưu trữ Pact theo phiên bản consumer
-- Theo dõi tương thích giữa các phiên bản API
-- Hỗ trợ webhook → tự động trigger CI bên producer khi consumer cập nhật contract
+### 4. Kết nối với CI/CD
 
-## 🧪 Provider States
-- Cho phép producer set up data phù hợp trước khi verify một interaction
-- Được định nghĩa bởi consumer trong contract
-- Producer mapping các state → data setup tương ứng trong test
+- Mỗi PR vào service phải chạy contract test liên quan
+- Nếu hợp đồng bị thay đổi → yêu cầu phê duyệt từ consumer tương ứng
+- Contracts được lưu ở repo riêng hoặc cùng repo backend (trong thư mục `/contracts`)
 
-## 📌 Áp dụng trong dx-vas
+## Hệ quả
 
-- Bắt buộc contract test với tất cả API public hoặc shared
-- Là một bước trong checklist review OpenAPI (xem [`adr-009-api-governance.md`](./adr-009-api-governance.md))
-- Pact file phải được duyệt nếu là breaking change → thêm tag `breaking` vào commit/pull request
-- Producer được phép từ chối contract không hợp lệ hoặc chưa hỗ trợ
+✅ Ưu điểm:
 
-## 🛠 Công cụ đề xuất
+- Giảm thiểu lỗi không tương thích giữa các dịch vụ
+- Bảo vệ luồng xác thực và phân quyền đa tenant
+- Phát hiện sớm sai khác nếu service thay đổi (VD: schema, auth claim, error format)
 
-| Mục tiêu | Công cụ |
-|---------|---------|
-| Viết contract (consumer) | `pact-js`, `pact-python`, `pact-go`, `pact-net` |
-| Verify contract (producer) | `pact-provider-verifier` |
-| Broker | Pactflow (SaaS) hoặc self-hosted Pact Broker |
-| CI/CD | GitHub Actions, GitLab CI, webhook từ Broker |
+⚠️ Lưu ý:
 
-## ✅ Lợi ích
+- Contract test cần dữ liệu mẫu theo từng `tenant_id`
+- JWT test nên dùng fixture/generator thay vì token thật
+- Một số service sử dụng Pub/Sub cần thêm test listener giả lập (hoặc sử dụng test harness)
 
-- Phát hiện breaking change trước khi deploy
-- Tăng độ tin cậy và khả năng mở rộng giữa các service
-- Đảm bảo frontend/backend phát triển độc lập nhưng nhất quán
-- Giảm lỗi runtime do thiếu đồng bộ API
+## Liên kết liên quan
 
-## ❌ Rủi ro & Giải pháp
-
-| Rủi ro | Giải pháp |
-|--------|-----------|
-| Pact file cũ/lỗi bị verify sai | Tích hợp schema validator + version tag |
-| Không có test cho interaction edge case | Bắt buộc coverage cho API critical |
-| Producer không muốn verify mọi contract | Giới hạn contract scope theo `provider_tag` |
-
-## 🔄 Các phương án đã loại bỏ
-
-| Phương án | Lý do không chọn |
-|-----------|------------------|
-| Manual integration test giữa các service | Không scale, chậm, khó tự động hoá |
-| Chỉ dùng test frontend để phát hiện API bug | Không bảo vệ producer trước thay đổi silent |
-
-## 📎 Tài liệu liên quan
-
-- API Governance: [ADR-009](./adr-009-api-governance.md)
-- CI/CD Strategy: [ADR-001](./adr-001-ci-cd.md)
+- [`adr-006-auth-strategy.md`](./adr-006-auth-strategy.md)
+- [`adr-007-rbac.md`](./adr-007-rbac.md)
+- [`README.md#15-testing--contract`](../README.md#15-testing--contract)
 
 ---
 > “Contract testing là cách để các dịch vụ giao tiếp bằng sự tin cậy – chứ không phải niềm tin mù quáng.”

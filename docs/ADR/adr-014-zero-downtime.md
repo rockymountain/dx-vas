@@ -1,9 +1,9 @@
 ---
 id: adr-014-zero-downtime
-title: ADR-014: Chiến lược Triển khai Không Gián Đoạn (Zero-Downtime Deployment) cho hệ thống dx-vas
+title: ADR-014 - Chiến lược Triển khai Không Gián Đoạn (Zero-Downtime Deployment) cho hệ thống dx-vas
 status: accepted
 author: DX VAS Platform Team
-date: 2025-06-22
+date: 2025-05-22
 tags: [deployment, cloud-run, traffic-split, dx-vas]
 ---
 

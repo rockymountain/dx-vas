@@ -1,9 +1,9 @@
 ---
 id: adr-007-rbac
 status: accepted
-title: ADR-007: Chiến lược phân quyền RBAC động cho toàn hệ thống dx-vas
+title: ADR-007 - Chiến lược phân quyền RBAC động cho toàn hệ thống dx-vas
 author: DX VAS Platform Team
-date: 2025-06-22
+date: 2025-05-22
 tags: [rbac, security, auth, dx-vas]
 ---
 

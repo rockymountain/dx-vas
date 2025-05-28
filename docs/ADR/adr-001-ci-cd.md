@@ -1,9 +1,9 @@
 ---
 id: adr-001-ci-cd
-title: ADR-001: Chiến lược CI/CD chung cho toàn hệ thống dx-vas
+title: ADR-001 - Chiến lược CI/CD chung cho toàn hệ thống dx-vas
 status: accepted
 author: DX VAS DevOps Team
-date: 2025-06-22
+date: 2025-05-22
 tags: [ci, cd, github-actions, cloud-run, dx-vas]
 ---
 

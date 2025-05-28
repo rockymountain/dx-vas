@@ -1,9 +1,9 @@
 ---
 id: adr-021-external-observability
-title: ADR-021: Chính sách tích hợp Observability với hệ thống bên ngoài cho dx-vas
+title: ADR-021 - Chính sách tích hợp Observability với hệ thống bên ngoài cho dx-vas
 status: accepted
 author: DX VAS Platform Team
-date: 2025-06-22
+date: 2025-05-22
 tags: [observability, logging, metrics, tracing, dx-vas, external, otlp]
 ---
 

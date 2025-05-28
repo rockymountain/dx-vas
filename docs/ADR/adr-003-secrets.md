@@ -1,103 +1,75 @@
 ---
 id: adr-003-secrets
-title: ADR-003: Chiến lược Quản lý và Xoay vòng Secrets cho hệ thống dx-vas
+title: ADR-003 - Chiến lược Quản lý và Xoay vòng Secrets cho hệ thống dx-vas
 status: accepted
 author: DX VAS Security & DevOps Team
-date: 2025-06-22
+date: 2025-05-22
 tags: [secrets, security, secret-rotation, dx-vas]
 ---
 
-## 📌 Bối cảnh
+# ADR-003: Chính sách quản lý Secrets
 
-Hệ thống **dx-vas** bao gồm nhiều dịch vụ triển khai trên GCP như:
-- API Gateway
-- Backend Service (CRM Adapter, LMS Proxy, Notification Service, v.v.)
-- Frontend Webapp (Admin, Customer Portal)
-- CI/CD Pipeline (GitHub Actions)
+## Bối cảnh
 
-Các dịch vụ này cần sử dụng **secrets** để kết nối với:
-- Database (Cloud SQL), Redis
-- 3rd-party API (Zalo, Google OAuth, Firebase...)
-- Hệ thống nội bộ (SSO, webhook)
+Hệ thống dx-vas bao gồm nhiều service (Auth, User, Notification…) và nhiều tenant (trường thành viên), mỗi tenant có thể sử dụng các kênh gửi thông báo riêng biệt như Zalo OA, Gmail API, SMS Provider, v.v.
 
-Nếu secrets không được quản lý đúng cách (hardcoded, không xoay vòng), hệ thống có thể gặp rủi ro bảo mật nghiêm trọng.
+Tất cả các secret nhạy cảm như token, API key, mật khẩu CSDL... cần được quản lý tập trung, có khả năng rotate, audit truy cập, và phân quyền theo nguyên tắc tối thiểu.
 
-## 🧠 Quyết định
+## Quyết định
 
-**Áp dụng chiến lược quản lý và xoay vòng secrets tập trung bằng Google Secret Manager và GitHub Secrets, phân tách rõ giữa secrets runtime và CI/CD, định kỳ rotate và kiểm soát audit.**
+### 1. Sử dụng Google Cloud Secret Manager
 
-## 🔐 Loại secrets và nơi lưu trữ
+- Tất cả secrets đều được lưu trữ tại Google Cloud Secret Manager (GCSM)
+- Mỗi secret có thể có nhiều phiên bản (`versions`)
+- Việc truy xuất phải thông qua identity của Cloud Run / Cloud Function hoặc workload identity
 
-| Loại secrets | Ví dụ | Lưu tại |
-|--------------|-------|----------|
-| Runtime secrets | DB password, JWT key, OAuth client ID/secret | Google Secret Manager (per env) |
-| CI/CD secrets | Terraform SA key, GitHub token, WIF config | GitHub Secrets |
+### 2. Mỗi tenant có secrets riêng biệt (nếu dùng)
 
-## 📦 Cách sử dụng secrets
+- Tenant có thể cấu hình Zalo OA riêng, Gmail API key riêng hoặc các webhook/token tùy theo nhu cầu
+- Những secret này sẽ được lưu theo định danh:
 
-### 1. Runtime secrets trong Cloud Run
-- Inject từ Google Secret Manager vào **biến môi trường** hoặc **file**
-- Sử dụng Terraform để cấu hình binding IAM và mount
-- Cloud Run tự động mount phiên bản mới nếu có update (optional warm reload logic)
+```text
+projects/dx-vas-tenant-abc/secrets/zalo-oa-token
+projects/dx-vas-tenant-xyz/secrets/gmail-api-key
+```
 
-### 2. CI/CD sử dụng secrets
-- GitHub Actions đọc từ GitHub Secrets:
-  - `WIF_PROVIDER`, `WIF_SERVICE_ACCOUNT`
-  - `JWT_SIGNING_KEY`, `SLACK_WEBHOOK_URL`
-- Secrets không bao giờ được ghi log hoặc in ra output CI
+* Sub Notification Service sẽ truy xuất secrets tương ứng theo tenant\_id
+* Việc rotate, phân quyền và revoke secret được thực hiện theo từng tenant
 
-## 🔁 Chính sách xoay vòng (Rotation Policy)
+### 3. Phân quyền truy cập secrets
 
-| Loại secrets | Chu kỳ xoay | Ghi chú |
-|--------------|-------------|--------|
-| DB password | 90 ngày | Qua script tự động hoặc Cloud SQL IAM |
-| JWT signing key | 30 ngày | Hỗ trợ multiple keys & forward compatibility |
-| OAuth/Zalo key | 60–90 ngày hoặc khi revoke |
-| GitHub token | 90 ngày hoặc khi bị rotate bởi GitHub |
+* Mỗi service chỉ có quyền truy xuất secrets cần thiết theo nguyên tắc **least privilege**
+* Ví dụ:
 
-- Xoay vòng được thực hiện qua:
-  - `gcloud secrets versions add`
-  - Terraform apply mới (chuyển secret version)
-  - Gửi deploy mới để mount lại secrets vào Cloud Run
+  * `auth-service-master` có quyền đọc secret `jwt-signing-key`
+  * `notification-service-xyz` có quyền đọc `zalo-oa-token` trong project `dx-vas-tenant-xyz`
+* Superadmin Webapp có công cụ xem và cập nhật secret cấu hình theo tenant (ghi log audit)
 
-### ➕ Tự động hoá
-- Sử dụng Cloud Scheduler + Pub/Sub để xoay định kỳ
-- Có thể viết bot CI tự động rotate một số token OAuth expiring
+### 4. Rotate và revoke secret
 
-## 🔎 Kiểm soát & Audit
+* Mỗi secret nên có TTL định kỳ (VD: 90 ngày)
+* Công cụ quản trị có thể trigger rotate → tạo version mới, update config và revoke version cũ
+* Notification Service cần hỗ trợ reload token từ Secret Manager mà không cần restart service
 
-- Audit access qua **Cloud Audit Logs** và `access logs` của GitHub
-- Gắn tag secret theo: `env`, `application`, `rotation_policy`
-- CI/CD scan check trong pre-commit/CI:
-  - Không cho phép push hardcoded secret (dùng `gitleaks`, `truffleHog`)
+## Hệ quả
 
-## ✅ Lợi ích
+✅ Ưu điểm:
 
-- Bảo mật tập trung, dễ kiểm soát quyền truy cập theo môi trường
-- Dễ dàng thay thế/revoke nếu rò rỉ
-- Tăng khả năng tuân thủ các tiêu chuẩn (OWASP, Google Cloud best practices)
-- Gắn chặt quy trình security với CI/CD pipeline
+* Secrets được tách biệt rõ ràng theo môi trường, theo tenant
+* Hỗ trợ nhiều cấu hình linh hoạt: mỗi trường có thể dùng kênh gửi riêng
+* Có thể rotate mà không gián đoạn dịch vụ
+* Dễ audit truy cập theo từng tenant
 
-## ❌ Rủi ro & Giải pháp
+⚠️ Lưu ý:
 
-| Rủi ro | Giải pháp |
-|--------|-----------|
-| Quên rotate secrets | Alert sau 90 ngày qua CI hoặc secret label + audit log |
-| Secret bị ghi log | Dùng middleware log masking, CI block output chứa `TOKEN`, `SECRET` |
-| Secret bị revoke nhưng chưa update | Deploy mỗi lần rotate, hỗ trợ rollback version cũ trong Secret Manager |
+* Cần công cụ hoặc script hỗ trợ cập nhật secret cho từng tenant
+* Tenant phải chịu trách nhiệm cung cấp và quản lý token riêng nếu không dùng mặc định hệ thống
 
-## 🔄 Các lựa chọn đã loại bỏ
+## Liên kết liên quan
 
-| Phương án | Lý do không chọn |
-|-----------|------------------|
-| `.env` file trong Git repo | Rò rỉ bảo mật, không kiểm soát phân quyền |
-| Lưu tất cả secrets trong GitHub Secrets | Không phù hợp cho runtime GCP, không hỗ trợ IAM riêng theo env |
-| Không rotate | Không tuân thủ zero-trust, rủi ro khi credential bị lộ |
-
-## 📎 Tài liệu liên quan
-
-- CI/CD Strategy: [ADR-001](./adr-001-ci-cd.md)
-- IaC Terraform Strategy: [ADR-002](./adr-002-iac.md)
+* [`adr-008-audit-logging.md`](./adr-008-audit-logging.md)
+* [`adr-015-deployment-strategy.md`](./adr-015-deployment-strategy.md)
+* [`README.md#9-quản-lý-bảo-mật--secrets`](../README.md#9-quản-lý-bảo-mật--secrets)
 
 ---
 > “Không có secret nào nên tồn tại mãi mãi – rotate là cách bạn bảo vệ hệ thống khi bạn quên rằng đã từng để lộ nó.”
