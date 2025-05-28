@@ -2,7 +2,7 @@
 
 ## 1. Giới thiệu
 
-Tài liệu này mô tả chi tiết mô hình dữ liệu của **User Service Master** – một trong những thành phần cốt lõi của hệ thống `dx_vas` theo kiến trúc **multi-tenant**. Service này chịu trách nhiệm quản lý **định danh toàn cục người dùng**, **thông tin tenant**, và **mẫu vai trò/quyền toàn cục (RBAC templates)**.
+Tài liệu này mô tả chi tiết mô hình dữ liệu của **User Service Master** – một trong những thành phần cốt lõi của hệ thống `dx-vas` theo kiến trúc **multi-tenant**. Service này chịu trách nhiệm quản lý **định danh toàn cục người dùng**, **thông tin tenant**, và **mẫu vai trò/quyền toàn cục (RBAC templates)**.
 
 ## 2. Phạm vi
 

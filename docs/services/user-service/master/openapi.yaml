@@ -652,7 +652,7 @@ components:
         id: "845f9e3b-2f64-4dc5-b3e3-7c1a0fdd5f0c"
         user_id: "2d789a56-1a11-4e52-bfc6-4d9c3b2e9f79"
         tenant_id: "vas_001"
-        is_active: true
+        assignment_status: active
         assigned_at: "2024-06-25T10:30:00Z"
 
     GlobalPermissionTemplateExample:

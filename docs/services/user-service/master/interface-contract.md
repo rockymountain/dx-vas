@@ -279,11 +279,28 @@ Cập nhật thông tin gán user vào tenant – thường để vô hiệu hó
 **Request body:**
 ```json
 {
-  "is_active": false
+  "assignment_status": "revoked"
 }
 ```
 
-**Response:** `204 No Content`
+**Giá trị hợp lệ của `assignment_status`:**
+
+- `"active"`
+- `"revoked"`
+
+**Response**
+
+```json
+{
+  "id": "c9d5d2e5-84b1-40de-8f7f-7f8cf4b6b94e",
+  "user_id_global": "72ae5021-cc44-46c5-bf99-51bcaa9d2ea6",
+  "tenant_id": "vas-hn",
+  "assignment_status": "revoked"
+}
+```
+
+**Ghi chú:**
+- Trước đây dùng `is_active: boolean`, nay thay bằng `assignment_status` (`enum`) để tăng khả năng mở rộng và đồng bộ với mô hình dữ liệu thực tế.
 
 **Phát sự kiện:**
 - `tenant_user_assignment_updated`
@@ -444,6 +461,19 @@ Tài liệu này định nghĩa rõ ràng các hợp đồng giao diện (interf
 Mọi API đều áp dụng chuẩn phản hồi thống nhất và cơ chế phân quyền linh hoạt dựa trên RBAC đã được mô tả trong [`design.md`](./design.md) và [`rbac-deep-dive.md`](../../../architecture/rbac-deep-dive.md).
 
 👉 **Các API này là nền tảng để các dịch vụ Auth Master, Sub Auth và Superadmin Webapp hoạt động ổn định và mở rộng linh hoạt trong kiến trúc multi-tenant.**
+
+---
+
+## 📌 Phụ lục: Các ENUM sử dụng trong User Service Master
+
+| Tên trường           | Enum giá trị hợp lệ                | Mô tả                                                                 |
+|----------------------|------------------------------------|----------------------------------------------------------------------|
+| `assignment_status`  | `active`, `revoked`                | Trạng thái gán user vào một tenant.                                 |
+| `auth_provider`      | `google`, `local`, `otp`           | Phương thức định danh của user.                                     |
+| `tenant_status`      | `active`, `suspended`, `archived`  | Trạng thái hoạt động của một tenant. *(Tùy chọn nếu mở rộng về sau)*|
+| `event_type` (nếu có)| `created`, `updated`, `deleted`    | Loại sự kiện phát ra trong các event. *(áp dụng nếu thống nhất định danh kiểu event trong log/audit)* |
+
+**Ghi chú:** Các ENUM này nên được định nghĩa tập trung trong codebase backend để tái sử dụng (ví dụ: constant hoặc enum class trong FastAPI hoặc Pydantic), đồng thời được phản ánh rõ trong `openapi.yaml` và các ví dụ minh hoạ để đảm bảo tính thống nhất giữa backend, frontend và hệ thống tài liệu.
 
 ---
 
