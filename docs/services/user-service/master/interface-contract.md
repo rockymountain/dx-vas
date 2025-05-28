@@ -98,8 +98,8 @@ Cập nhật thông tin user (thường để sửa tên/email khi có yêu cầ
 - Việc xác định `auth_provider` (`google`, `local`, `otp`, ...) rất quan trọng để phân biệt luồng xác thực.
 
 📚 Xem thêm:
-- [`design.md`](../design.md#luồng-nghiệp-vụ-đăng-ký--lookup-user)
-- [`data-model.md`](../data-model.md#bảng-users_global)
+- [`design.md`](./design.md#luồng-nghiệp-vụ-đăng-ký--lookup-user)
+- [`data-model.md`](./data-model.md#bảng-users_global)
 
 ---
 
@@ -205,8 +205,8 @@ Xoá hoặc đánh dấu tenant là `inactive`.
 ---
 
 📚 Xem thêm:
-- [`design.md`](../design.md#luồng-superadmin-tạo--quản-lý-tenant)
-- [`data-model.md`](../data-model.md#bảng-tenants)
+- [`design.md`](./design.md#luồng-superadmin-tạo--quản-lý-tenant)
+- [`data-model.md`](./data-model.md#bảng-tenants)
 
 ---
 
@@ -291,8 +291,8 @@ Cập nhật thông tin gán user vào tenant – thường để vô hiệu hó
 ---
 
 📚 Xem thêm:
-- [`design.md`](../design.md#luồng-1-gán-user-into-tenant)
-- [`data-model.md`](../data-model.md#bảng-user_tenant_assignments)
+- [`design.md`](./design.md#luồng-1-gán-user-into-tenant)
+- [`data-model.md`](./data-model.md#bảng-user_tenant_assignments)
 
 ---
 
@@ -391,8 +391,8 @@ Cập nhật/xoá các template theo `template_id`. Các thay đổi có thể �
 ---
 
 📚 Xem thêm:
-- [`design.md`](../design.md#mục-3-quản-lý-template-rbac-toàn-cục)
-- [`data-model.md`](../data-model.md#bảng-global_roles_templates-và-global_permissions_templates)
+- [`design.md`](./design.md#mục-3-quản-lý-template-rbac-toàn-cục)
+- [`data-model.md`](./data-model.md#bảng-global_roles_templates-và-global_permissions_templates)
 
 ---
 
@@ -441,7 +441,7 @@ Tài liệu này định nghĩa rõ ràng các hợp đồng giao diện (interf
 - Gán người dùng vào tenant (`/user-tenant-assignments`)
 - Quản lý template RBAC toàn cục (`/rbac/templates`)
 
-Mọi API đều áp dụng chuẩn phản hồi thống nhất và cơ chế phân quyền linh hoạt dựa trên RBAC đã được mô tả trong [`design.md`](../design.md) và [`rbac-deep-dive.md`](../../../rbac-deep-dive.md).
+Mọi API đều áp dụng chuẩn phản hồi thống nhất và cơ chế phân quyền linh hoạt dựa trên RBAC đã được mô tả trong [`design.md`](./design.md) và [`rbac-deep-dive.md`](../../../architecture/rbac-deep-dive.md).
 
 👉 **Các API này là nền tảng để các dịch vụ Auth Master, Sub Auth và Superadmin Webapp hoạt động ổn định và mở rộng linh hoạt trong kiến trúc multi-tenant.**
 
