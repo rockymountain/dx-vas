@@ -1,6 +1,6 @@
 ---
 id: adr-019-project-layout
-title: ADR-019: Chiến lược tổ chức GCP Project, Network & Quyền hạn cho hệ thống dx-vas
+title: ADR-019 <br> Chiến lược tổ chức GCP Project, Network & Quyền hạn cho hệ thống dx-vas
 status: accepted
 author: DX VAS Platform Team
 date: 2025-06-22
