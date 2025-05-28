@@ -271,53 +271,34 @@ paths:
 
   /user-tenant-assignments:
     get:
-      tags:
-        - User-Tenant Assignments
-      summary: Lấy danh sách tenant mà một user được gán
-      operationId: listTenantAssignments
+      summary: Lấy danh sách tenant mà user đã được gán
+      tags: [UserTenantAssignments]
       parameters:
-        - in: query
-          name: user_id
+        - name: user_id_global
+          in: query
           required: true
           schema:
             type: string
-        - in: query
-          name: status
-          required: false
-          schema:
-            type: string
-            enum: [active, revoked]
+            format: uuid
       responses:
         "200":
-          description: Danh sách tenant mà user được gán
+          description: Danh sách user-tenant assignments
           content:
             application/json:
               schema:
                 type: array
                 items:
                   $ref: "#/components/schemas/UserTenantAssignment"
-        "400":
-          $ref: "#/components/responses/ValidationError"
-        "403":
-          $ref: "#/components/responses/ForbiddenError"
 
     post:
-      tags:
-        - User-Tenant Assignments
-      summary: Gán user vào một tenant cụ thể
-      operationId: assignUserToTenant
+      summary: Gán user vào một tenant
+      tags: [UserTenantAssignments]
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              type: object
-              required: [user_id, tenant_id]
-              properties:
-                user_id:
-                  type: string
-                tenant_id:
-                  type: string
+              $ref: "#/components/schemas/UserTenantAssignmentCreate"
       responses:
         "201":
           description: Gán thành công
@@ -325,41 +306,31 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/UserTenantAssignment"
-        "400":
-          $ref: "#/components/responses/ValidationError"
-        "403":
-          $ref: "#/components/responses/ForbiddenError"
 
-  /user-tenant-assignments/{assignment_id}:
+  /user-tenant-assignments/{id}:
     patch:
-      tags:
-        - User-Tenant Assignments
-      summary: Cập nhật trạng thái gán user vào tenant (hoạt động / thu hồi)
-      operationId: patchTenantAssignment
+      summary: Cập nhật trạng thái gán user-tenant
+      tags: [UserTenantAssignments]
       parameters:
-        - in: path
-          name: assignment_id
+        - name: id
+          in: path
           required: true
           schema:
             type: string
+            format: uuid
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                is_active:
-                  type: boolean
+              $ref: "#/components/schemas/UserTenantAssignmentUpdate"
       responses:
-        "204":
-          description: Cập nhật thành công
-        "400":
-          $ref: "#/components/responses/ValidationError"
-        "403":
-          $ref: "#/components/responses/ForbiddenError"
-        "404":
-          $ref: "#/components/responses/NotFoundError"
+        "200":
+          description: Đã cập nhật assignment
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserTenantAssignment"
 
   /rbac/templates/roles:
     get:
@@ -444,7 +415,7 @@ paths:
           $ref: "#/components/responses/ForbiddenError"
 
 components:
-  securitySchemes: []
+  securitySchemes:
     bearerAuth:
       type: http
       scheme: bearer
@@ -533,25 +504,40 @@ components:
           format: uuid
         tenant_id:
           type: string
-        is_active:
-          type: boolean
-      required: [id, user_id_global, tenant_id, is_active]
+        assignment_status:
+          type: string
+          enum: [active, revoked]
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
 
     UserTenantAssignmentCreate:
       type: object
+      required:
+        - user_id_global
+        - tenant_id
       properties:
         user_id_global:
           type: string
           format: uuid
         tenant_id:
           type: string
-      required: [user_id_global, tenant_id]
+        assignment_status:
+          type: string
+          enum: [active, revoked]
+          default: active
 
     UserTenantAssignmentUpdate:
       type: object
+      required:
+        - assignment_status
       properties:
-        is_active:
-          type: boolean
+        assignment_status:
+          type: string
+          enum: [active, revoked]
 
     # RBAC TEMPLATE
     GlobalRoleTemplate:
@@ -678,14 +664,3 @@ components:
         resource: "user"
         default_condition: { "department": "any" }
         description: "Cho phép đọc tất cả người dùng trong hệ thống"
-
-tags:
-  - name: Users Global
-    description: Quản lý người dùng toàn cục trong hệ thống (User Service Master).
-  - name: Tenants
-    description: Quản lý thông tin các tenant (trường thành viên) trong hệ thống.
-  - name: User-Tenant Assignments
-    description: Gán người dùng vào tenant và quản lý trạng thái hoạt động của họ trong từng tenant.
-  - name: RBAC Templates
-    description: Quản lý template vai trò và quyền (RBAC) toàn cục, dùng để đồng bộ xuống các tenant.
-
