@@ -4,30 +4,30 @@
 
 | ADR | Áp dụng cho Service | Vai trò/Điểm nhấn triển khai |
 |-----|----------------------|-------------------------------|
-| [ADR-001: CI/CD](./adr-001-ci-cd.md) | Tất cả services | – |
-| [ADR-002: IaC](./adr-002-iac.md) | Tất cả services | – |
-| [ADR-003: Secrets](./adr-003-secrets.md) | Tất cả services | – |
-| [ADR-004: Security](./adr-004-security.md) | Tất cả services | ✅ API Gateway: rate-limiting, WAF; ✅ Backend: sanitize input, secure dependencies |
-| [ADR-005: Env Config](./adr-005-env-config.md) | Tất cả services | – |
-| [ADR-006: Auth Strategy](./adr-006-auth-strategy.md) | Auth Service, API Gateway | ✅ Auth Service: OTP & OAuth flow; ✅ API Gateway: validate & inject header |
-| [ADR-007: RBAC](./adr-007-rbac.md) | User Service, API Gateway | ✅ API Gateway: evaluate RBAC at runtime; ✅ User Service: quản lý dữ liệu RBAC |
-| [ADR-008: Audit Logging](./adr-008-audit-logging.md) | Tất cả services | ✅ User Service: expose /audit/logs; ✅ Gateway & Backend: log hành vi có side-effect |
-| [ADR-009: API Governance](./adr-009-api-governance.md) | Tất cả services phơi API | ✅ Mỗi service phải cung cấp OpenAPI schema, được kiểm tra qua CI |
-| [ADR-010: Contract Testing](./adr-010-contract-testing.md) | Tất cả services phơi API | – |
-| [ADR-011: API Error Format](./adr-011-api-error-format.md) | Tất cả services phơi API | – |
-| [ADR-012: Response Structure](./adr-012-response-structure.md) | Tất cả services phơi API | – |
-| [ADR-013: Path Naming Convention](./adr-013-path-naming-convention.md) | Tất cả services phơi API | – |
-| [ADR-014: Zero Downtime Deployment](./adr-014-zero-downtime.md) | Tất cả services | ✅ Yêu cầu Backward Compatible schema, tách deploy & migration |
-| [ADR-015: Deployment Strategy](./adr-015-deployment-strategy.md) | Tất cả services | – |
-| [ADR-016: Auto Scaling](./adr-016-auto-scaling.md) | Tất cả services | – |
-| [ADR-017: Env Deploy Boundary](./adr-017-env-deploy-boundary.md) | Tất cả services | – |
-| [ADR-018: Release Approval Policy](./adr-018-release-approval-policy.md) | Tất cả services | – |
-| [ADR-019: Project Layout](./adr-019-project-layout.md) | Tất cả services | – |
-| [ADR-020: Cost Observability](./adr-020-cost-observability.md) | Tất cả services | – |
-| [ADR-021: External Observability](./adr-021-external-observability.md) | Tất cả services | – |
-| [ADR-022: SLA, SLO, Monitoring](./adr-022-sla-slo-monitoring.md) | Tất cả services | – |
-| [ADR-023: Schema Migration Strategy](./adr-023-schema-migration-strategy.md) | Các service có quản lý DB schema (User, Auth, SIS, LMS, CRM...) | ✅ Tuân thủ chiến lược 3 bước (Prepare – Transition – Cleanup) và rollbackable |
-| [ADR-024: Data Anonymization & Retention](./adr-024-data-anonymization-retention.md) | Tất cả services xử lý PII (User, Auth, SIS, LMS, CRM, Gateway...) | ✅ TTL policy, masking PII logs, anonymize sandbox |
+| [ADR-001: CI/CD](./adr-001-ci-cd.md) | Tất cả services (core + tenant stack) | ✅ Tách pipeline theo stack; ✅ Sử dụng GitHub Actions và Environments |
+| [ADR-002: IaC](./adr-002-iac.md) | Hạ tầng GCP toàn hệ thống | ✅ Tách Terraform module cho core/tenant; hỗ trợ provisioning tự động |
+| [ADR-003: Secrets](./adr-003-secrets.md) | Tất cả services | ✅ Secret per tenant (Zalo, Gmail); quản lý bằng Secret Manager & rotate riêng |
+| [ADR-004: Security](./adr-004-security.md) | Tất cả services | ✅ Gateway enforce JWT trust boundary; ✅ Mỗi tenant có project/DB/network riêng |
+| [ADR-005: Env Config](./adr-005-env-config.md) | Tất cả services | ✅ Mỗi stack có env riêng (`dev`, `staging`, `prod`) |
+| [ADR-006: Auth Strategy](./adr-006-auth-strategy.md) | Auth Service, API Gateway | ✅ Sub Auth login OTP; ✅ Master Auth Google; JWT có `tenant_id` |
+| [ADR-007: RBAC](./adr-007-rbac.md) | User Service, API Gateway | ✅ RBAC phân tầng; Gateway đọc Redis theo `user_id` + `tenant_id` |
+| [ADR-008: Audit Logging](./adr-008-audit-logging.md) | Tất cả services | ✅ Log hành vi có side-effect; ✅ Audit log có `tenant_id`, traceId |
+| [ADR-009: API Governance](./adr-009-api-governance.md) | Tất cả services phơi API | ✅ Kiểm tra OpenAPI + tagging module trong CI |
+| [ADR-010: Contract Testing](./adr-010-contract-testing.md) | Tất cả services phơi API | ✅ Hợp đồng test có `tenant_id`, JWT context |
+| [ADR-011: API Error Format](./adr-011-api-error-format.md) | Tất cả services phơi API | ✅ Dùng chung ErrorEnvelope (code/message/details) |
+| [ADR-012: Response Structure](./adr-012-response-structure.md) | Tất cả services phơi API | ✅ Chuẩn `meta`, `data`, `errors`; dễ monitoring |
+| [ADR-013: Path Naming Convention](./adr-013-path-naming-convention.md) | Tất cả services phơi API | ✅ Tuân thủ RESTful, phân loại rõ tài nguyên |
+| [ADR-014: Zero Downtime Deployment](./adr-014-zero-downtime.md) | Tất cả services | ✅ Tách migration & deploy; rollback dễ dàng |
+| [ADR-015: Deployment Strategy](./adr-015-deployment-strategy.md) | Core & tenant stack | ✅ Stack per tenant; Gateway chia theo domain/host |
+| [ADR-016: Auto Scaling](./adr-016-auto-scaling.md) | Tất cả services (Cloud Run) | ✅ Core và tenant scale độc lập; cấu hình min/max instance |
+| [ADR-017: Env Deploy Boundary](./adr-017-env-deploy-boundary.md) | Tất cả services | ✅ Mỗi tenant có môi trường riêng biệt |
+| [ADR-018: Release Approval Policy](./adr-018-release-approval-policy.md) | Core & tenant stack | ✅ Core phải duyệt thủ công; tenant có thể tự động nếu an toàn |
+| [ADR-019: Project Layout](./adr-019-project-layout.md) | GCP project toàn hệ thống | ✅ Chia project: core, tenant, monitoring, data |
+| [ADR-020: Cost Observability](./adr-020-cost-observability.md) | Tất cả services | ✅ Tách chi phí per tenant; billing label theo service/group |
+| [ADR-021: External Observability](./adr-021-external-observability.md) | Tùy chọn cho tenant stack | ✅ Cho phép tích hợp Prometheus, Grafana, Datadog nếu cần |
+| [ADR-022: SLA, SLO, Monitoring](./adr-022-sla-slo-monitoring.md) | Tất cả services | ✅ Alert/log theo `tenant_id`; dashboard riêng mỗi tenant |
+| [ADR-023: Schema Migration Strategy](./adr-023-schema-migration-strategy.md) | Các service có DB schema | ✅ Tuân thủ 3 bước: prepare, transition, cleanup |
+| [ADR-024: Data Anonymization & Retention](./adr-024-data-anonymization-retention.md) | Dịch vụ xử lý PII | ✅ TTL per table; masking log; anonymize sandbox data |
 
 ---
 
