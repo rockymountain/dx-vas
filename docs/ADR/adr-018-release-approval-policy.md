@@ -1,105 +1,78 @@
 ---
 id: adr-018-release-approval-policy
-title: ADR-018: Chính sách phê duyệt và rollback release cho môi trường production của dx-vas
+title: ADR-018 - Chính sách phê duyệt và rollback release cho môi trường production của dx-vas
 status: accepted
 author: DX VAS Platform Team
 date: 2025-06-22
 tags: [release, approval, rollback, dx-vas, production]
 ---
 
-## 📌 Bối cảnh
+# ADR-018: Chính sách Phê duyệt Phát hành (Release Approval Policy)
 
-Việc release dịch vụ mới vào môi trường production của **dx-vas** là hành động có rủi ro cao, đặc biệt với các hệ thống như API Gateway, LMS Adapter, CRM Proxy và frontend SSR. Trong một số trường hợp trước đây, việc thiếu kiểm tra chéo hoặc rollback kịp thời đã gây:
-- Downtime cho người dùng thực
-- Mất session do JWT/token thay đổi không backward-compatible
-- Conflict dữ liệu do schema không đồng bộ
+## Bối cảnh
 
-Để đảm bảo tính ổn định và độ tin cậy, cần có **cơ chế phê duyệt bắt buộc trước khi release production**, cũng như **chiến lược rollback rõ ràng**.
+Hệ thống dx-vas vận hành theo mô hình multi-tenant. Mỗi tenant là một trường thành viên, có stack riêng (frontend, backend, adapter), được deploy trên GCP project riêng.
 
----
+Các dịch vụ core (Gateway, Auth Master, User Master...) được chia sẻ giữa các tenant và cần độ ổn định cao. Vì vậy, hệ thống cần một chính sách phê duyệt phát hành rõ ràng, hỗ trợ:
 
-## 🧠 Quyết định
+- Phát hành nhanh cho các tenant (khi cần fix lỗi riêng)
+- Phê duyệt chặt chẽ cho các thay đổi hệ thống dùng chung
+- Tự động hoá pipeline CI/CD nhưng vẫn đảm bảo kiểm soát chất lượng
 
-**Áp dụng chính sách phê duyệt bắt buộc và kế hoạch rollback chuẩn hoá cho mọi bản release lên production trong hệ thống dx-vas.**
+## Quyết định
 
----
+### 1. Tách pipeline theo nhóm
 
-## 🔐 Chính sách phê duyệt release
+| Nhóm dịch vụ | Ví dụ | Phê duyệt |
+|--------------|-------|-----------|
+| **Core Services** | Gateway, Auth Master, User Master, Notification Master | Phải phê duyệt thủ công trên môi trường staging trước khi lên production |
+| **Tenant Services** | Sub Auth, Sub User, Frontend Tenant A/B | Có thể tự động nếu qua test, hoặc yêu cầu duyệt tùy tenant |
 
-### ✅ Áp dụng cho:
-- Mọi service trong môi trường `production`
-- Bao gồm cả backend (API Gateway, Adapter) và frontend (SSR WebApp)
+### 2. Nguyên tắc phê duyệt
 
-### ✅ Người được phép approve:
-- Thành viên thuộc nhóm `Platform`
-- Hoặc người được gán quyền `release approver`
-- Phải **khác người với người trực tiếp merge hoặc thực hiện deploy** (require 4-eyes)
+- **Core services**:
+  - Phải có staging riêng
+  - Phải chạy toàn bộ test (unit + integration)
+  - Chỉ release sau khi được Superadmin hoặc DevOps Lead duyệt thủ công
 
-### ✅ Cơ chế phê duyệt:
-- Thực hiện qua GitHub Pull Request:
-  - Merge vào nhánh `main` sẽ trigger release production
-  - Phải có tối thiểu 1 approve từ người thuộc nhóm `release approver`
-  - Check CI/CD pass + checklist hoàn tất
-- Bắt buộc checklist trước khi phê duyệt:
-  - ✅ Migration đã chạy (hoặc tách riêng)
-  - ✅ Đã test staging xong
-  - ✅ Canary hoặc QA OK (nếu dùng)
-  - ✅ Tài liệu release note rõ ràng
-  - ✅ Có hướng dẫn rollback cụ thể kèm theo (link đến script hoặc mô tả)
+- **Tenant stack**:
+  - Mỗi tenant có môi trường staging riêng (VD: `staging-tenant-a.dx-vas.vn`)
+  - Có thể phê duyệt tự động nếu:
+    - Thay đổi không ảnh hưởng schema / auth / rbac
+    - CI/CD chạy pass toàn bộ kiểm thử
+  - Nếu thay đổi lớn → yêu cầu duyệt bởi quản trị viên kỹ thuật tenant (hoặc Superadmin nếu nghiêm trọng)
 
----
+### 3. Công cụ và audit
 
-## ♻️ Chính sách rollback
+- Sử dụng GitHub Actions + Approval Gates + môi trường `environments`
+- Mọi hành động phê duyệt đều được log trong GitHub và chuyển về Cloud Audit
+- Có webhook gửi notification khi release thành công cho từng tenant (qua Zalo/Slack)
 
-| Chiến lược triển khai | Cách rollback |
-|-----------------------|----------------|
-| Rolling | Re-route traffic về revision cũ (Cloud Run) |
-| Canary | Update traffic về revision ổn định trước đó |
-| Blue/Green | Switch lại tag/môi trường `blue` |
-| Manual | Revert Git commit + redeploy bản trước |
+### 4. Triển khai đa môi trường
 
-> Mọi rollback cần ghi lại lý do và gửi báo cáo post-mortem nếu ảnh hưởng production.
+- `dev`: tự động phát hành sau khi merge → để test nhanh
+- `staging`: môi trường trung gian, bắt buộc kiểm thử thủ công với dữ liệu thật (clone)
+- `prod`: môi trường chính thức, chỉ phát hành sau phê duyệt (core và tenant)
 
-### Công cụ hỗ trợ:
-- `gcloud run services update-traffic`
-- Tag version cũ: `git tag v1.2.3`
-- Rollback script nằm trong `/scripts/rollback/`
-- CI/CD hỗ trợ `rollback.yml` workflow (nếu được trigger)
+## Hệ quả
 
----
+✅ Ưu điểm:
 
-## 🛡️ Audit & Logging
-- Tất cả hành động release & rollback phải được:
-  - Ghi log vào hệ thống audit (Cloud Logging hoặc GitHub Audit Log)
-  - Gắn trace ID và thông tin người thực hiện
-- Các thay đổi có ảnh hưởng dữ liệu **phải ghi chú rõ phạm vi** trong PR
+- Kiểm soát chặt chẽ các thay đổi ảnh hưởng toàn hệ thống
+- Tenant vẫn có sự linh hoạt cao để phát hành riêng
+- Phân biệt rõ trách nhiệm quản lý giữa Superadmin và quản trị tenant
+- Tối ưu CI/CD theo mô hình tách stack
 
----
+⚠️ Lưu ý:
 
-## ✅ Lợi ích
+- Cần quy trình rollback nhanh nếu release lỗi
+- Pipeline phức tạp hơn nếu số tenant tăng nhiều → nên gom pipeline theo template
 
-- Ngăn release vô tình hoặc không kiểm soát
-- Giảm rủi ro khi deploy vào production
-- Tăng tính minh bạch, trách nhiệm và khả năng truy vết
+## Liên kết liên quan
 
----
-
-## ❌ Rủi ro & Giải pháp
-
-| Rủi ro | Giải pháp |
-|--------|-----------|
-| Approval chậm gây chặn luồng release | Có danh sách người duyệt dự phòng, phân công rõ theo từng module |
-| Bỏ qua rollback hoặc rollback sai cách | Checklist bắt buộc, CI cảnh báo nếu không có hướng dẫn rollback |
-| Người duyệt không hiểu thay đổi | Đính kèm link mô tả, PR summary, ảnh chụp màn hình hoặc demo |
-
----
-
-## 📎 Tài liệu liên quan
-
-- Deployment Strategy: [ADR-015](./adr-015-deployment-strategy.md)
-- Environment Policy: [ADR-017](./adr-017-env-deploy-boundary.md)
-- CI/CD Strategy: [ADR-001](./adr-001-ci-cd.md)
-- Zero Downtime: [ADR-014](./adr-014-zero-downtime.md)
+- [`adr-015-deployment-strategy.md`](./adr-015-deployment-strategy.md)
+- [`adr-019-project-layout.md`](./adr-019-project-layout.md)
+- [`README.md#11-ci-cd--release-approval`](../README.md#11-ci-cd--release-approval)
 
 ---
 > "Một bản release tốt bắt đầu từ sự chuẩn bị kỹ và kết thúc bằng khả năng rollback tốt hơn."
