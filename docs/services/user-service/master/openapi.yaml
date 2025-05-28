@@ -203,14 +203,12 @@ components:
       required: [full_name, email, auth_provider]
 
     UserGlobalResponse:
-      type: object
-      properties:
-        meta:
-          $ref: '#/components/schemas/ResponseMeta'
-        error:
-          $ref: '#/components/schemas/ErrorResponse'
-        data:
-          $ref: '#/components/schemas/UserGlobal'
+      allOf:
+        - $ref: '#/components/schemas/SuccessEnvelope'
+        - type: object
+          properties:
+            data:
+              $ref: '#/components/schemas/UserGlobal'
 
     Tenant:
       type: object
@@ -234,26 +232,22 @@ components:
       required: [tenant_name]
 
     TenantResponse:
-      type: object
-      properties:
-        meta:
-          $ref: '#/components/schemas/ResponseMeta'
-        error:
-          $ref: '#/components/schemas/ErrorResponse'
-        data:
-          $ref: '#/components/schemas/Tenant'
+      allOf:
+        - $ref: '#/components/schemas/SuccessEnvelope'
+        - type: object
+          properties:
+            data:
+              $ref: '#/components/schemas/Tenant'
 
     TenantListResponse:
-      type: object
-      properties:
-        meta:
-          $ref: '#/components/schemas/ResponseMeta'
-        error:
-          $ref: '#/components/schemas/ErrorResponse'
-        data:
-          type: array
-          items:
-            $ref: '#/components/schemas/Tenant'
+      allOf:
+        - $ref: '#/components/schemas/SuccessEnvelope'
+        - type: object
+          properties:
+            data:
+              type: array
+              items:
+                $ref: '#/components/schemas/Tenant'
 
     UserTenantAssignment:
       type: object
@@ -290,36 +284,38 @@ components:
       required: [assignment_status]
 
     UserTenantAssignmentResponse:
-      type: object
-      properties:
-        meta:
-          $ref: '#/components/schemas/ResponseMeta'
-        error:
-          $ref: '#/components/schemas/ErrorResponse'
-        data:
-          $ref: '#/components/schemas/UserTenantAssignment'
+      allOf:
+        - $ref: '#/components/schemas/SuccessEnvelope'
+        - type: object
+          properties:
+            data:
+              $ref: '#/components/schemas/UserTenantAssignment'
 
     UserTenantAssignmentListResponse:
-      type: object
-      properties:
-        meta:
-          $ref: '#/components/schemas/ResponseMeta'
-        error:
-          $ref: '#/components/schemas/ErrorResponse'
-        data:
-          type: array
-          items:
-            $ref: '#/components/schemas/UserTenantAssignment'
+      allOf:
+        - $ref: '#/components/schemas/SuccessEnvelope'
+        - type: object
+          properties:
+            data:
+              type: array
+              items:
+                $ref: '#/components/schemas/UserTenantAssignment'
 
     ResponseMeta:
       type: object
-      required: [request_id, timestamp]
       properties:
-        request_id:
+        trace_id:
           type: string
         timestamp:
           type: string
           format: date-time
+        source:
+          type: string
+        version:
+          type: string
+        duration_ms:
+          type: integer
+      required: [trace_id, timestamp]
 
     ErrorResponse:
       type: object
@@ -342,6 +338,18 @@ components:
           $ref: '#/components/schemas/ErrorResponse'
         data:
           type: object
+          nullable: true
+      required: [meta, error, data]
+
+    SuccessEnvelope:
+      type: object
+      properties:
+        meta:
+          $ref: '#/components/schemas/ResponseMeta'
+        error:
+          type: object
+          nullable: true
+      required: [meta, error]
 
   securitySchemes:
     bearerAuth:
