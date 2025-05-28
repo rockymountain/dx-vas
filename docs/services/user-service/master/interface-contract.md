@@ -4,6 +4,9 @@
 * _Phạm vi:_
 Service này quản lý định danh toàn cục người dùng, thông tin tenant, và các template RBAC toàn cục. Nó không quản lý RBAC cục bộ của từng tenant (xem Sub User Service).
 
+> 🧭 **Nguyên tắc chung:**  
+> Với các API `PATCH`, hệ thống mặc định trả về `204 No Content` nếu cập nhật thành công, để tối ưu hiệu năng và đơn giản hóa xử lý phía client. Nếu client cần object mới nhất, nên thực hiện `GET` sau khi cập nhật.
+
 ---
 
 ## 📌 API: `/users-global`
@@ -469,4 +472,5 @@ Mọi API đều áp dụng chuẩn phản hồi thống nhất và cơ chế ph
 ---
 
 📎 Để biết chi tiết luồng nghiệp vụ: xem [`design.md`](./design.md)
+
 📦 Để tra cứu schema chi tiết: xem [`data-model.md`](./data-model.md)
