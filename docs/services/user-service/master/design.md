@@ -155,6 +155,7 @@ Các bảng chính do User Service Master quản lý bao gồm:
 
 ```mermaid
 erDiagram
+
     USERS_GLOBAL {
         UUID user_id PK
         TEXT full_name
@@ -172,28 +173,34 @@ erDiagram
         UUID id PK
         UUID user_id_global FK
         TEXT tenant_id FK
-        TEXT[] role_codes
+        TEXT role_codes
         BOOLEAN is_active
     }
 
     GLOBAL_ROLES_TEMPLATES {
         UUID template_id PK
-        TEXT template_code UNIQUE
+        TEXT template_code
         TEXT description
     }
 
     GLOBAL_PERMISSIONS_TEMPLATES {
         UUID template_id PK
-        TEXT permission_code UNIQUE
+        TEXT permission_code
         TEXT action
         TEXT resource
-        JSONB default_condition
+        TEXT default_condition
     }
 
     USERS_GLOBAL ||--o{ USER_TENANT_ASSIGNMENTS : has
     TENANTS ||--o{ USER_TENANT_ASSIGNMENTS : includes
     GLOBAL_ROLES_TEMPLATES ||--o{ GLOBAL_PERMISSIONS_TEMPLATES : defines
 ```
+
+📝 **Ghi chú quan trọng cho sơ đồ ERD:**
+
+- `USER_TENANT_ASSIGNMENTS.role_codes`: Là một **mảng TEXT**. Mermaid không hỗ trợ kiểu `TEXT[]`, nên được ghi là `TEXT` cho đơn giản.
+- `GLOBAL_PERMISSIONS_TEMPLATES.default_condition`: Là một **trường JSONB** dùng để định nghĩa điều kiện RBAC. Mermaid chỉ hỗ trợ `TEXT`, nên cần hiểu `TEXT default_condition` ở đây là biểu diễn của JSONB.
+- `email`, `template_code`, `permission_code`: Có ràng buộc `UNIQUE` trong thiết kế thực tế – không thể hiện trong sơ đồ Mermaid nhưng được định nghĩa trong migration script hoặc tài liệu `data-model.md`.
 
 👉 Xem chi tiết định nghĩa bảng tại: [`data-model.md`](./data-model.md)
 
