@@ -4,26 +4,26 @@
 
 | STT | Mục chính | Mô tả | Liên kết |
 |-----|-----------|-------|----------|
-| 1️⃣ | **Yêu cầu dự án** | Mô hình tổ chức, số lượng người dùng, yêu cầu mở rộng | [Xem mục](#1️-yêu-cầu-dự-án) |
-| 2️⃣ | **Đăng nhập & Phân quyền động (RBAC)** | Thiết kế RBAC động, template, phân tầng Master/Sub | [Xem mục](#2️-đăng-nhập--phân-quyền-động-rbac) |
-| 3️⃣ | **Auth Service** | Xác thực người dùng, JWT, xác thực đa kênh | [Xem mục](#3️-auth-service) |
-| 4️⃣ | **User Service** | Cấu trúc user master/sub, RBAC binding và API quản lý | [Xem mục](#4️-user-service) |
-| 5️⃣ | **API Gateway** | Quản lý route, kiểm tra phân quyền, cấu trúc response | [Xem mục](#5️⃣-api-gateway) |
-| 6️⃣ | **Notification Service** | Hệ thống gửi thông báo đa kênh: Zalo, Gmail, WebPush | [Xem mục](#6️-notification-service) |
-| 7️⃣ | **Superadmin Webapp (SPA)** | Quản lý toàn hệ thống, tenants, templates, global log | [Xem mục](#7️-superadmin-webapp-spa) |
-| 8️⃣ | **Chiến lược Quản lý Dữ liệu** | Soft delete, anonymization, retention, audit logging | [Xem mục](#8️-chiến-lược-quản-lý-dữ-liệu) |
-| 9️⃣ | **Hạ tầng triển khai** | Google Cloud Run, Terraform, auto-scaling, mô hình tách stack | [Xem mục](#9️-hạ-tầng-triển-khai) |
+| 1️⃣ | **Yêu cầu dự án** | Mô hình tổ chức, số lượng người dùng, yêu cầu mở rộng | [Xem mục](#1-yêu-cầu-dự-án) |
+| 2️⃣ | **Đăng nhập & Phân quyền động (RBAC)** | Thiết kế RBAC động, template, phân tầng Master/Sub | [Xem mục](#2-đăng-nhập--phân-quyền-động-rbac) |
+| 3️⃣ | **Auth Service** | Xác thực người dùng, JWT, xác thực đa kênh | [Xem mục](#3-auth-service) |
+| 4️⃣ | **User Service** | Cấu trúc user master/sub, RBAC binding và API quản lý | [Xem mục](#4-user-service) |
+| 5️⃣ | **API Gateway** | Quản lý route, kiểm tra phân quyền, cấu trúc response | [Xem mục](#5-api-gateway) |
+| 6️⃣ | **Notification Service** | Hệ thống gửi thông báo đa kênh: Zalo, Gmail, WebPush | [Xem mục](#6-notification-service) |
+| 7️⃣ | **Superadmin Webapp (SPA)** | Quản lý toàn hệ thống, tenants, templates, global log | [Xem mục](#7-superadmin-webapp-spa) |
+| 8️⃣ | **Chiến lược Quản lý Dữ liệu** | Soft delete, anonymization, retention, audit logging | [Xem mục](#8-chiến-lược-quản-lý-dữ-liệu) |
+| 9️⃣ | **Hạ tầng triển khai** | Google Cloud Run, Terraform, auto-scaling, mô hình tách stack | [Xem mục](#9-hạ-tầng-triển-khai) |
 | 🔟 | **Admin Webapp (per tenant)** | Giao diện quản lý giáo viên, học vụ, tài chính | [Xem mục](#10-admin-webapp-per-tenant) |
-| 1️⃣1️⃣ | **Customer Portal (PWA)** | Portal dành cho phụ huynh & học sinh, hỗ trợ offline | [Xem mục](#1️1️-customer-portal-pwa) |
-| 1️⃣2️⃣ | **CRM – SuiteCRM** | Adapter tích hợp quản lý học sinh tiềm năng | [Xem mục](#1️2️-crm--suitecrm) |
-| 1️⃣3️⃣ | **SIS – Gibbon** | Adapter quản lý hồ sơ, điểm, lớp học | [Xem mục](#1️3️-sis--gibbon) |
-| 1️⃣4️⃣ | **LMS – Moodle** | Adapter tích hợp hệ thống học tập | [Xem mục](#1️4️-lms--moodle) |
-| 1️⃣5️⃣ | **Zalo OA & Google Chat** | Tích hợp kênh thông báo nội bộ & phụ huynh | [Xem mục](#1️5️-zalo-oa--google-chat) |
-| 1️⃣6️⃣ | **CI/CD & DevOps** | Quy trình release, rollback, release approval | [Xem mục](#1️6️-cicd--devops) |
-| 1️⃣7️⃣ | **Bảo mật & Giám sát** | IAM, secrets, audit, monitoring, alerting | [Xem mục](#1️7️-bảo-mật--giám-sát) |
-| 1️⃣8️⃣ | **Data Migration Plan** | Kế hoạch chuyển đổi dữ liệu thật & test | [Xem mục](#1️8️-data-migration-plan) |
-| 1️⃣9️⃣ | **Đào tạo & Chuyển giao** | Hướng dẫn sử dụng, đào tạo vận hành | [Xem mục](#1️9️-đào-tạo--chuyển-giao) |
-| 2️⃣0️⃣ | **Tổng kết** | Tóm tắt, khuyến nghị và hướng mở rộng | [Xem mục](#2️0️-tổng-kết) |
+| 1️⃣1️⃣ | **Customer Portal (PWA)** | Portal dành cho phụ huynh & học sinh, hỗ trợ offline | [Xem mục](#11-customer-portal-pwa) |
+| 1️⃣2️⃣ | **CRM – SuiteCRM** | Adapter tích hợp quản lý học sinh tiềm năng | [Xem mục](#12-crm--suitecrm) |
+| 1️⃣3️⃣ | **SIS – Gibbon** | Adapter quản lý hồ sơ, điểm, lớp học | [Xem mục](#13-sis--gibbon) |
+| 1️⃣4️⃣ | **LMS – Moodle** | Adapter tích hợp hệ thống học tập | [Xem mục](#14-lms--moodle) |
+| 1️⃣5️⃣ | **Zalo OA & Google Chat** | Tích hợp kênh thông báo nội bộ & phụ huynh | [Xem mục](#15-zalo-oa--google-chat) |
+| 1️⃣6️⃣ | **CI/CD & DevOps** | Quy trình release, rollback, release approval | [Xem mục](#16-cicd--devops) |
+| 1️⃣7️⃣ | **Bảo mật & Giám sát** | IAM, secrets, audit, monitoring, alerting | [Xem mục](#17-bảo-mật--giám-sát) |
+| 1️⃣8️⃣ | **Data Migration Plan** | Kế hoạch chuyển đổi dữ liệu thật & test | [Xem mục](#18-data-migration-plan) |
+| 1️⃣9️⃣ | **Đào tạo & Chuyển giao** | Hướng dẫn sử dụng, đào tạo vận hành | [Xem mục](#19-đào-tạo--chuyển-giao) |
+| 2️⃣0️⃣ | **Tổng kết** | Tóm tắt, khuyến nghị và hướng mở rộng | [Xem mục](#20-tổng-kết) |
 
 ---
 
@@ -31,7 +31,7 @@
 
 | STT | Phụ lục | Mô tả | Liên kết |
 |-----|--------|-------|----------|
-| 🅰️ | **Phụ lục A – ADRs** | Danh sách quyết định kiến trúc chính thức | [Xem mục](#phụ-lục-a–danh-sách-quyết-định-Kiến-trúc--adrs) |
+| 🅰️ | **Phụ lục A – ADRs** | Danh sách quyết định kiến trúc chính thức | [Xem mục](#phụ-lục-a–danh-sách-quyết-định-kiến-trúc--adrs) |
 | 🅱️ | **Phụ lục B – Nguyên tắc Kiến trúc Cốt lõi** | Nguyên lý nền tảng trong thiết kế dx-vas | [Xem mục](#phụ-lục-b--nguyên-tắc-kiến-trúc-cốt-lõi) |
 | 🆑 | **Phụ lục C – Sơ đồ Kiến trúc** | Mermaid diagrams chi tiết các thành phần | [Xem mục](#phụ-lục-c--sơ-đồ-kiến-trúc) |
 | 🆘 | **Phụ lục D – Interface Contracts (ICs)** | Định nghĩa ràng buộc giữa các service | [Xem mục](#phụ-lục-d--interface-contracts) |
