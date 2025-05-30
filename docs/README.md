@@ -11,13 +11,13 @@
 | 5️⃣ | **API Gateway** | Định tuyến, xác thực, phân quyền và forward request theo tenant | [Xem mục](#5-api-gateway) |
 | 6️⃣ | **Notification Service** | Gửi thông báo đa kênh theo tenant và toàn hệ thống (Pub/Sub) | [Xem mục](#6-notification-service-multi-tenant--option-b) |
 | 7️⃣ | **Superadmin Webapp (SPA)** | Giao diện quản trị tập trung để điều hành toàn bộ hệ thống | [Xem mục](#7-superadmin-webapp-spa) |
-| 8️⃣ | **Hạ tầng triển khai** | Mô hình triển khai GCP: core vs tenant stack, logging, data | [Xem mục](#8-hạ-tầng-triển-khai) |
-| 9️⃣ | **Admin Webapp (per tenant)** | Giao diện quản trị nội bộ tại mỗi trường thành viên | [Xem mục](#9-admin-webapp---spa-cấp-độ-tenant) |
-| 🔟 | **Customer Portal (PWA)** | Giao diện phụ huynh/học sinh, hỗ trợ offline và OTP login | [Xem mục](#10-customer-portal---pwa-cấp-độ-tenant) |
-| 1️⃣1️⃣ | **CRM – SuiteCRM** | Tuyển sinh, chuyển đổi pipeline, giao tiếp qua API Gateway | [Xem mục](#11-crm--suitecrm-cấp-độ-tenant) |
-| 1️⃣2️⃣ | **SIS – Gibbon** | Quản lý lớp, điểm danh, học phí, học bạ | [Xem mục](#12-sis--gibbon-cấp-độ-tenant) |
-| 1️⃣3️⃣ | **LMS – Moodle** | Học tập online, bài tập, điểm danh, đồng bộ SIS | [Xem mục](#13-lms--moodle-cấp-độ-tenant) |
-| 1️⃣4️⃣ | **Notification Service (kênh cụ thể)** | Cấu hình gửi qua Zalo, Gmail API, WebPush, Chat | [Xem mục](#14-notification-service) |
+| 8 | **Chiến lược Quản lý Dữ liệu** | Chiến lược quản lý dữ liệu tập trung | [Xem mục](#8-hiến-lược-quản-lý-dữ-liệu) |
+| 9 | **Hạ tầng triển khai** | Mô hình triển khai GCP: core vs tenant stack, logging, data | [Xem mục](#9-hạ-tầng-triển-khai) |
+| 10 | **Admin Webapp (per tenant)** | Giao diện quản trị nội bộ tại mỗi trường thành viên | [Xem mục](#10-admin-webapp---spa-cấp-độ-tenant) |
+| 1️⃣1 | **Customer Portal (PWA)** | Giao diện phụ huynh/học sinh, hỗ trợ offline và OTP login | [Xem mục](#11-customer-portal---pwa-cấp-độ-tenant) |
+| 1️⃣2 | **CRM – SuiteCRM** | Tuyển sinh, chuyển đổi pipeline, giao tiếp qua API Gateway | [Xem mục](#12-crm--suitecrm-cấp-độ-tenant) |
+| 1️⃣3 | **SIS – Gibbon** | Quản lý lớp, điểm danh, học phí, học bạ | [Xem mục](#13-sis--gibbon-cấp-độ-tenant) |
+| 1️⃣4 | **LMS – Moodle** | Học tập online, bài tập, điểm danh, đồng bộ SIS | [Xem mục](#14-lms--moodle-cấp-độ-tenant) |
 | 1️⃣5️⃣ | **Zalo OA & Google Chat** | Kênh gửi thông báo phụ huynh và nội bộ giáo viên | [Xem mục](#15-zalo-oa--google-chat) |
 | 1️⃣6️⃣ | **CI/CD & DevOps** | GitHub Actions, Cloud Build, rollback, secrets, test | [Xem mục](#16-cicd--devops) |
 | 1️⃣7️⃣ | **Bảo mật & Giám sát** | Chống OWASP Top 10, MFA, log & alert truy cập | [Xem mục](#17-bảo-mật--giám-sát) |
@@ -206,7 +206,7 @@ API Gateway đóng vai trò trung tâm điều phối trong kiến trúc dx-vas,
 
 📘 Sơ đồ đánh giá RBAC xem chi tiết tại: 👉 [RBAC Evaluation Flow – System Diagrams](./architecture/system-diagrams.md#4-rbac-evaluation-flow--luồng-đánh-giá-phân-quyền-động)
 
-## 6. Notification Service (Multi-Tenant – Option B)
+## 6. Notification Service (Multi-Tenant)
 
 Notification Service trong kiến trúc dx-vas được triển khai theo mô hình phân tầng, hỗ trợ gửi thông báo cách ly theo tenant và broadcast toàn hệ thống bằng kiến trúc bất đồng bộ qua Pub/Sub.
 
@@ -301,7 +301,23 @@ Superadmin Webapp là ứng dụng quản trị tập trung dành riêng cho đ�
 
 📘 Các API được mô tả trong: [`ic-superadmin-webapp.md`](./interfaces/ic-superadmin-webapp.md)
 
-## 8. Hạ tầng triển khai
+## 8. Chiến lược Quản lý Dữ liệu
+
+Hệ thống dx-vas áp dụng chiến lược quản lý dữ liệu tập trung để:
+- Đảm bảo dữ liệu luôn tuân thủ các quy định pháp lý (FERPA, GDPR...)
+- Hỗ trợ audit, phân tích, khôi phục, và truy vết sự kiện
+- Tối ưu hoá chi phí lưu trữ và hiệu suất hệ thống
+
+**Nguyên tắc chính:**
+- ❌ Không hard delete các object có liên kết lịch sử, audit, hoặc cần giữ lâu dài (xem [ADR-026](./ADR/adr-026-hard-delete-policy.md))
+- ✅ Luôn sử dụng soft delete (`status`, `is_deleted`, `is_archived`) cho dữ liệu quan trọng
+- 🔒 Dữ liệu PII phải được ẩn danh trước khi dùng ở dev/staging (xem [ADR-024](./ADR/adr-024-data-anonymization-retention.md))
+- ⏳ Logs, audit, token, OTP có retention rõ ràng và purge định kỳ
+- 🔁 Schema migration phải rollback được, theo 3 bước chuẩn (xem [ADR-023](./ADR/adr-023-schema-migration-strategy.md))
+
+📎 Xem chi tiết: [ADR-027 - Data Management Strategy](./ADR/adr-027-data-management-strategy.md)
+
+## 9. Hạ tầng triển khai
 
 Hệ thống dx-vas được triển khai trên Google Cloud theo mô hình **multi-tenant tách biệt theo stack**, kết hợp với các thành phần dùng chung để tối ưu hoá bảo mật, khả năng mở rộng và quản trị tập trung.
 
@@ -351,7 +367,7 @@ Mỗi tenant (trường) được triển khai dưới dạng **một stack riê
 
 📘 Sơ đồ triển khai xem tại: 👉 [Deployment Overview Diagram](./architecture/system-diagrams.md#9-deployment-overview-diagram--sơ-đồ-triển-khai-tổng-quan)
 
-## 9. Admin Webapp - SPA (cấp độ tenant)
+## 10. Admin Webapp - SPA (cấp độ tenant)
 
 Admin Webapp là ứng dụng quản trị nội bộ dành riêng cho từng trường thành viên (tenant). Đây là giao diện chính để giáo viên, nhân viên và ban giám hiệu quản lý hoạt động học tập, vận hành và phối hợp giữa các bộ phận trong trường.
 
@@ -391,41 +407,33 @@ Admin Webapp là ứng dụng quản trị nội bộ dành riêng cho từng tr
 
 📘 Các API backend sử dụng được định nghĩa tại: [`user-service/interface-contract.md`](./services/user-service/interface-contract.md)
 
-## 10. Customer Portal - PWA (cấp độ tenant)
+## 11. Customer Portal - PWA (cấp độ tenant)
 
 * Giao diện cho phụ huynh và học sinh.
 * Hỗ trợ OTP/Zalo login, cài đặt trên mobile, offline với cache gần nhất.
 * Chế độ offline chỉ cho phép đọc dữ liệu đã được cache trước đó.
 * Đồng bộ lại dữ liệu tự động khi có kết nối mạng.
 
-## 11. CRM – SuiteCRM (cấp độ tenant)
+## 12. CRM – SuiteCRM (cấp độ tenant)
 
 * Quản lý pipeline tuyển sinh.
 * Khi phụ huynh đăng ký nhập học thành công → tự chuyển sang SIS.
 * Giao tiếp qua API Gateway, kiểm soát RBAC.
 * Kế hoạch chuyển đổi cơ chế đồng bộ sang event-driven, dùng Pub/Sub hoặc Redis stream.
 
-## 12. SIS – Gibbon (cấp độ tenant)
+## 13. SIS – Gibbon (cấp độ tenant)
 
 * Quản lý học sinh, lớp, điểm danh, học phí.
 * Có export API cho LMS, Portal, Admin Webapp.
 * Lưu vết lịch sử: học lực, lớp học, học bạ.
 * Liên kết phụ huynh – học sinh lưu trong bảng tham chiếu.
 
-## 13. LMS – Moodle (cấp độ tenant)
+## 14. LMS – Moodle (cấp độ tenant)
 
 * Học tập online, giao bài, chấm điểm.
 * SSO với OAuth2.
 * Tự động đồng bộ học sinh từ SIS.
 * Điểm có thể đẩy ngược về SIS.
-
-## 14. Notification Service
-
-* Gửi thông báo Web, Email (Gmail API), Zalo OA, Google Chat.
-* Phụ huynh nhận thông báo qua Zalo/Email.
-* Học sinh, giáo viên nhận qua WebPush/Google Chat.
-* Người dùng chọn kênh ưa thích qua giao diện.
-* Tích hợp A/B testing và tracking nếu cần.
 
 ## 15. Zalo OA & Google Chat
 

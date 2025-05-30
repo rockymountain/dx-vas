@@ -249,10 +249,10 @@ User Service Master phát các sự kiện lên Google Cloud Pub/Sub để:
 {
   "event_id": "evt_7a3a8b40",
   "event_type": "tenant_user_assigned",
-  "user_id": "usr_12345678",
+  "user_id_global": "usr_12345678",
   "tenant_id": "vas-truong-a",
   "role_codes": ["teacher", "homeroom"],
-  "is_active": true,
+  "assignment_status": "active",
   "timestamp": "2025-06-01T08:30:00Z"
 }
 ```

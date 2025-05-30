@@ -233,15 +233,15 @@ Trả về tất cả các tenant mà user đã được gán vào.
 [
   {
     "assignment_id": "a123",
-    "user_id": "user-uuid",
+    "user_id_global": "user-uuid",
     "tenant_id": "tenant_a",
-    "is_active": true
+    "assignment_status": "active"
   },
   {
     "assignment_id": "a456",
-    "user_id": "user-uuid",
+    "user_id_global": "user-uuid",
     "tenant_id": "tenant_b",
-    "is_active": false
+    "assignment_status": "revoked"
   }
 ]
 ```
