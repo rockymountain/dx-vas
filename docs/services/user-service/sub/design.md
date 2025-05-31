@@ -140,17 +140,17 @@ erDiagram
 ### `GET /users/me/permissions`
 ```mermaid
 sequenceDiagram
-  participant FE
+  participant Frontend
   participant API
   participant RBACResolver
   participant DB
 
-  FE->>API: GET /users/me/permissions
+  Frontend->>API: GET /users/me/permissions
   API->>RBACResolver: getPermissions(user_id)
   RBACResolver->>DB: Fetch role_code(s) for user
   RBACResolver->>DB: Expand role_code → permission list
   RBACResolver-->>API: permission[]
-  API-->>FE: 200 OK + permissions
+  API-->>Frontend: 200 OK + permissions
 ```
 
 ---
