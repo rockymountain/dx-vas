@@ -1,8 +1,8 @@
-# 📘 Thiết kế chi tiết `user-service/sub/`
+# 📘 User Service Sub – Service Design Document
 
 ```
-title: Thiết kế chi tiết `user-service/sub/`
-version: 1.0
+title: Thiết kế chi tiết User Service Sub
+version: 1.1
 last_updated: 2025-05-31
 author: DX VAS Team
 reviewed_by: Stephen Le
