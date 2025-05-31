@@ -29,6 +29,8 @@
 | [ADR-023: Schema Migration Strategy](./adr-023-schema-migration-strategy.md) | Các service có DB schema | ✅ Tuân thủ 3 bước: prepare, transition, cleanup |
 | [ADR-024: Data Anonymization & Retention](./adr-024-data-anonymization-retention.md) | Dịch vụ xử lý PII | ✅ TTL per table; masking log; anonymize sandbox data |
 | [ADR-025: Multi-Tenant Versioning](./adr-025-multi-tenant-versioning.md) | Core & tenant stack | ✅ Cho phép mỗi tenant chọn version riêng; hỗ trợ rollout lệch phiên bản |
+| [ADR-026: Hard Delete Policy](./adr-026-hard-delete-policy.md) | Tất cả service có dữ liệu nhạy cảm | ✅ Xác định tiêu chí không được xoá vật lý; sử dụng soft delete và audit |
+| [ADR-027: Data Management Strategy](./adr-027-data-management-strategy.md) | Toàn hệ thống | ✅ Chuẩn hoá phân loại dữ liệu, retention, purge, schema, access, bảo mật |
 
 ---
 
