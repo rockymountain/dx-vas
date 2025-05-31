@@ -1,12 +1,12 @@
 # 📘 Thiết kế chi tiết `user-service/sub/`
 
----
+```
 title: Thiết kế chi tiết `user-service/sub/`
 version: 1.0
 last_updated: 2025-05-31
 author: DX VAS Team
 reviewed_by: Stephen Le
----
+```
 
 ## 1. 🧭 Phạm vi và Trách nhiệm (Scope & Responsibilities)
 
