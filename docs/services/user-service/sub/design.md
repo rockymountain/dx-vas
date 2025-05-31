@@ -251,3 +251,12 @@ sequenceDiagram
 * **Caching (tùy chọn):** `GET /users/me/permissions` có thể được cache theo session.
 
 ---
+
+## 12. 📚 Tài liệu liên kết
+
+* [Interface Contract](./interface-contract.md): Đặc tả chi tiết các API được service cung cấp
+* [Data Model](./data-model.md): Thiết kế schema CSDL chi tiết cho service
+* [OpenAPI](./openapi.yaml): Mô tả chuẩn OpenAPI 3.1 cho các endpoint
+* [adr-012 - Response Structure](../../../ADR/adr-012-response-structure.md): Chuẩn định dạng API response toàn hệ thống
+* [adr-026 - Hard Delete Policy](../../../ADR/adr-026-hard-delete-policy.md): Chính sách xóa cứng dữ liệu
+* [adr-027 - Data Management Strategy](../../../ADR/adr-027-data-management-strategy.md): Chiến lược quản lý dữ liệu giữa Master/Sub 
