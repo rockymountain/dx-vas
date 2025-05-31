@@ -74,8 +74,7 @@ paths:
             enum: [asc, desc]
             default: desc
           description: Thứ tự sắp xếp
-      x-required-permissions:
-        - superadmin.view_all_users_global
+      x-required-permission: superadmin.view_all_users_global
       x-audit-action: list_users_global
       responses:
         '200':
@@ -87,7 +86,11 @@ paths:
         '401':
           $ref: '#/components/responses/UnauthorizedError'
         '403':
-          $ref: '#/components/responses/ForbiddenError'
+          description: Không đủ quyền
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ForbiddenError'
 
     post:
       summary: Tạo người dùng toàn cục (Master)
@@ -96,9 +99,7 @@ paths:
       description: |
         Tạo mới người dùng toàn hệ thống và khởi tạo user_id duy nhất.
         Có thể phát sinh sự kiện `user_global_created` để các Sub Service đồng bộ.
-      x-required-permissions:
-        - auth_sub.create_user_global
-        - superadmin.create_user_global
+      x-required-permission: superadmin.create_user_global
       x-audit-action: create_user_global
       x-emits-event: user_global_created
       requestBody:
@@ -116,6 +117,12 @@ paths:
                 $ref: '#/components/schemas/UserGlobalResponse'
         '400':
           $ref: '#/components/responses/BadRequestError'
+        '403':
+          description: Không đủ quyền
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ForbiddenError'
         '409':
           $ref: '#/components/responses/ConflictError'
 
@@ -150,8 +157,7 @@ paths:
       summary: Cập nhật thông tin người dùng toàn cục
       tags:
         - users-global
-      x-required-permissions:
-        - superadmin.update_user_global
+      x-required-permission: superadmin.update_user_global
       x-audit-action: update_user_global
       requestBody:
         required: true
@@ -165,7 +171,11 @@ paths:
         '400':
           $ref: '#/components/responses/BadRequestError'
         '403':
-          $ref: '#/components/responses/ForbiddenError'
+          description: Không đủ quyền
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ForbiddenError'
         '404':
           $ref: '#/components/responses/NotFoundError'
 
@@ -198,8 +208,7 @@ paths:
             type: string
             enum: [asc, desc]
           description: Thứ tự sắp xếp
-      x-required-permissions:
-        - superadmin.view_tenants
+      x-required-permission: superadmin.view_tenants
       x-audit-action: list_tenants
       responses:
         '200':
@@ -208,6 +217,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/TenantListResponse'
+        '403':
+          description: Không đủ quyền
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ForbiddenError'
 
     post:
       summary: Tạo tenant mới
@@ -257,8 +272,7 @@ paths:
       summary: Cập nhật thông tin tenant
       tags:
         - tenants
-      x-required-permissions:
-        - superadmin.update_tenant
+      x-required-permission: superadmin.update_tenant
       x-audit-action: update_tenant
       requestBody:
         content:
@@ -268,7 +282,12 @@ paths:
       responses:
         '204':
           description: Cập nhật thành công
-
+        '403':
+          description: Không đủ quyền
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ForbiddenError'
 
   /user-tenant-assignments:
     get:
@@ -298,8 +317,7 @@ paths:
           schema:
             type: string
             enum: [asc, desc]
-      x-required-permissions:
-        - superadmin.view_user_assignments
+      x-required-permission: superadmin.view_user_assignments
       x-audit-action: list_user_tenant_assignments
       responses:
         '200':
@@ -308,13 +326,18 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/UserTenantAssignmentListResponse'
+        '403':
+          description: Không đủ quyền
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ForbiddenError'
 
     post:
       summary: Gán user vào tenant
       tags:
         - user-tenant-assignments
-      x-required-permissions:
-        - superadmin.assign_user_to_tenant
+      x-required-permission: superadmin.assign_user_to_tenant
       x-audit-action: assign_user_to_tenant
       x-emits-event: user_assigned_to_tenant
       requestBody:
@@ -329,6 +352,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/UserTenantAssignmentResponse'
+        '403':
+          description: Không đủ quyền
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ForbiddenError'
 
   /user-tenant-assignments/{id}:
     patch:
@@ -381,8 +410,7 @@ paths:
           schema:
             type: string
             enum: [asc, desc]
-      x-required-permissions:
-        - superadmin.view_rbac_templates
+      x-required-permission: superadmin.view_rbac_templates
       x-audit-action: list_rbac_template_roles
       responses:
         '200':
@@ -391,6 +419,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/RoleTemplateListResponse'
+        '403':
+          description: Không đủ quyền
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ForbiddenError'
       x-note: >
         RBAC templates là metadata toàn cục (global metadata), không thuộc phạm vi áp dụng của ADR-026 (multi-tenant versioning) và ADR-027 (data management strategy).
 
@@ -460,8 +494,7 @@ paths:
           schema:
             type: string
             enum: [asc, desc]
-      x-required-permissions:
-        - superadmin.view_rbac_templates
+      x-required-permission: superadmin.view_rbac_templates
       x-audit-action: list_rbac_template_permissions
       responses:
         '200':
@@ -470,6 +503,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/PermissionTemplateListResponse'
+        '403':
+          description: Không đủ quyền
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ForbiddenError'
       x-note: >
         RBAC templates là metadata toàn cục (global metadata), không thuộc phạm vi áp dụng của ADR-026 (multi-tenant versioning) và ADR-027 (data management strategy).
 
