@@ -1,6 +1,12 @@
 # 📘 Thiết kế chi tiết `user-service/sub/`
 
 ---
+title: Thiết kế chi tiết `user-service/sub/`
+version: 1.0
+last_updated: 2025-05-31
+author: DX VAS Team
+reviewed_by: Stephen Le
+---
 
 ## 1. 🧭 Phạm vi và Trách nhiệm (Scope & Responsibilities)
 
@@ -16,6 +22,16 @@
 | `UserTenantRole`      | Vai trò mà người dùng được gán trong tenant                         |
 | `RoleTemplateLite`    | Danh sách role được đồng bộ từ master                                |
 | `PermissionTemplateLite` | Danh sách quyền được đồng bộ từ master                           |
+
+### 🔒 Ngoài Phạm Vi (Out of Scope)
+
+Service này **không** thực hiện các tác vụ sau:
+
+- ❌ Xác thực (authentication): việc xác thực JWT đã được thực hiện tại Gateway.
+- ❌ Quản lý vòng đời RBAC template (tạo/sửa/xoá role/permission template): Sub chỉ consume bản sao đã đồng bộ.
+- ❌ Ghi dữ liệu người dùng: không tạo/sửa/xoá người dùng hoặc role trực tiếp – chỉ nhận qua event.
+- ❌ Truy cập hoặc xử lý dữ liệu ngoài phạm vi tenant được gán (đảm bảo cách ly tenant tuyệt đối).
+- ❌ Gọi sang `user-service/master` hoặc các service khác: không có external HTTP call.
 
 ---
 
@@ -34,6 +50,43 @@
 ---
 
 ## 3. 🗃️ Mô hình dữ liệu chi tiết (Data Model)
+
+### 🗺️ Sơ đồ ERD (Entity Relationship Diagram)
+
+```mermaid
+erDiagram
+  UserLocal ||--o{ UserTenantRole : has
+  UserTenantRole }o--|| RoleTemplateLite : references
+  RoleTemplateLite ||--o{ PermissionTemplateLite : includes
+
+  UserLocal {
+    UUID user_id PK
+    STRING email
+    STRING full_name
+    STRING auth_provider
+    STRING status
+    BOOLEAN is_active_in_tenant
+  }
+
+  UserTenantRole {
+    UUID user_id FK
+    STRING role_code FK
+    STRING[] permissions
+  }
+
+  RoleTemplateLite {
+    STRING role_code PK
+    STRING name
+    STRING description
+  }
+
+  PermissionTemplateLite {
+    STRING code PK
+    STRING resource
+    STRING action
+    STRING description
+  }
+```
 
 ### Bảng: `UserLocal`
 | Cột                 | Kiểu     | Ghi chú                                |
@@ -98,6 +151,33 @@ sequenceDiagram
 | `purge_user_from_tenant` (tuỳ chọn) | Xoá vật lý `UserLocal` nếu chính sách cho phép                        |
 | `rbac_template_updated`             | Cập nhật bảng `RoleTemplateLite`, `PermissionTemplateLite`            |
 
+### 📦 Ví dụ Payload Sự Kiện Tiêu Biểu (Event Payloads)
+
+```json
+// user_assigned_to_tenant
+{
+  "event": "user_assigned_to_tenant",
+  "user_id": "uuid-1234",
+  "tenant_id": "tenant-abc",
+  "role_code": "teacher",
+  "assigned_by": "admin-user-999",
+  "assigned_at": "2025-05-01T10:00:00Z"
+}
+```
+
+```json
+// rbac_template_updated
+{
+  "event": "rbac_template_updated",
+  "role_code": "teacher",
+  "permissions": [
+    { "code": "student.view", "resource": "student", "action": "view" },
+    { "code": "attendance.mark", "resource": "attendance", "action": "update" }
+  ],
+  "updated_at": "2025-05-01T09:30:00Z"
+}
+```
+
 ---
 
 ## 6. 🔐 Bảo mật & Phân quyền
@@ -136,5 +216,38 @@ sequenceDiagram
 * Test endpoint `/me/permissions` trả về chính xác với nhiều role
 
 > 🧪 Có thể sử dụng tools như `pytest`, `testcontainers`, hoặc `async-kafka` mock để kiểm tra event flow
+
+---
+
+## 9. 📈 Khả năng Giám sát (Observability)
+
+| Metric                                  | Mô tả                                                  |
+| --------------------------------------- | ------------------------------------------------------ |
+| `sub_user_sync_total`                   | Tổng số user được đồng bộ từ master                    |
+| `sub_event_consume_latency`             | Độ trễ trung bình khi xử lý 1 event                    |
+| `sub_event_error_count`                 | Số lượng lỗi khi xử lý event (có thể chia theo type)   |
+| `api_get_users_latency`                 | Thời gian xử lý `GET /users` trung bình                |
+| `api_get_me_permissions_cache_hit_rate` | Tỷ lệ cache hit nếu sử dụng Redis cho permission cache |
+
+> Nên expose các metric này qua Prometheus nếu có setup observability chung.
+
+---
+
+## 10. 🔁 Độ tin cậy & Phục hồi (Reliability & Resilience)
+
+* **Cơ chế retry event**: Tối thiểu 3 lần nếu event xử lý thất bại, sau đó ghi vào Dead Letter Queue (DLQ).
+* **Idempotency key**: Dựa trên `user_id + tenant_id + event_type`, đảm bảo việc consume event không gây trùng lặp dữ liệu.
+* **Theo dõi offset Kafka**: Đảm bảo event không bị mất hoặc xử lý trễ.
+
+---
+
+## 11. ⚡️ Hiệu năng & Khả năng mở rộng
+
+* **SLO đề xuất:**
+
+  * `GET /users`: <150ms với tenant ≤ 1000 người dùng
+  * `GET /users/me/permissions`: <100ms (cacheable)
+* **Scalability:** sub-service có thể scale horizontally, mỗi instance gắn với 1 tenant.
+* **Caching (tùy chọn):** `GET /users/me/permissions` có thể được cache theo session.
 
 ---
