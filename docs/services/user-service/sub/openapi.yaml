@@ -1,0 +1,291 @@
+# ===============================
+# 📘 User Service Sub – OpenAPI Spec (5★ version)
+# ===============================
+
+openapi: 3.0.3
+info:
+  title: User Service Sub – API Spec
+  version: 1.0.0
+  description: |
+    OpenAPI specification cho `user-service/sub` – phục vụ đọc dữ liệu người dùng trong 1 tenant cụ thể theo mô hình master/sub.
+    Các API chỉ cung cấp quyền truy vấn (read-only) và luôn trả về theo chuẩn [ADR-012](../../../ADR/adr-012-response-structure.md).
+
+servers:
+  - url: https://api.truongvietanh.edu.vn/user-sub
+    description: Production (tenant-scoped)
+
+tags:
+  - name: users
+    description: Thông tin người dùng trong tenant
+  - name: rbac
+    description: Thông tin RBAC template đã đồng bộ
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    # 🧩 Meta wrapper
+    ResponseMeta:
+      type: object
+      required: [request_id, timestamp]
+      properties:
+        request_id:
+          type: string
+        timestamp:
+          type: string
+          format: date-time
+        page:
+          type: integer
+          nullable: true
+        per_page:
+          type: integer
+          nullable: true
+        total:
+          type: integer
+          nullable: true
+
+    ErrorEnvelope:
+      type: object
+      required: [meta, error]
+      properties:
+        meta:
+          $ref: '#/components/schemas/ResponseMeta'
+        error:
+          $ref: '#/components/schemas/ErrorResponse'
+
+    ErrorResponse:
+      type: object
+      required: [code, message]
+      properties:
+        code:
+          type: string
+          example: USER_NOT_FOUND
+        message:
+          type: string
+          example: Người dùng không tồn tại
+
+    # ✅ Enums
+    AuthProvider:
+      type: string
+      enum: [local, google]
+    UserStatus:
+      type: string
+      enum: [active, invited, suspended, deleted]
+
+    # ✅ User Schemas
+    UserOut:
+      type: object
+      properties:
+        user_id:
+          type: string
+          format: uuid
+        full_name:
+          type: string
+        email:
+          type: string
+          format: email
+        status:
+          $ref: '#/components/schemas/UserStatus'
+        is_active_in_tenant:
+          type: boolean
+        auth_provider:
+          $ref: '#/components/schemas/AuthProvider'
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+
+    UserListResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/UserOut'
+        meta:
+          $ref: '#/components/schemas/ResponseMeta'
+
+    # ✅ Roles
+    RoleOut:
+      type: object
+      properties:
+        role_code:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+
+    RoleListResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/RoleOut'
+        meta:
+          $ref: '#/components/schemas/ResponseMeta'
+
+    # ✅ Permissions
+    PermissionOut:
+      type: object
+      properties:
+        code:
+          type: string
+        resource:
+          type: string
+        action:
+          type: string
+        description:
+          type: string
+
+    PermissionListResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/PermissionOut'
+        meta:
+          $ref: '#/components/schemas/ResponseMeta'
+
+    # ✅ Permissions for current user
+    PermissionStringsResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            type: string
+        meta:
+          $ref: '#/components/schemas/ResponseMeta'
+
+paths:
+  /users:
+    get:
+      tags: [users]
+      summary: Danh sách người dùng trong tenant
+      x-required-permission: tenant.read_users
+      parameters:
+        - name: page
+          in: query
+          schema: { type: integer, default: 1, minimum: 1 }
+        - name: limit
+          in: query
+          schema: { type: integer, default: 20, minimum: 1, maximum: 100 }
+        - name: search
+          in: query
+          schema: { type: string }
+      responses:
+        '200':
+          description: Thành công
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserListResponse'
+        '401':
+          description: Chưa xác thực
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '403':
+          description: Không đủ quyền
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+
+  /users/me:
+    get:
+      tags: [users]
+      summary: Lấy thông tin user hiện tại
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserOut'
+        '401':
+          description: Chưa xác thực
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+
+  /users/me/permissions:
+    get:
+      tags: [users]
+      summary: Lấy quyền hiện tại của user
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PermissionStringsResponse'
+        '401':
+          description: Chưa xác thực
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+
+  /roles:
+    get:
+      tags: [rbac]
+      summary: Danh sách role templates
+      x-required-permission: tenant.view_rbac_config
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RoleListResponse'
+        '401':
+          description: Chưa xác thực
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '403':
+          description: Không đủ quyền
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+
+  /permissions:
+    get:
+      tags: [rbac]
+      summary: Danh sách permission templates
+      x-required-permission: tenant.view_rbac_config
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PermissionListResponse'
+        '401':
+          description: Chưa xác thực
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '403':
+          description: Không đủ quyền
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'

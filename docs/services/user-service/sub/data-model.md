@@ -1,4 +1,4 @@
-# 🗃️ Data Model – Sub User Service
+# 🗃️ User Service Sub - Data Model
 
 ```
 title: Data Model – User Service Sub
