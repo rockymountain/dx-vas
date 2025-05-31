@@ -57,21 +57,19 @@ paths:
         - in: query
           name: auth_provider
           schema:
-            type: string
-            enum: [local, google]
-          description: Lọc theo loại đăng nhập
+            $ref: '#/components/schemas/AuthProviderEnum'
+          description: Loại đăng nhập
+          example: "google"
         - in: query
           name: sort_by
           schema:
-            type: string
-            enum: [created_at, full_name]
+            $ref: '#/components/schemas/UserGlobalSortByEnum'
             default: created_at
           description: Trường dùng để sắp xếp
         - in: query
           name: sort_order
           schema:
-            type: string
-            enum: [asc, desc]
+            $ref: '#/components/schemas/SortOrderEnum'
             default: desc
           description: Thứ tự sắp xếp
       x-required-permission: superadmin.view_all_users_global
@@ -90,7 +88,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ForbiddenError'
+                $ref: '#/components/responses/ForbiddenError'
 
     post:
       summary: Tạo người dùng toàn cục (Master)
@@ -122,7 +120,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ForbiddenError'
+                $ref: '#/components/responses/ForbiddenError'
         '409':
           $ref: '#/components/responses/ConflictError'
 
@@ -175,7 +173,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ForbiddenError'
+                $ref: '#/components/responses/ForbiddenError'
         '404':
           $ref: '#/components/responses/NotFoundError'
 
@@ -199,14 +197,12 @@ paths:
         - in: query
           name: sort_by
           schema:
-            type: string
-            enum: [created_at, name]
+            $ref: '#/components/schemas/TenantSortByEnum'
           description: Trường sắp xếp
         - in: query
           name: sort_order
           schema:
-            type: string
-            enum: [asc, desc]
+            $ref: '#/components/schemas/SortOrderEnum'
           description: Thứ tự sắp xếp
       x-required-permission: superadmin.view_tenants
       x-audit-action: list_tenants
@@ -222,7 +218,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ForbiddenError'
+                $ref: '#/components/responses/ForbiddenError'
 
     post:
       summary: Tạo tenant mới
@@ -287,7 +283,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ForbiddenError'
+                $ref: '#/components/responses/ForbiddenError'
 
   /user-tenant-assignments:
     get:
@@ -310,13 +306,11 @@ paths:
         - in: query
           name: sort_by
           schema:
-            type: string
-            enum: [created_at]
+            $ref: '#/components/schemas/UserTenantAssignmentsSortByEnum'
         - in: query
           name: sort_order
           schema:
-            type: string
-            enum: [asc, desc]
+            $ref: '#/components/schemas/SortOrderEnum'
       x-required-permission: superadmin.view_user_assignments
       x-audit-action: list_user_tenant_assignments
       responses:
@@ -331,7 +325,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ForbiddenError'
+                $ref: '#/components/responses/ForbiddenError'
 
     post:
       summary: Gán user vào tenant
@@ -357,7 +351,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ForbiddenError'
+                $ref: '#/components/responses/ForbiddenError'
 
   /user-tenant-assignments/{id}:
     patch:
@@ -403,13 +397,11 @@ paths:
         - in: query
           name: sort_by
           schema:
-            type: string
-            enum: [template_code, created_at]
+            $ref: '#/components/schemas/RoleTemplateSortByEnum'
         - in: query
           name: sort_order
           schema:
-            type: string
-            enum: [asc, desc]
+            $ref: '#/components/schemas/SortOrderEnum'
       x-required-permission: superadmin.view_rbac_templates
       x-audit-action: list_rbac_template_roles
       responses:
@@ -424,7 +416,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ForbiddenError'
+                $ref: '#/components/responses/ForbiddenError'
       x-note: >
         RBAC templates là metadata toàn cục (global metadata), không thuộc phạm vi áp dụng của ADR-026 (multi-tenant versioning) và ADR-027 (data management strategy).
 
@@ -487,13 +479,11 @@ paths:
         - in: query
           name: sort_by
           schema:
-            type: string
-            enum: [permission_code, created_at]
+            $ref: '#/components/schemas/PermissionTemplateSortByEnum'
         - in: query
           name: sort_order
           schema:
-            type: string
-            enum: [asc, desc]
+            $ref: '#/components/schemas/SortOrderEnum'
       x-required-permission: superadmin.view_rbac_templates
       x-audit-action: list_rbac_template_permissions
       responses:
@@ -508,7 +498,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ForbiddenError'
+                $ref: '#/components/responses/ForbiddenError'
       x-note: >
         RBAC templates là metadata toàn cục (global metadata), không thuộc phạm vi áp dụng của ADR-026 (multi-tenant versioning) và ADR-027 (data management strategy).
 
@@ -592,20 +582,94 @@ components:
             $ref: '#/components/schemas/ErrorEnvelope'
 
   schemas:
+    TenantStatusEnum:
+      type: string
+      enum: [active, inactive, suspended, archived]
+      description: Trạng thái hoạt động của tenant (trường thành viên)
+      example: active
+
+    UserStatusEnum:
+      type: string
+      enum: [active, inactive, invited, suspended, deleted]
+      description: Trạng thái hoạt động của người dùng
+      example: active
+
+    AssignmentStatusEnum:
+      type: string
+      enum: [active, revoked, pending, suspended, rejected]
+      description: Trạng thái phân quyền người dùng trong tenant
+      example: active
+
+    SortOrderEnum:
+      type: string
+      enum: [asc, desc]
+      description: Thứ tự sắp xếp (tăng/giảm)
+
+    AuthProviderEnum:
+      type: string
+      enum: [local, google]
+      description: Loại đăng nhập của người dùng
+      example: "google"
+
+    UserGlobalSortByEnum:
+      type: string
+      enum: [created_at, full_name]
+      description: Trường dùng để sắp xếp danh sách người dùng toàn cục
+
+    TenantSortByEnum:
+      type: string
+      enum: [created_at, name]
+      description: Trường dùng để sắp xếp danh sách tenant
+
+    UserTenantAssignmentsSortByEnum:
+      type: string
+      enum: [created_at]
+      description: Trường dùng để sắp xếp danh sách User Tenant Assignments
+
+    RoleTemplateSortByEnum:
+      type: string
+      enum: [template_code, created_at]
+      description: Trường dùng để sắp xếp danh sách role template
+
+    PermissionTemplateSortByEnum:
+      type: string
+      enum: [permission_code, created_at]
+      description: Trường dùng để sắp xếp danh sách permission template
+
     UserGlobal:
       type: object
       properties:
         user_id:
           type: string
           format: uuid
+          description: Định danh người dùng toàn cục
+          example: "abc123"
+          readOnly: true
         full_name:
           type: string
+          description: Họ và tên người dùng
+          example: "Nguyễn Văn A"
         email:
           type: string
           format: email
+          description: Địa chỉ email người dùng
+          example: "user@example.com"
         auth_provider:
+          $ref: '#/components/schemas/AuthProviderEnum'
+          description: Loại đăng nhập
+          example: "google"
+        created_at:
           type: string
-          enum: [google, local, otp]
+          format: date-time
+          description: Thời điểm người dùng được tạo
+          example: "2024-01-01T08:00:00Z"
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          description: Thời điểm người dùng được cập nhật lần cuối
+          example: "2024-01-10T12:00:00Z"
+          readOnly: true
       required: [user_id, full_name, email, auth_provider]
 
     UserGlobalCreateRequest:
@@ -613,12 +677,17 @@ components:
       properties:
         full_name:
           type: string
+          description: Họ và tên người dùng
+          example: "Nguyễn Văn A"
         email:
           type: string
           format: email
+          description: Địa chỉ email người dùng
+          example: "user@example.com"
         auth_provider:
-          type: string
-          enum: [google, local, otp]
+          $ref: '#/components/schemas/AuthProviderEnum'
+          description: Loại đăng nhập
+          example: "google"
       required: [full_name, email, auth_provider]
 
     UserGlobalResponse:
@@ -634,10 +703,27 @@ components:
       properties:
         tenant_id:
           type: string
+          description: Định danh tenant
+          example: "abc123"
+          readOnly: true
         tenant_name:
           type: string
+          description: Tên tenant
+          example: "Trường Tiểu Học Việt Anh"
         status:
+          $ref: '#/components/schemas/TenantStatusEnum'
+        created_at:
           type: string
+          format: date-time
+          description: Ngày tạo tenant
+          example: "2024-01-01T08:00:00Z"
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          description: Ngày cập nhật tenant gần nhất
+          example: "2024-01-10T12:00:00Z"
+          readOnly: true
       required: [tenant_id, tenant_name, status]
 
     TenantCreateRequest:
@@ -645,8 +731,10 @@ components:
       properties:
         tenant_name:
           type: string
+          description: Tên tenant
+          example: "Trường Tiểu Học Việt Anh"
         status:
-          type: string
+          $ref: '#/components/schemas/TenantStatusEnum'
           default: active
       required: [tenant_name]
 
@@ -676,14 +764,20 @@ components:
         id:
           type: string
           format: uuid
+          description: Định danh quan hệ người dùng và tenant
+          example: "abc123"
+          readOnly: true
         user_id_global:
           type: string
           format: uuid
+          description: Định danh người dùng toàn cục
+          example: "abc123"
         tenant_id:
           type: string
+          description: Định danh tenant
+          example: "abc123"
         assignment_status:
-          type: string
-          enum: [active, revoked]
+          $ref: '#/components/schemas/AssignmentStatusEnum'
       required: [id, user_id_global, tenant_id, assignment_status]
 
     UserTenantAssignmentCreateRequest:
@@ -692,16 +786,19 @@ components:
         user_id_global:
           type: string
           format: uuid
+          description: Định danh người dùng toàn cục
+          example: "abc123"
         tenant_id:
           type: string
+          description: Định danh tenant
+          example: "abc123"
       required: [user_id_global, tenant_id]
 
     UserTenantAssignmentUpdateRequest:
       type: object
       properties:
         assignment_status:
-          type: string
-          enum: [active, revoked]
+          $ref: '#/components/schemas/AssignmentStatusEnum'
       required: [assignment_status]
 
     UserTenantAssignmentResponse:
@@ -755,11 +852,29 @@ components:
         template_id:
           type: string
           format: uuid
+          description: Định danh vai trò toàn cục mẫu
+          example: "abc123"
         template_code:
           type: string
+          description: Mã mẫu
+          example: "abc123"
         description:
           type: string
           nullable: true
+          description: Mô tả khái quát
+          example: "Mẫu vai trò tư vấn"
+        created_at:
+          type: string
+          format: date-time
+          description: Ngày tạo role template
+          example: "2024-01-05T10:30:00Z"
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          description: Ngày cập nhật role template gần nhất
+          example: "2024-01-20T14:00:00Z"
+          readOnly: true
       required: [template_id, template_code]
 
     GlobalPermissionTemplate:
@@ -768,8 +883,13 @@ components:
         template_id:
           type: string
           format: uuid
+          description: Định danh mẫu quyền toàn cục
+          example: "per_abc123"
+          readOnly: true
         permission_code:
           type: string
+          description: mã quyền
+          example: "permission abc123"
         action:
           type: string
         resource:
@@ -781,6 +901,18 @@ components:
         description:
           type: string
           nullable: true
+        created_at:
+          type: string
+          format: date-time
+          description: Ngày tạo permission template
+          example: "2024-01-03T09:15:00Z"
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          description: Ngày cập nhật permission template gần nhất
+          example: "2024-01-12T17:45:00Z"
+          readOnly: true
       required: [template_id, permission_code, action, resource]
 
     GlobalUserUpdate:
@@ -789,14 +921,18 @@ components:
         full_name:
           type: string
           nullable: true
+          description: Họ và tên người dùng
+          example: "Nguyễn Văn A"
         phone:
           type: string
           nullable: true
+          description: Số điện thoại người dùng
+          example: "0983123456"
         status:
-          type: string
-          enum: [pending, active, inactive, deleted]
+          $ref: '#/components/schemas/UserStatusEnum'
           nullable: true
           description: Trạng thái vòng đời người dùng toàn cục.
+          example: "active"
 
     UserGlobalListResponse:
       allOf:
@@ -861,9 +997,8 @@ components:
           nullable: true
           description: Tên mới của tenant (nếu cần cập nhật)
         status:
-          type: string
+          $ref: '#/components/schemas/TenantStatusEnum'
           nullable: true
-          enum: [active, inactive]
           description: Trạng thái mới của tenant
       additionalProperties: false
 
@@ -888,9 +1023,13 @@ components:
       properties:
         request_id:
           type: string
+          description: Định danh yêu cầu
+          example: "req_abc123"
         timestamp:
           type: string
           format: date-time
+          description: thời gian
+          example: "2024-01-01T12:00:00Z"
         page:
           type: integer
           nullable: true

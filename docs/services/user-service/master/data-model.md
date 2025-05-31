@@ -186,7 +186,7 @@ CREATE TABLE user_tenant_assignments (
   tenant_id TEXT NOT NULL REFERENCES tenants(tenant_id),         -- 🔗 Tenant được gán
   assignment_status TEXT NOT NULL DEFAULT 'active',     -- Trạng thái: active, revoked
   assigned_at TIMESTAMPTZ DEFAULT now() NOT NULL,       -- ⏱️ Thời điểm gán
-  revoked_at TIMESTAMPTZ,                               -- ⏱️ Thời điểm hủy gán (nếu có)
+  updated_at TIMESTAMPTZ,                               -- ⏱️ Thời điểm hủy gán (nếu có)
   assigned_by UUID,                                     -- 🔗 Người gán (user_id_global) – thường là Superadmin
   UNIQUE (user_id_global, tenant_id),                   -- 🛡️ Không thể gán trùng người dùng vào cùng tenant
   CHECK (assignment_status IN ('active', 'revoked'))
@@ -204,7 +204,7 @@ CREATE TABLE user_tenant_assignments (
 | `tenant_id`        | TEXT         | Tenant cụ thể                                                           |
 | `assignment_status`| TEXT         | Trạng thái hiện tại: active / revoked                                  |
 | `assigned_at`      | TIMESTAMPTZ  | Thời điểm thực hiện gán                                                |
-| `revoked_at`       | TIMESTAMPTZ  | Thời điểm hủy quyền truy cập (nếu có)                                  |
+| `updated_at`       | TIMESTAMPTZ  | Thời điểm hủy quyền truy cập (nếu có)                                  |
 | `assigned_by`      | UUID         | ID của user thực hiện thao tác gán (thường là superadmin)              |
 
 ---

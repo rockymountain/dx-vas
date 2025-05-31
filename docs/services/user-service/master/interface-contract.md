@@ -85,7 +85,8 @@ Cập nhật thông tin user (thường để sửa tên/email khi có yêu cầ
 ```json
 {
   "full_name": "Trần Thị Bình",
-  "email": "b@example.com"
+  "email": "b@example.com",
+  "status": "active"
 }
 ```
 
@@ -233,13 +234,13 @@ Trả về tất cả các tenant mà user đã được gán vào.
 [
   {
     "assignment_id": "a123",
-    "user_id_global": "user-uuid",
+    "user_id": "user-uuid",
     "tenant_id": "tenant_a",
     "assignment_status": "active"
   },
   {
     "assignment_id": "a456",
-    "user_id_global": "user-uuid",
+    "user_id": "user-uuid",
     "tenant_id": "tenant_b",
     "assignment_status": "revoked"
   }
