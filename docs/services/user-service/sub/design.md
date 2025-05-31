@@ -47,6 +47,20 @@ Service này **không** thực hiện các tác vụ sau:
 
 > 🔧 API dùng chuẩn OpenAPI, tuân thủ cấu trúc response ADR-012, định nghĩa schema riêng cho tất cả response và error.
 
+### 📦 Ví dụ response `GET /users/me/permissions`
+```json
+{
+  "data": [
+    "student.view",
+    "attendance.mark"
+  ],
+  "meta": {
+    "request_id": "req-abc-123",
+    "timestamp": "2025-05-31T14:20:00Z"
+  }
+}
+```
+
 ---
 
 ## 3. 🗃️ Mô hình dữ liệu chi tiết (Data Model)
@@ -87,6 +101,7 @@ erDiagram
     STRING description
   }
 ```
+> 💡 **Ghi chú:** Mối quan hệ RoleTemplateLite → PermissionTemplateLite là mối quan hệ logic, không được biểu diễn qua bảng join vật lý. RBACResolver tại Sub sẽ tự động "expand" permissions dựa trên bản cache template từ Master.
 
 ### Bảng: `UserLocal`
 | Cột                 | Kiểu     | Ghi chú                                |
